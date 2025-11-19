@@ -79,6 +79,141 @@ The architecture prioritizes:
 - Email: Resend
 - Error Tracking: Sentry (optional)
 
+## UI/UX Design System
+
+### Design Philosophy
+
+Personity embodies **quiet luxury** — sophisticated, minimal, and purposeful. Every element serves a function. No decoration for decoration's sake.
+
+**Core Principles:**
+- **Restraint over abundance** - Use space generously, elements sparingly
+- **Clarity over cleverness** - Direct communication, no hidden meanings
+- **Precision over approximation** - Exact spacing (8px grid), perfect alignment
+- **Substance over style** - Function drives form
+
+### Color System
+
+**Primary Palette:**
+```
+Neutral Scale (90% of UI):
+- N950: #0A0A0B  // Primary text
+- N900: #18181B  // Card backgrounds
+- N700: #3F3F46  // Secondary text
+- N500: #71717A  // Tertiary text
+- N300: #D4D4D8  // Borders
+- N200: #E4E4E7  // Subtle borders
+- N100: #F4F4F5  // Page background
+- N50:  #FAFAFA  // Elevated background
+- White: #FFFFFF // Cards, elevated surfaces
+
+Accent (2% of UI):
+- Primary: #2563EB   // CTAs, links, focus states
+- Success: #059669   // Completed states
+- Error: #DC2626     // Errors
+```
+
+### Typography
+
+**Font Stack:**
+- Sans-serif: Inter
+- Monospace: JetBrains Mono
+
+**Type Scale:**
+```
+Headings:
+- H1: 24px / 32px / 600 weight / -0.01em
+- H2: 20px / 28px / 600 weight / -0.005em
+- H3: 18px / 26px / 600 weight
+- H4: 16px / 24px / 600 weight
+
+Body:
+- Base: 14px / 20px / 400 weight
+- Small: 13px / 18px / 400 weight
+- XS: 12px / 16px / 400 weight
+```
+
+### Spacing System (8px Grid)
+
+```
+4px   8px   12px   16px   20px   24px   32px   40px   48px   64px   80px
+```
+
+**Application:**
+- Component padding: 16px or 24px
+- Section spacing: 48px or 64px
+- Form field gaps: 24px
+- Page margins: 80px (desktop), 24px (mobile)
+
+### Component Specifications
+
+**Buttons:**
+```
+Primary:
+- Background: #2563EB
+- Text: White, 14px, 500 weight
+- Padding: 12px 24px
+- Border-radius: 8px
+- Hover: #1D4ED8
+- Focus: 2px ring Primary/20
+
+Secondary:
+- Background: White
+- Text: N950, 14px, 500 weight
+- Border: 1px solid N300
+- Padding: 12px 24px
+- Border-radius: 8px
+- Hover: Border N400, Background N50
+
+Ghost:
+- Background: Transparent
+- Text: N700, 14px, 500 weight
+- Padding: 12px 24px
+- Hover: Background N100
+```
+
+**Input Fields:**
+```
+- Background: White
+- Border: 1px solid N300
+- Padding: 12px 16px
+- Border-radius: 8px
+- Text: N950, 14px
+- Placeholder: N400
+- Hover: Border N400
+- Focus: Border Primary, 2px ring Primary/20
+```
+
+**Cards:**
+```
+- Background: White
+- Border: 1px solid N200
+- Border-radius: 12px
+- Padding: 24px
+- Shadow: None (flat design)
+- Hover (if interactive): Border N300, translateY(-2px)
+```
+
+### Responsive Breakpoints
+
+```
+Mobile: 640px
+Tablet: 768px
+Desktop: 1024px
+Wide: 1280px
+```
+
+### Accessibility
+
+- **Contrast**: Minimum 4.5:1 for text (use N700+ on white)
+- **Focus**: Visible 2px ring on all interactive elements
+- **Keyboard**: Full navigation support
+- **Touch targets**: Minimum 44px × 44px
+
+**For complete UI specifications, see:**
+- `.kiro/specs/personity-mvp/UI-DESIGN-SYSTEM.md` - Full design system
+- `.kiro/specs/personity-mvp/UI-COMPONENT-SPECS.md` - Exact component measurements
+- `.kiro/specs/personity-mvp/UI-QUICK-START.md` - Copy-paste ready code
+
 ## Phase 0: Project Setup and Configuration
 
 ### 0.1 Environment Setup

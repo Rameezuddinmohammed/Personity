@@ -7,11 +7,21 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
 - [ ] 1. Project Setup and Configuration
 - [ ] 1.1 Initialize Next.js project with TypeScript and Tailwind CSS
   - Run `npx create-next-app@latest personity --typescript --tailwind --app --src-dir`
-  - Install all core dependencies (Prisma, React Query, Zod, bcryptjs, jsonwebtoken, OpenAI SDK, Resend, axios)
+  - Install all core dependencies (Prisma, React Query, Zod, bcryptjs, jsonwebtoken, @azure/openai, @supabase/supabase-js, Resend, axios)
   - Install UI dependencies (shadcn/ui components, Radix UI primitives, lucide-react)
+  - Install Inter font: `npm install @fontsource/inter`
   - Configure TypeScript with strict mode
   - Set up ESLint and Prettier
   - _Requirements: 21.1, 21.2_
+
+- [ ] 1.1.5 Configure UI Design System
+  - Set up Tailwind config with custom color palette (N50-N950, Primary, Success, Error)
+  - Configure Inter font family as default sans-serif
+  - Set up 8px spacing scale
+  - Configure border-radius defaults (8px, 12px, 16px)
+  - Add custom box-shadow utilities (minimal shadows only)
+  - Create base component styles following UI-DESIGN-SYSTEM.md
+  - _Requirements: 21.1, UI Design System_
 
 - [ ] 1.2 Configure environment variables and project structure
   - Create `.env.local` with all required variables (database, OpenAI, Instamojo, email, monitoring)
@@ -65,20 +75,27 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - _Requirements: 19.5_
 
 - [ ] 2.5 Build login and signup UI pages
-  - Create `/app/(auth)/login/page.tsx` with form
-  - Create `/app/(auth)/signup/page.tsx` with form
-  - Add form validation with react-hook-form and Zod
-  - Implement Google OAuth button
-  - Add error handling and loading states
-  - _Requirements: 1.1, 1.2, 1.3_
+  - Create `/app/(auth)/login/page.tsx` with centered 440px card
+  - Create `/app/(auth)/signup/page.tsx` with same layout
+  - Implement form with Input components (12px 16px padding, N300 borders)
+  - Add Primary button (12px 24px padding, #2563EB background)
+  - Add Google OAuth Secondary button with icon
+  - Implement form validation with react-hook-form and Zod
+  - Add error states (Error color borders, 2px ring)
+  - Add loading states (disabled button, N300 background)
+  - Follow UI-COMPONENT-SPECS.md for exact measurements
+  - _Requirements: 1.1, 1.2, 1.3, UI Design System_
 
 - [ ] 3. Survey Creation Workflow
 - [ ] 3.1 Create survey creation wizard UI
-  - Build multi-step form component with 5 steps
-  - Implement step navigation and validation
-  - Add progress indicator
+  - Build centered card (800px max-width, 48px padding, 16px border-radius)
+  - Create horizontal progress indicator (5 steps, 40px circles)
+  - Implement step navigation with Primary/Secondary buttons
+  - Style active step (Primary background), completed (Success), upcoming (N200)
+  - Add 2px connector line between steps (N200 background, Primary progress)
   - Create form state management with Zustand
-  - _Requirements: 2.1_
+  - Follow UI-COMPONENT-SPECS.md wizard specifications
+  - _Requirements: 2.1, UI Design System_
 
 - [ ] 3.2 Implement Step 1: Objective input with AI context detection
   - Create objective input field
@@ -123,11 +140,15 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
 
 - [ ] 4. Dashboard and Survey Management
 - [ ] 4.1 Create dashboard layout and navigation
-  - Build dashboard layout with sidebar
-  - Add navigation menu (Dashboard, Surveys, Billing, Settings)
-  - Implement user menu with logout
-  - Add mobile responsive navigation
-  - _Requirements: 17.1_
+  - Build top navigation bar (64px height, white background, N200 bottom border)
+  - Create fixed sidebar (240px width, white background, N200 right border)
+  - Add logo (24px height) and nav links (14px, 500 weight, 8px 16px padding)
+  - Implement user menu with avatar (32px circle, N200 background)
+  - Style active nav items (N200 background, N950 text)
+  - Add hover states (N100 background on all interactive elements)
+  - Implement mobile responsive navigation (hamburger < 768px)
+  - Follow UI-COMPONENT-SPECS.md dashboard layout specifications
+  - _Requirements: 17.1, UI Design System_
 
 - [ ] 4.2 Build surveys list view
   - Create `/app/(dashboard)/dashboard/page.tsx`
@@ -170,12 +191,18 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - _Requirements: 4.2_
 
 - [ ] 5.3 Build conversation UI with message exchange
-  - Create conversation interface with message list
-  - Add message input with character limit (2000)
-  - Display AI responses with typing indicator
-  - Show progress indicator with topics covered
-  - Make mobile-responsive
-  - _Requirements: 4.3, 4.4, 4.7_
+  - Create centered container (800px max-width, N50 background)
+  - Build white chat card (16px border-radius, 32px padding)
+  - Style AI messages (left-aligned, N100 background, 12px 16px padding, 12px border-radius)
+  - Style user messages (right-aligned, Primary/10 background, 12px 16px padding)
+  - Add typing indicator (3 dots, 8px circles, N400, bounce animation)
+  - Create sticky input area (white background, N200 top border, 24px padding)
+  - Add auto-grow textarea (12px 16px padding, max 120px height)
+  - Add send button (48px square, Primary background, white icon)
+  - Show progress bar (4px height, N200 background, Primary fill)
+  - Make mobile-responsive (full width < 640px)
+  - Follow UI-COMPONENT-SPECS.md conversation interface specifications
+  - _Requirements: 4.3, 4.4, 4.7, UI Design System_
 
 - [ ] 5.4 Implement message handling API
   - Create `/api/conversations/[token]/message` POST route

@@ -269,7 +269,24 @@ The MVP validates the core hypothesis: AI conversations can achieve 70%+ complet
 4. WHEN a respondent clicks the viral link, THE System SHALL redirect to the signup page with a referral tracking parameter
 5. WHERE a creator has a paid plan, THE System SHALL allow removal of "Powered by Personity" branding as an optional feature
 
-### Requirement 21: Performance Requirements
+### Requirement 21: UI/UX Design Standards
+
+**User Story:** As a user, I want a sophisticated, professional interface, so that I trust the platform with my research data.
+
+#### Acceptance Criteria
+
+1. THE System SHALL use the defined neutral color scale (N50-N950) for 90% of the interface
+2. THE System SHALL use accent colors (Primary #2563EB) for CTAs and focus states only
+3. THE System SHALL use Inter font family with 600 weight for headings and 400 weight for body text
+4. THE System SHALL follow 8px grid spacing system for all layout and component spacing
+5. THE System SHALL provide visible focus states (2px ring, 4px offset) on all interactive elements
+6. THE System SHALL provide hover states on all interactive elements
+7. THE System SHALL use border-radius of 8px (components), 12px (cards), or 16px (modals)
+8. THE System SHALL maintain minimum 4.5:1 color contrast ratio for text
+9. THE System SHALL support responsive layouts from 375px (mobile) to 2560px (desktop)
+10. THE System SHALL use minimal shadows (max 2px blur) following flat design principles
+
+### Requirement 22: Performance Requirements
 
 **User Story:** As a user, I want fast page loads and responses, so that I have a smooth experience.
 
