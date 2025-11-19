@@ -42,11 +42,14 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Create `.env.local` with all required variables (database, Azure AI Foundry, Supabase, email)
   - Add: DATABASE_URL, AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_DEPLOYMENT_NAME
   - Add: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
-  - Add: JWT_SECRET, RESEND_API_KEY, FROM_EMAIL
+  - Add: JWT_SECRET, RESEND_API_KEY, FROM_EMAIL, NEXT_PUBLIC_APP_URL
   - Create folder structure: `src/app`, `src/components`, `src/lib`, `src/types`
+  - Create `src/lib/validations` folder for shared Zod schemas (frontend + API)
   - Set up route groups: `(auth)`, `(dashboard)`, `(public)`
-  - Create `middleware.ts` for auth and rate limiting
+  - Create `middleware.ts` for auth
   - _Requirements: 19.2, 19.6_
+  
+  **Production:** Set NEXT_PUBLIC_APP_URL to actual domain in Vercel, not localhost
 
 - [ ] 1.3 Initialize Prisma and database schema
   - Run `npx prisma init`
@@ -288,6 +291,14 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Generate final summary
   - _Requirements: 4.6_
 
+- [ ]* 6.5 Add conversation engine unit tests
+  - Test master prompt generation with various survey configs
+  - Test token counting accuracy
+  - Test history summarization logic
+  - Test conversation ending detection
+  - Verify AI response parsing
+  - _Requirements: Testing Strategy_
+
 - [ ] 7. Quality Detection and Fraud Prevention
 - [ ] 7.1 Implement low-quality response detection
   - Create quality check function using GPT-4o-mini
@@ -311,13 +322,19 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - _Requirements: 7.2_
 
 - [ ] 8. Rate Limiting
-- [ ] 8.1 Implement middleware rate limiting
-  - Create rate limiting logic in `middleware.ts`
-  - Track requests per IP with in-memory Map
-  - Limit to 30 requests per minute
-  - Return 429 status when exceeded
-  - Reset counters after 60 seconds
+- [ ] 8.1 Implement rate limiting with Vercel KV
+  - Create Vercel KV database in Vercel dashboard (free tier)
+  - Install `@upstash/ratelimit` and `@upstash/redis`
+  - Create `lib/rate-limit.ts` with Upstash Ratelimit client
+  - Configure sliding window: 30 requests per minute per IP
+  - Apply rate limiting in conversation API routes
+  - Return 429 status with reset time when exceeded
   - _Requirements: 8.1, 8.2, 8.3_
+  
+  **Alternative (MVP Simplification):**
+  - Skip rate limiting for Phase 1
+  - Add in Phase 2 when scaling
+  - Document as known limitation
 
 - [ ] 9. Analysis Pipeline
 - [ ] 9.1 Implement per-response analysis
@@ -362,9 +379,11 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
 - [ ] 10.2 Build individual responses view with pagination
   - Create responses list component
   - Implement pagination (20 per page)
-  - Add search functionality
+  - Add client-side search functionality (filter loaded responses)
   - Show summary and quality score for each
   - _Requirements: 11.4, 11.5_
+  
+  **Note:** Search is client-side for MVP (< 100 responses). For scale, add Postgres full-text search or dedicated search index in Phase 2.
 
 - [ ] 10.3 Create response detail view
   - Build modal or page for full transcript
@@ -445,11 +464,23 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Save to ApiUsage table with provider, model, tokens, cost
   - _Requirements: 15.1, 15.4_
 
-- [ ] 13.2 Add daily cost monitoring
-  - Create function to calculate daily spend
-  - Send Slack alert when exceeding $500
+- [ ] 13.2 Add daily cost monitoring with Vercel Cron
+  - Create `/api/cron/check-costs` route (protected by Vercel Cron secret)
+  - Calculate daily spend from ApiUsage table
+  - Send email alert via Resend when exceeding $500
+  - Set up Vercel Cron job to run hourly: `0 * * * *`
   - Track costs per user and per survey
   - _Requirements: 15.2, 15.3_
+  
+  **Vercel Cron Configuration (vercel.json):**
+  ```json
+  {
+    "crons": [{
+      "path": "/api/cron/check-costs",
+      "schedule": "0 * * * *"
+    }]
+  }
+  ```
 
 - [ ] 14. Email Notifications
 - [ ] 14.1 Set up Resend email service

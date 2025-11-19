@@ -147,6 +147,30 @@ VERCEL_PROJECT_ID=... (from project settings)
 
 ---
 
+### 5.5 Vercel KV (REQUIRED - Rate Limiting)
+**What it's for**: Redis-based rate limiting (Vercel-compatible)
+
+**Steps to get it**:
+1. In Vercel dashboard, go to your project
+2. Click "Storage" tab
+3. Click "Create Database" → "KV"
+4. Name it "personity-ratelimit"
+5. Select region (same as your app)
+6. Click "Create"
+7. Environment variables auto-populate in Vercel
+
+**What to save** (auto-populated by Vercel):
+```
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
+**Cost**: Free tier (10,000 commands/day) - sufficient for MVP
+
+**Alternative**: Skip rate limiting for Phase 1, add in Phase 2
+
+---
+
 ### 6. Sentry (OPTIONAL - Error Tracking)
 **What it's for**: Monitoring errors in production
 
@@ -307,7 +331,7 @@ npx create-next-app@latest personity --typescript --tailwind --app --src-dir
 cd personity
 
 # 3. Install dependencies
-npm install @prisma/client prisma @tanstack/react-query zustand zod react-hook-form @hookform/resolvers bcryptjs jsonwebtoken @azure/openai @supabase/supabase-js resend axios
+npm install @prisma/client prisma @tanstack/react-query zustand zod react-hook-form @hookform/resolvers bcryptjs jsonwebtoken @azure/openai @supabase/supabase-js resend axios @upstash/ratelimit @upstash/redis
 
 # 4. Install UI dependencies
 npm install class-variance-authority clsx tailwind-merge lucide-react @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-select @radix-ui/react-toast

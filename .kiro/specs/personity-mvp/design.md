@@ -631,42 +631,56 @@ interface ConversationManager {
 }
 ```
 
-### Rate Limiting (Simplified)
+### Rate Limiting (Vercel-Compatible)
 
-**Use Vercel's Built-in Rate Limiting:**
+**Problem:** Vercel Edge Runtime is serverless and ephemeral. In-memory Maps don't persist across instances.
 
-For MVP, we'll use simple middleware rate limiting instead of complex custom implementation:
+**Solution for MVP:** Use Vercel KV (Redis) with @upstash/ratelimit
 
 ```typescript
-// middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// lib/rate-limit.ts
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
-const rateLimit = new Map<string, { count: number; resetAt: number }>();
+// Create Redis client
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
-export function middleware(request: NextRequest) {
-  // Simple rate limiting for conversation endpoints
-  if (request.nextUrl.pathname.startsWith('/api/conversations')) {
-    const ip = request.ip ?? 'unknown';
-    const now = Date.now();
-    const limit = rateLimit.get(ip);
-    
-    if (limit && now < limit.resetAt) {
-      if (limit.count >= 30) {
-        return NextResponse.json(
-          { error: 'Too many requests' },
-          { status: 429 }
-        );
-      }
-      limit.count++;
-    } else {
-      rateLimit.set(ip, { count: 1, resetAt: now + 60000 });
-    }
+// Create rate limiter
+export const conversationRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, '1 m'), // 30 requests per minute
+  analytics: true,
+  prefix: '@upstash/ratelimit',
+});
+
+// Usage in API route
+export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for') ?? 'unknown';
+  const { success, limit, reset, remaining } = await conversationRateLimit.limit(ip);
+  
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Too many requests', reset },
+      { status: 429 }
+    );
   }
   
-  return NextResponse.next();
+  // Continue with request...
 }
 ```
+
+**Setup:**
+1. Create free Vercel KV database in Vercel dashboard
+2. Add environment variables (auto-populated by Vercel)
+3. Install: `npm install @upstash/ratelimit @upstash/redis`
+
+**Alternative (Accept Risk for MVP):**
+- Skip rate limiting entirely for Phase 1
+- Add it in Phase 2 when scaling
+- Document as known limitation
 
 ## Data Models
 
