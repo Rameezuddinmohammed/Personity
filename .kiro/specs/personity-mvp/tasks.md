@@ -2,6 +2,21 @@
 
 This plan breaks down the Personity MVP into discrete, actionable coding tasks. Each task builds incrementally on previous work, ending with a fully integrated system.
 
+## Tech Stack (Phase 1)
+
+**Core Services:**
+- Azure AI Foundry (GPT-4o) - AI conversations
+- Supabase (Pro) - Database + file storage
+- Resend - Email delivery
+- Vercel (Pro) - Hosting
+
+**Optional:**
+- Sentry - Error tracking (can skip for MVP)
+
+**Delayed to Phase 2:**
+- Instamojo - Payment processing
+- Analytics - Mixpanel or similar
+
 ## Task List
 
 - [ ] 1. Project Setup and Configuration
@@ -24,7 +39,10 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - _Requirements: 21.1, UI Design System_
 
 - [ ] 1.2 Configure environment variables and project structure
-  - Create `.env.local` with all required variables (database, OpenAI, Instamojo, email, monitoring)
+  - Create `.env.local` with all required variables (database, Azure AI Foundry, Supabase, email)
+  - Add: DATABASE_URL, AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_DEPLOYMENT_NAME
+  - Add: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
+  - Add: JWT_SECRET, RESEND_API_KEY, FROM_EMAIL
   - Create folder structure: `src/app`, `src/components`, `src/lib`, `src/types`
   - Set up route groups: `(auth)`, `(dashboard)`, `(public)`
   - Create `middleware.ts` for auth and rate limiting
@@ -98,8 +116,8 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - _Requirements: 2.1, UI Design System_
 
 - [ ] 3.2 Implement Step 1: Objective input with AI context detection
-  - Create objective input field
-  - Call OpenAI to detect if context is needed based on objective
+  - Create objective input field (textarea, 16px padding, N300 border)
+  - Call Azure AI Foundry GPT-4o to detect if context is needed based on objective
   - Conditionally show/hide Step 2 based on AI response
   - _Requirements: 2.2, 2.3_
 
@@ -132,8 +150,8 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
 
 - [ ] 3.7 Implement test mode simulation
   - Create test mode toggle in survey settings
-  - Build test conversation UI
-  - Call OpenAI without saving to database
+  - Build test conversation UI (same styling as respondent interface)
+  - Call Azure AI Foundry without saving to database
   - Display conversation transcript
   - Add reset functionality
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
@@ -209,8 +227,8 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Validate session token and status
   - Check rate limits (30 req/min per IP)
   - Append user message to conversation history
-  - Call OpenAI with master prompt and history
-  - Track token usage and costs
+  - Call Azure AI Foundry GPT-4o with master prompt and history
+  - Track token usage and costs ($2.50/1M input, $10/1M output)
   - Return AI response
   - _Requirements: 4.3, 6.1, 6.2, 6.7, 8.1, 8.2_
 
@@ -241,10 +259,12 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - _Requirements: 4.6, 20.2, 20.3, 20.4_
 
 - [ ] 6. AI Conversation Engine
-- [ ] 6.1 Create OpenAI service wrapper
-  - Build `lib/ai/openai.ts` with direct SDK usage
+- [ ] 6.1 Create Azure AI Foundry service wrapper
+  - Build `lib/ai/azure-openai.ts` using @azure/openai SDK
+  - Initialize AzureOpenAI client with API key, endpoint, and deployment name
   - Implement `generateAIResponse` function
-  - Set model to gpt-4o, temperature 0.7, max_tokens 200
+  - Use deployment name from env (AZURE_OPENAI_DEPLOYMENT_NAME)
+  - Set temperature 0.7, max_tokens 200
   - Return content and token usage
   - _Requirements: 6.2_
 
@@ -355,11 +375,12 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
 
 - [ ] 11. Export Functionality
 - [ ] 11.1 Implement PDF export
-  - Install PDF generation library (jsPDF or similar)
-  - Create PDF template with branding
+  - Install PDF generation library (jsPDF or @react-pdf/renderer)
+  - Create PDF template with minimal branding (following UI design system)
   - Include executive summary, themes, response summaries
-  - Add watermark for free plan users
-  - Upload to AWS S3
+  - Add "Powered by Personity" watermark for free plan users
+  - Upload to Supabase Storage bucket "exports"
+  - Generate signed URL (1 hour expiry)
   - Return download URL
   - _Requirements: 12.1, 12.2, 12.3, 12.6_
 
@@ -516,9 +537,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - _Requirements: All requirements_
 
 - [ ] 18.4 Set up monitoring and alerts
-  - Configure Sentry for production
-  - Set up cost alert webhooks
-  - Test error reporting
+  - Configure Sentry for production (optional - can skip for MVP)
+  - Set up cost alert webhooks (Slack or email)
+  - Test error reporting (if Sentry enabled)
   - Verify email notifications working
   - _Requirements: 15.1, 15.2, 18.1_
 
