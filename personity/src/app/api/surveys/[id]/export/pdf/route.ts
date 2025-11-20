@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { supabaseAdmin } from '@/lib/db/supabase';
+import { supabaseAdmin } from '@/lib/supabase/server';
 import { getLatestAggregateAnalysis } from '@/lib/ai/aggregate-analysis';
 import { generateInsightsPDF } from '@/lib/export/pdf-generator';
 

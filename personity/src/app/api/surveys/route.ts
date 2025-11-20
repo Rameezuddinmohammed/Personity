@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { supabaseAdmin } from '@/lib/db/supabase';
+import { supabaseAdmin } from '@/lib/supabase/server';
 import { createSurveySchema } from '@/lib/validations/survey';
 import { generateMasterPrompt } from '@/lib/ai/master-prompt';
 import { generateShortUrl } from '@/lib/utils/short-url';
