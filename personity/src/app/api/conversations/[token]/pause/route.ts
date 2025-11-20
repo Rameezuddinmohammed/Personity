@@ -47,7 +47,7 @@ export async function POST(
       .eq('id', session.id);
     
     // Generate resume URL
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://personity.vercel.app';
     const resumeUrl = `${appUrl}/s/${(session.Survey as any).shortUrl}/resume?token=${token}`;
     
     return NextResponse.json({
