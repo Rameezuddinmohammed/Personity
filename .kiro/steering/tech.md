@@ -4,25 +4,26 @@
 
 - **Framework**: Next.js 14 (App Router) with TypeScript 5.x
 - **Styling**: Tailwind CSS 3.x with shadcn/ui components
-- **Database**: PostgreSQL 15+ via Prisma ORM 5.x
+- **Database**: PostgreSQL 15+ via Supabase (with TypeScript types)
 - **AI Provider**: Azure AI Foundry (GPT-4o via Azure OpenAI SDK)
-- **Hosting**: Vercel (Pro plan)
+- **Hosting**: Vercel (Hobby/Free tier)
 - **Node**: 20.x LTS
 
 ## Key Libraries
 
 - **State Management**: Zustand (client), React Query (TanStack Query) for data fetching
 - **Validation**: Zod with react-hook-form
-- **Authentication**: bcryptjs, jsonwebtoken (JWT with 24h expiry)
+- **Authentication**: Supabase Auth (email/password + Google OAuth)
 - **UI Components**: Radix UI primitives, lucide-react icons
 - **Email**: Resend
 - **Payments**: ⏸️ Instamojo (delayed to Phase 2)
 - **Monitoring**: Sentry (error tracking - optional)
 
-## Database Provider Options
+## Database Provider
 
-- Supabase (Pro plan) - recommended
-- PlanetScale - alternative
+- **Supabase** - PostgreSQL database with built-in auth, storage, and realtime features
+- Direct SQL access via Supabase client
+- TypeScript types auto-generated from schema
 
 ## File Storage
 
@@ -36,10 +37,9 @@ npm run dev                 # Start dev server (localhost:3000)
 npm run build              # Build for production
 npm run start              # Start production server
 
-# Database
-npx prisma migrate dev     # Create and apply migration
-npx prisma generate        # Generate Prisma Client
-npx prisma studio          # Open database GUI
+# Database (Supabase)
+# Migrations are managed via Supabase Dashboard or MCP tools
+# TypeScript types are auto-generated from schema
 
 # Code Quality
 npm run lint               # Run ESLint
@@ -54,10 +54,9 @@ vercel --prod              # Deploy to production
 ## Environment Variables
 
 Required in `.env.local`:
-- `DATABASE_URL` - PostgreSQL connection string
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` - Supabase (database + auth + storage)
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase client configuration
 - `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT_NAME` - Azure AI Foundry
-- `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` - Supabase (database + storage)
-- `JWT_SECRET` - JWT signing secret
 - ~~`INSTAMOJO_API_KEY`, `INSTAMOJO_AUTH_TOKEN`, `INSTAMOJO_SALT`~~ - Payment provider (⏸️ Phase 2)
 - `RESEND_API_KEY` - Email service
 - `NEXT_PUBLIC_APP_URL` - Application URL

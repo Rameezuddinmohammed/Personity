@@ -5,10 +5,10 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
 ## Tech Stack (Phase 1)
 
 **Core Services:**
-- Azure AI Foundry (GPT-4o) - AI conversations
-- Supabase (Pro) - Database + file storage
-- Resend - Email delivery
-- Vercel (Pro) - Hosting
+- Azure AI Foundry (GPT-4o) - AI conversations ($200 credits available)
+- Supabase (Free tier) - Database + file storage
+- Resend (Free tier) - Email delivery
+- Vercel (Hobby/Free tier) - Hosting
 
 **Optional:**
 - Sentry - Error tracking (can skip for MVP)
@@ -19,17 +19,26 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
 
 ## Task List
 
-- [ ] 1. Project Setup and Configuration
-- [ ] 1.1 Initialize Next.js project with TypeScript and Tailwind CSS
+- [x] 1. Project Setup and Configuration
+
+
+
+
+
+
+- [x] 1.1 Initialize Next.js project with TypeScript and Tailwind CSS
+
   - Run `npx create-next-app@latest personity --typescript --tailwind --app --src-dir`
-  - Install all core dependencies (Prisma, React Query, Zod, bcryptjs, jsonwebtoken, @azure/openai, @supabase/supabase-js, Resend, axios)
+  - Install all core dependencies (React Query, Zod, @azure/openai, @supabase/supabase-js, Resend, axios)
   - Install UI dependencies (shadcn/ui components, Radix UI primitives, lucide-react)
   - Install Inter font: `npm install @fontsource/inter`
   - Configure TypeScript with strict mode
   - Set up ESLint and Prettier
   - _Requirements: 21.1, 21.2_
 
-- [ ] 1.1.5 Configure UI Design System
+- [x] 1.1.5 Configure UI Design System
+
+
   - Set up Tailwind config with custom color palette (N50-N950, Primary, Success, Error)
   - Configure Inter font family as default sans-serif
   - Set up 8px spacing scale
@@ -38,11 +47,14 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Create base component styles following UI-DESIGN-SYSTEM.md
   - _Requirements: 21.1, UI Design System_
 
-- [ ] 1.2 Configure environment variables and project structure
-  - Create `.env.local` with all required variables (database, Azure AI Foundry, Supabase, email)
-  - Add: DATABASE_URL, AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_DEPLOYMENT_NAME
+
+- [x] 1.2 Configure environment variables and project structure
+
+  - Create `.env.local` with all required variables (Supabase, Azure AI Foundry, email)
   - Add: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
-  - Add: JWT_SECRET, RESEND_API_KEY, FROM_EMAIL, NEXT_PUBLIC_APP_URL
+  - Add: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
+  - Add: AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_DEPLOYMENT_NAME
+  - Add: RESEND_API_KEY, FROM_EMAIL, NEXT_PUBLIC_APP_URL
   - Create folder structure: `src/app`, `src/components`, `src/lib`, `src/types`
   - Create `src/lib/validations` folder for shared Zod schemas (frontend + API)
   - Set up route groups: `(auth)`, `(dashboard)`, `(public)`
@@ -51,22 +63,33 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   
   **Production:** Set NEXT_PUBLIC_APP_URL to actual domain in Vercel, not localhost
 
-- [ ] 1.3 Initialize Prisma and database schema
-  - Run `npx prisma init`
-  - Define complete Prisma schema with all models (User, Survey, ConversationSession, Conversation, ResponseAnalysis, AggregateAnalysis, ApiUsage, BannedIp)
-  - Add proper indexes for performance
-  - Run initial migration
-  - Generate Prisma Client
-  - _Requirements: All data-related requirements_
 
-- [ ]* 1.4 Set up MCP server for Supabase
+
+- [x] 1.3 Initialize Supabase and database schema
+
+  - Set up Supabase project
+  - Create database tables via Supabase migrations (User, Survey, ConversationSession, Conversation, ResponseAnalysis, AggregateAnalysis, ApiUsage, BannedIp)
+  - Add proper indexes for performance
+  - Generate TypeScript types from schema
+  - Configure Supabase client
+  - _Requirements: All data-related requirements_
+  - _Note: Migrated from Prisma to Supabase for better integration_
+
+- [x] 1.4 Set up MCP server for Supabase
   - Create `.kiro/settings/mcp.json` with Supabase MCP configuration
   - Add Supabase URL and service role key to environment
   - Test MCP connection with list_tables command
   - _Requirements: Development tooling_
+  - _Status: Completed - MCP tools used for migrations and type generation_
 
-- [ ] 2. Authentication System
-- [ ] 2.1 Implement user registration with email/password
+- [x] 2. Authentication System
+
+
+
+
+- [x] 2.1 Implement user registration with email/password
+
+
   - Create `/api/auth/signup` route
   - Implement password hashing with bcrypt (10 rounds)
   - Validate email format and password strength using Zod
@@ -74,28 +97,32 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Send welcome email via Resend
   - _Requirements: 1.1, 19.1_
 
-- [ ] 2.2 Implement user login and JWT token generation
+
+
+- [x] 2.2 Implement user login and JWT token generation
   - Create `/api/auth/login` route
   - Verify password with bcrypt
   - Generate JWT token with 24-hour expiry
   - Return token in HTTP-only cookie
   - _Requirements: 1.3, 19.5_
 
-- [ ] 2.3 Implement Google OAuth authentication
+- [x] 2.3 Implement Google OAuth authentication
   - Set up Google OAuth credentials
   - Create `/api/auth/google` route
   - Handle OAuth callback and user creation/linking
   - Generate JWT token for OAuth users
   - _Requirements: 1.2_
 
-- [ ] 2.4 Create authentication middleware
+- [x] 2.4 Create authentication middleware
+
+
   - Implement JWT verification middleware
   - Protect dashboard and API routes
   - Add user context to requests
   - Handle token expiry and refresh
   - _Requirements: 19.5_
 
-- [ ] 2.5 Build login and signup UI pages
+- [x] 2.5 Build login and signup UI pages
   - Create `/app/(auth)/login/page.tsx` with centered 440px card
   - Create `/app/(auth)/signup/page.tsx` with same layout
   - Implement form with Input components (12px 16px padding, N300 borders)
@@ -107,8 +134,15 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Follow UI-COMPONENT-SPECS.md for exact measurements
   - _Requirements: 1.1, 1.2, 1.3, UI Design System_
 
-- [ ] 3. Survey Creation Workflow
-- [ ] 3.1 Create survey creation wizard UI
+- [x] 3. Survey Creation Workflow
+
+
+
+
+
+- [x] 3.1 Create survey creation wizard UI
+
+
   - Build centered card (800px max-width, 48px padding, 16px border-radius)
   - Create horizontal progress indicator (5 steps, 40px circles)
   - Implement step navigation with Primary/Secondary buttons
@@ -118,32 +152,39 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Follow UI-COMPONENT-SPECS.md wizard specifications
   - _Requirements: 2.1, UI Design System_
 
-- [ ] 3.2 Implement Step 1: Objective input with AI context detection
+- [x] 3.2 Implement Step 1: Objective input with AI context detection
+
+
   - Create objective input field (textarea, 16px padding, N300 border)
   - Call Azure AI Foundry GPT-4o to detect if context is needed based on objective
   - Conditionally show/hide Step 2 based on AI response
   - _Requirements: 2.2, 2.3_
 
-- [ ] 3.3 Implement Step 2: Context collection (conditional)
+- [x] 3.3 Implement Step 2: Context collection (conditional)
+
   - Create fields for product description, user info, known issues
   - Make all fields optional
   - Store context as JSON
   - _Requirements: 2.3_
 
-- [ ] 3.4 Implement Step 3: Key topics input
+- [x] 3.4 Implement Step 3: Key topics input
+
   - Create bullet list input for 2-10 topics
   - Add/remove topic functionality
   - Validate minimum 2 topics
   - _Requirements: 2.4_
 
-- [ ] 3.5 Implement Step 4: Settings configuration
+- [x] 3.5 Implement Step 4: Settings configuration
+
   - Create dropdowns for length (Quick/Standard/Deep)
   - Create dropdown for tone (Professional/Friendly/Casual)
   - Create radio buttons for stop condition
   - Add optional max questions input
   - _Requirements: 2.4_
 
-- [ ] 3.6 Create survey API endpoint and master prompt generation
+- [x] 3.6 Create survey API endpoint and master prompt generation
+
+
   - Create `/api/surveys` POST route
   - Generate unique 6-character short URL
   - Create master prompt template from survey config
@@ -151,7 +192,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Return survey with short URL
   - _Requirements: 2.6, 2.7_
 
-- [ ] 3.7 Implement test mode simulation
+- [x] 3.7 Implement test mode simulation
+
+
   - Create test mode toggle in survey settings
   - Build test conversation UI (same styling as respondent interface)
   - Call Azure AI Foundry without saving to database
@@ -159,8 +202,17 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Add reset functionality
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [ ] 4. Dashboard and Survey Management
-- [ ] 4.1 Create dashboard layout and navigation
+- [x] 4. Dashboard and Survey Management
+
+
+
+
+
+
+
+- [x] 4.1 Create dashboard layout and navigation
+
+
   - Build top navigation bar (64px height, white background, N200 bottom border)
   - Create fixed sidebar (240px width, white background, N200 right border)
   - Add logo (24px height) and nav links (14px, 500 weight, 8px 16px padding)
@@ -171,7 +223,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Follow UI-COMPONENT-SPECS.md dashboard layout specifications
   - _Requirements: 17.1, UI Design System_
 
-- [ ] 4.2 Build surveys list view
+- [x] 4.2 Build surveys list view
+
+
   - Create `/app/(dashboard)/dashboard/page.tsx`
   - Fetch user's surveys from API
   - Display surveys in grid/list with status, response count, completion rate
@@ -179,7 +233,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Implement empty state with example survey option
   - _Requirements: 17.1, 17.2, 17.3_
 
-- [ ] 4.3 Implement survey detail view and management
+- [x] 4.3 Implement survey detail view and management
+
+
   - Create survey detail page
   - Display survey configuration
   - Show real-time response count
@@ -187,15 +243,24 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Add delete functionality (soft delete)
   - _Requirements: 17.3, 17.4, 17.5_
 
-- [ ] 4.4 Create usage tracking display
+- [x] 4.4 Create usage tracking display
+
+
   - Show current plan and limits
   - Display responses used this month
   - Add progress bar for usage
   - Show days remaining for free plan
   - _Requirements: 14.2_
 
-- [ ] 5. Respondent Conversation Experience
-- [ ] 5.1 Create survey landing page
+- [x] 5. Respondent Conversation Experience
+
+
+
+
+
+
+- [x] 5.1 Create survey landing page
+
   - Build `/app/(public)/s/[shortUrl]/page.tsx`
   - Fetch survey by short URL
   - Display survey title and objective
@@ -203,7 +268,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Show "Powered by Personity" branding
   - _Requirements: 4.1, 20.1_
 
-- [ ] 5.2 Implement conversation session creation
+
+- [x] 5.2 Implement conversation session creation
+
   - Create `/api/surveys/[shortUrl]/start` route
   - Generate unique session token
   - Create ConversationSession in database
@@ -211,7 +278,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Return session token and initial AI greeting
   - _Requirements: 4.2_
 
-- [ ] 5.3 Build conversation UI with message exchange
+
+- [x] 5.3 Build conversation UI with message exchange
+
   - Create centered container (800px max-width, N50 background)
   - Build white chat card (16px border-radius, 32px padding)
   - Style AI messages (left-aligned, N100 background, 12px 16px padding, 12px border-radius)
@@ -225,7 +294,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Follow UI-COMPONENT-SPECS.md conversation interface specifications
   - _Requirements: 4.3, 4.4, 4.7, UI Design System_
 
-- [ ] 5.4 Implement message handling API
+
+- [x] 5.4 Implement message handling API
+
   - Create `/api/conversations/[token]/message` POST route
   - Validate session token and status
   - Check rate limits (30 req/min per IP)
@@ -235,14 +306,18 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Return AI response
   - _Requirements: 4.3, 6.1, 6.2, 6.7, 8.1, 8.2_
 
-- [ ] 5.5 Implement conversation history management
+
+- [x] 5.5 Implement conversation history management
+
   - Load conversation history from database
   - Implement token counting function
   - Add history summarization when exceeding 100k tokens
   - Preserve first 2 and last 6 exchanges
   - _Requirements: 6.5_
 
-- [ ] 5.6 Add pause and resume functionality
+
+- [x] 5.6 Add pause and resume functionality
+
   - Create pause button in conversation UI
   - Implement `/api/conversations/[token]/pause` route
   - Save current state to database
@@ -251,7 +326,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Restore conversation with full history
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 5.7 Implement conversation completion flow
+
+- [x] 5.7 Implement conversation completion flow
+
   - Detect when AI determines conversation is complete
   - Generate summary of understanding
   - Display summary to respondent for confirmation
@@ -261,8 +338,8 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Show thank you screen with viral CTA
   - _Requirements: 4.6, 20.2, 20.3, 20.4_
 
-- [ ] 6. AI Conversation Engine
-- [ ] 6.1 Create Azure AI Foundry service wrapper
+- [x] 6. AI Conversation Engine
+- [x] 6.1 Create Azure AI Foundry service wrapper
   - Build `lib/ai/azure-openai.ts` using @azure/openai SDK
   - Initialize AzureOpenAI client with API key, endpoint, and deployment name
   - Implement `generateAIResponse` function
@@ -270,26 +347,30 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Set temperature 0.7, max_tokens 200
   - Return content and token usage
   - _Requirements: 6.2_
+  - _Status: Completed in Task 5_
 
-- [ ] 6.2 Implement master prompt template system
+- [x] 6.2 Implement master prompt template system
   - Create prompt template with variable placeholders
   - Build function to replace variables (objective, context, topics, settings)
   - Format context and topics properly
   - Store generated prompts in database
   - _Requirements: 6.1_
+  - _Status: Completed in Task 3_
 
-- [ ] 6.3 Add topic tracking logic
+- [x] 6.3 Add topic tracking logic
   - Parse AI responses to identify topics discussed
   - Update currentState.topicsCovered in session
   - Prevent repeating questions on covered topics
   - _Requirements: 6.6_
+  - _Status: Completed - AI-powered topic identification implemented_
 
-- [ ] 6.4 Implement conversation ending detection
+- [x] 6.4 Implement conversation ending detection
   - Analyze conversation state (exchange count, topics covered)
   - Check stop condition from survey settings
   - Determine when to end conversation
   - Generate final summary
   - _Requirements: 4.6_
+  - _Status: Completed - AI-powered completion detection with topic coverage check_
 
 - [ ]* 6.5 Add conversation engine unit tests
   - Test master prompt generation with various survey configs
@@ -298,46 +379,66 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Test conversation ending detection
   - Verify AI response parsing
   - _Requirements: Testing Strategy_
+  - _Status: Optional - Skipped for MVP_
 
-- [ ] 7. Quality Detection and Fraud Prevention
-- [ ] 7.1 Implement low-quality response detection
+- [x] 7. Quality Detection and Fraud Prevention
+
+
+
+
+- [x] 7.1 Implement low-quality response detection
+
+
   - Create quality check function using GPT-4o-mini
   - Detect 1-2 word responses, "idk", generic answers
   - Flag sessions after 3 low-quality responses
   - Attempt re-engagement once
   - _Requirements: 4.5, 7.1_
 
-- [ ] 7.2 Add spam and abuse detection
+- [x] 7.2 Add spam and abuse detection
+
+
   - Detect identical responses (3+ times)
   - Track sessions per IP in 24-hour window
   - Calculate average exchange time
   - Flag suspicious patterns
   - _Requirements: 7.2, 7.3, 7.4_
 
-- [ ] 7.3 Implement IP banning system
+- [x] 7.3 Implement IP banning system
+
+
   - Create BannedIp table operations
   - Ban IPs with 10+ low-quality sessions in 24 hours
   - Check banned IPs before allowing new sessions
   - Add manual ban/unban functionality
   - _Requirements: 7.2_
 
-- [ ] 8. Rate Limiting
-- [ ] 8.1 Implement rate limiting with Vercel KV
-  - Create Vercel KV database in Vercel dashboard (free tier)
-  - Install `@upstash/ratelimit` and `@upstash/redis`
-  - Create `lib/rate-limit.ts` with Upstash Ratelimit client
-  - Configure sliding window: 30 requests per minute per IP
-  - Apply rate limiting in conversation API routes
-  - Return 429 status with reset time when exceeded
+- [x] 8. Rate Limiting
+
+
+- [x] 8.1 Implement rate limiting (MVP: In-Memory Solution)
+
+  - ✅ In-memory rate limiter already implemented in conversation message handler
+  - ✅ Limits to 30 requests per minute per IP
+  - ✅ Returns 429 status with reset time when exceeded
+  - ✅ Sufficient for Phase 1 MVP
   - _Requirements: 8.1, 8.2, 8.3_
   
-  **Alternative (MVP Simplification):**
-  - Skip rate limiting for Phase 1
-  - Add in Phase 2 when scaling
-  - Document as known limitation
+  **Phase 1 Implementation:**
+  - Using simple Map-based rate limiter in `src/app/api/conversations/[token]/message/route.ts`
+  - Good enough for initial launch
+  - Can upgrade to Vercel KV in Phase 2 for distributed rate limiting
+  
+  **Future Enhancement (Phase 2):**
+  - Upgrade to Vercel KV with `@upstash/ratelimit` for production-grade distributed rate limiting
+  - Persistent across serverless instances and deployments
 
-- [ ] 9. Analysis Pipeline
-- [ ] 9.1 Implement per-response analysis
+- [x] 9. Analysis Pipeline
+
+
+- [x] 9.1 Implement per-response analysis
+
+
   - Create analysis function using GPT-4o
   - Generate 2-3 sentence summary
   - Extract 2-5 key themes
@@ -347,13 +448,17 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Assign quality score (1-10)
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7_
 
-- [ ] 9.2 Trigger analysis on conversation completion
+- [x] 9.2 Trigger analysis on conversation completion
+
+
   - Call analysis function when conversation completes
   - Save results to ResponseAnalysis table
   - Handle analysis errors gracefully
   - _Requirements: 9.1_
 
-- [ ] 9.3 Implement aggregate analysis generation
+- [x] 9.3 Implement aggregate analysis generation
+
+
   - Create aggregate analysis function
   - Fetch all response analyses for survey
   - Generate executive summary (3-5 sentences)
@@ -361,14 +466,22 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Detect user segments (if 15+ responses)
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5_
 
-- [ ] 9.4 Trigger aggregate analysis at milestones
+- [x] 9.4 Trigger aggregate analysis at milestones
+
+
   - Run aggregate analysis when survey reaches 5 responses
   - Re-run every 5 additional responses
   - Store results in AggregateAnalysis table
   - _Requirements: 10.1, 10.2_
 
-- [ ] 10. Insights Dashboard
-- [ ] 10.1 Create insights overview page
+- [x] 10. Insights Dashboard
+
+
+
+
+- [x] 10.1 Create insights overview page
+
+
   - Build `/app/(dashboard)/surveys/[id]/insights/page.tsx`
   - Display executive summary prominently
   - Show top themes with visual indicators
@@ -376,7 +489,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Add export buttons (PDF, CSV)
   - _Requirements: 11.1, 11.2, 11.3_
 
-- [ ] 10.2 Build individual responses view with pagination
+- [x] 10.2 Build individual responses view with pagination
+
+
   - Create responses list component
   - Implement pagination (20 per page)
   - Add client-side search functionality (filter loaded responses)
@@ -385,7 +500,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   
   **Note:** Search is client-side for MVP (< 100 responses). For scale, add Postgres full-text search or dedicated search index in Phase 2.
 
-- [ ] 10.3 Create response detail view
+
+- [x] 10.3 Create response detail view
+
   - Build modal or page for full transcript
   - Display complete conversation history
   - Show analysis results (themes, sentiment, quotes)
@@ -398,9 +515,10 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Create PDF template with minimal branding (following UI design system)
   - Include executive summary, themes, response summaries
   - Add "Powered by Personity" watermark for free plan users
-  - Upload to Supabase Storage bucket "exports"
+  - Upload to Supabase Storage bucket "exports" (Free tier: 1GB storage)
   - Generate signed URL (1 hour expiry)
   - Return download URL
+  - Note: Supabase Storage is free (no AWS S3 needed)
   - _Requirements: 12.1, 12.2, 12.3, 12.6_
 
 - [ ] 11.2 Implement CSV export
@@ -554,10 +672,10 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Configure custom domain
   - _Requirements: 21.1, 21.2_
 
-- [ ] 18.2 Run database migrations in production
-  - Apply Prisma migrations to production database
-  - Verify all tables and indexes created
+- [ ] 18.2 Verify database in production
+  - Verify all Supabase tables and indexes exist
   - Test database connectivity
+  - Verify TypeScript types are up to date
   - _Requirements: All data requirements_
 
 - [ ] 18.3 Perform end-to-end testing in staging

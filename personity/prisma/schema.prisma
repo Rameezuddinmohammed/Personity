@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                      String   @id @default(uuid())
+  email                   String   @unique
+  passwordHash            String
+  name                    String
+  plan                    Plan     @default(FREE)
+  responsesUsedThisMonth  Int      @default(0)
+  paymentProviderId       String?  @unique
+  paymentLinkId           String?
+  subscriptionStatus      SubscriptionStatus @default(ACTIVE)
+  subscriptionRenewsAt    DateTime?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  surveys                 Survey[]
+  
+  @@index([email])
+  @@index([plan])
+}
+
+enum Plan {
+  FREE
+  STARTER
+  PRO
+  BUSINESS
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+}
+
+model Survey {
+  id            String   @id @default(uuid())
+  userId        String
+  title         String
+  objective     String   @db.Text
+  context       Json?
+  topics        Json
+  settings      Json
+  masterPrompt  String   @db.Text
+  status        SurveyStatus @default(ACTIVE)
+  shortUrl      String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions      ConversationSession[]
+  aggregateAnalysis AggregateAnalysis[]
+  
+  @@index([userId])
+  @@index([shortUrl])
+  @@index([status])
+}
+
+enum SurveyStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+model ConversationSession {
+  id              String   @id @default(uuid())
+  surveyId        String
+  sessionToken    String   @unique
+  status          SessionStatus @default(ACTIVE)
+  currentState    Json
+  ipAddress       String
+  userAgent       String
+  countryCode     String?
+  startedAt       DateTime @default(now())
+  lastMessageAt   DateTime @default(now())
+  completedAt     DateTime?
+  metadata        Json?
+  
+  survey          Survey   @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  conversation    Conversation?
+  
+  @@index([sessionToken])
+  @@index([surveyId])
+  @@index([status])
+  @@index([ipAddress])
+}
+
+enum SessionStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+model Conversation {
+  id              String   @id @default(uuid())
+  sessionId       String   @unique
+  exchanges       Json
+  durationSeconds Int
+  tokenUsage      Json
+  createdAt       DateTime @default(now())
+  
+  session         ConversationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  analysis        ResponseAnalysis?
+  
+  @@index([sessionId])
+}
+
+model ResponseAnalysis {
+  id              String   @id @default(uuid())
+  conversationId  String   @unique
+  summary         String   @db.Text
+  keyThemes       Json
+  sentiment       Sentiment
+  topQuotes       Json
+  painPoints      Json
+  opportunities   Json
+  qualityScore    Int
+  isFlagged       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+model AggregateAnalysis {
+  id              String   @id @default(uuid())
+  surveyId        String
+  responseCount   Int
+  executiveSummary String  @db.Text
+  topThemes       Json
+  userSegments    Json?
+  createdAt       DateTime @default(now())
+  
+  survey          Survey   @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  
+  @@index([surveyId])
+}
+
+model ApiUsage {
+  id              String   @id @default(uuid())
+  provider        String
+  model           String
+  tokensInput     Int
+  tokensOutput    Int
+  cost            Float
+  context         String?  // e.g. "conversation:123" or "analysis:456"
+  createdAt       DateTime @default(now())
+  
+  @@index([createdAt])
+}
+
+model BannedIp {
+  id              String   @id @default(uuid())
+  ipAddress       String   @unique
+  reason          String?
+  bannedAt        DateTime @default(now())
+  expiresAt       DateTime?
+  
+  @@index([ipAddress])
+}

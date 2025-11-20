@@ -8,9 +8,6 @@ personity/
 │   ├── settings/
 │   │   └── mcp.json           # MCP server config (Supabase)
 │   └── specs/                 # Project specifications
-├── prisma/
-│   ├── schema.prisma          # Database schema
-│   └── migrations/            # Database migrations
 ├── src/
 │   ├── app/                   # Next.js App Router
 │   │   ├── (auth)/           # Auth route group
@@ -36,10 +33,14 @@ personity/
 │   │   └── conversation/     # Conversation UI
 │   ├── lib/
 │   │   ├── ai/               # AI provider integration
-│   │   │   ├── openai.ts
-│   │   │   └── provider.ts
-│   │   ├── auth/             # Auth utilities (JWT, bcrypt)
-│   │   ├── db/               # Prisma client
+│   │   │   ├── azure-openai.ts
+│   │   │   └── master-prompt.ts
+│   │   ├── db/               # Supabase client
+│   │   │   └── supabase.ts
+│   │   ├── supabase/         # Supabase utilities
+│   │   │   ├── client.ts
+│   │   │   ├── server.ts
+│   │   │   └── middleware.ts
 │   │   ├── email/            # Email service (Resend)
 │   │   └── utils/            # Shared utilities
 │   ├── types/                # TypeScript type definitions

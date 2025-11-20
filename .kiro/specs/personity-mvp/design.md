@@ -61,8 +61,7 @@ The architecture prioritizes:
 
 **Backend:**
 - Next.js API Routes
-- Prisma ORM 5.x
-- PostgreSQL 15+
+- Supabase (PostgreSQL 15+ with TypeScript types)
 - Node.js 20.x LTS
 
 **AI Provider:**
@@ -235,7 +234,7 @@ npx create-next-app@latest personity --typescript --tailwind --app --src-dir
 cd personity
 
 # Install core dependencies
-npm install @prisma/client prisma
+npm install @supabase/supabase-js @supabase/ssr
 npm install @tanstack/react-query zustand
 npm install zod react-hook-form @hookform/resolvers
 npm install bcryptjs jsonwebtoken
@@ -377,9 +376,9 @@ Personity will use MCP servers for enhanced development capabilities. Create `.k
 
 ### 0.5 Database Schema Setup
 
-The database schema will be defined using Prisma. Key tables include:
+The database schema is managed via Supabase. Key tables include:
 
-- `users` - User accounts and subscription info
+- `User` - User accounts and subscription info
 - `surveys` - Survey configurations
 - `conversation_sessions` - Active/paused conversation sessions
 - `conversations` - Message history
@@ -396,10 +395,9 @@ personity/
 ├── .kiro/
 │   └── settings/
 │       └── mcp.json
-├── prisma/
-│   ├── schema.prisma
-│   └── migrations/
 ├── src/
+│   ├── types/
+│   │   └── supabase.ts  # Generated TypeScript types
 │   ├── app/
 │   │   ├── (auth)/
 │   │   │   ├── login/
@@ -684,14 +682,18 @@ export async function POST(request: Request) {
 
 ## Data Models
 
-### Prisma Schema
+### Database Schema (Supabase)
 
-```prisma
-// prisma/schema.prisma
+The database schema is managed via Supabase migrations. TypeScript types are auto-generated.
 
-generator client {
-  provider = "prisma-client-js"
-}
+```sql
+-- Example: User table
+CREATE TABLE "User" (
+  "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  "email" TEXT NOT NULL UNIQUE,
+  "name" TEXT NOT NULL,
+  -- ... other fields
+);
 
 datasource db {
   provider = "postgresql"
@@ -1112,7 +1114,7 @@ describe('Survey Flow', () => {
 
 - Rate limiting on all endpoints
 - Input validation using Zod schemas
-- SQL injection prevention via Prisma ORM
+- SQL injection prevention via Supabase parameterized queries
 - XSS prevention via React's built-in escaping
 - CORS restrictions to allowed origins only
 
@@ -1300,9 +1302,9 @@ export async function POST(request: NextRequest) {
     }
     
     // Update user in database
-    await prisma.user.update({
-      where: { email: buyerEmail },
-      data: {
+    await supabaseAdmin
+      .from('User')
+      .update({
         plan,
         paymentProviderId: paymentId,
         subscriptionStatus: 'ACTIVE',
@@ -1384,9 +1386,10 @@ Since Instamojo doesn't have built-in recurring subscriptions for individuals, w
 ```typescript
 // Cron job or scheduled task (run daily)
 export async function checkExpiredSubscriptions() {
-  const expiredUsers = await prisma.user.findMany({
-    where: {
-      plan: { not: 'FREE' },
+  const { data: expiredUsers } = await supabaseAdmin
+    .from('User')
+    .select('*')
+    .neq('plan', 'FREE')
       subscriptionRenewsAt: {
         lte: new Date(),
       },
@@ -1411,9 +1414,9 @@ export async function checkExpiredSubscriptions() {
     gracePeriodEnd.setDate(gracePeriodEnd.getDate() + 7);
     
     if (new Date() > gracePeriodEnd) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
+      await supabaseAdmin
+        .from('User')
+        .update({
           subscriptionStatus: 'PAST_DUE',
         },
       });
