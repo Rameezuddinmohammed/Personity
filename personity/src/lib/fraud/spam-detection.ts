@@ -154,6 +154,17 @@ export async function checkForSpam(
   exchanges: Array<{ role: string; content: string; timestamp: string }>,
   newMessage: string
 ): Promise<SpamCheckResult> {
+  // Skip spam checks in development or if explicitly disabled
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDisabled = process.env.DISABLE_FRAUD_DETECTION === 'true';
+  
+  if (isDevelopment || isDisabled) {
+    return {
+      isSpam: false,
+      shouldBan: false,
+    };
+  }
+  
   // Check for identical responses
   if (detectIdenticalResponses(exchanges, newMessage)) {
     return {

@@ -3,14 +3,17 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Plus, FileText, BarChart3, Pause, Play, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, FileText, BarChart3, Pause, Play, Trash2, ExternalLink, Hammer, ThumbsUp, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+type SurveyMode = 'PRODUCT_DISCOVERY' | 'FEEDBACK_SATISFACTION' | 'EXPLORATORY_GENERAL';
 
 interface Survey {
   id: string;
   title: string;
   objective: string;
   status: 'active' | 'paused' | 'completed';
+  mode?: SurveyMode; // Optional for backward compatibility
   shortUrl: string;
   createdAt: string;
   updatedAt: string;
@@ -40,6 +43,23 @@ export function SurveysList() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getModeBadge = (mode?: SurveyMode) => {
+    const badges = {
+      PRODUCT_DISCOVERY: { Icon: Hammer, label: 'Product', color: 'bg-blue-50 text-blue-700' },
+      FEEDBACK_SATISFACTION: { Icon: ThumbsUp, label: 'Feedback', color: 'bg-green-50 text-green-700' },
+      EXPLORATORY_GENERAL: { Icon: Search, label: 'Research', color: 'bg-purple-50 text-purple-700' },
+    };
+    // Default to EXPLORATORY_GENERAL for surveys created before mode feature
+    const badge = badges[mode || 'EXPLORATORY_GENERAL'];
+    const Icon = badge.Icon;
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${badge.color}`}>
+        <Icon className="w-3 h-3" />
+        {badge.label}
+      </span>
+    );
   };
 
   const getStatusIndicator = (status: string) => {
@@ -116,11 +136,14 @@ export function SurveysList() {
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-[hsl(var(--color-foreground))] mb-1">
-                {survey.title}
-              </h3>
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-lg font-bold text-[hsl(var(--color-foreground))]">
+                  {survey.title}
+                </h3>
+                {getModeBadge(survey.mode)}
+              </div>
               {getStatusIndicator(survey.status)}
-              <p className="text-sm text-[hsl(var(--color-muted-foreground))] line-clamp-2">
+              <p className="text-sm text-[hsl(var(--color-muted-foreground))] line-clamp-2 mt-2">
                 {survey.objective}
               </p>
             </div>
@@ -128,7 +151,7 @@ export function SurveysList() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
-              <p className="text-xs text-neutral-500 mb-1">Total Responses</p>
+              <p className="text-xs text-neutral-500 mb-1">Total Engaged</p>
               <p className="text-2xl font-semibold text-neutral-950">
                 {survey.responseCount}
               </p>

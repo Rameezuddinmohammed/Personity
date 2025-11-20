@@ -158,7 +158,7 @@ export default function SignupPage() {
 
             <Button
               type="submit"
-              variant="primary"
+              variant="default"
               className="w-full"
               disabled={isLoading}
             >

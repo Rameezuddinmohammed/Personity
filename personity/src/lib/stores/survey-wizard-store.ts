@@ -1,11 +1,18 @@
 import { create } from 'zustand';
 
+export type SurveyMode = 'PRODUCT_DISCOVERY' | 'FEEDBACK_SATISFACTION' | 'EXPLORATORY_GENERAL';
+
 export interface SurveyWizardState {
   // Current step (1-5)
   currentStep: number;
   
   // Step 1: Objective
   objective: string;
+  
+  // Detected mode
+  mode: SurveyMode;
+  modeConfidence: 'HIGH' | 'MEDIUM' | 'LOW';
+  suggestedContextQuestions: string[];
   
   // Step 2: Context (conditional)
   showContextStep: boolean;
@@ -32,6 +39,7 @@ export interface SurveyWizardState {
   // Actions
   setCurrentStep: (step: number) => void;
   setObjective: (objective: string) => void;
+  setMode: (mode: SurveyMode, confidence: 'HIGH' | 'MEDIUM' | 'LOW', questions: string[]) => void;
   loadTemplate: (template: { objective: string; topics: string[] }) => void;
   setShowContextStep: (show: boolean) => void;
   setContext: (context: Partial<SurveyWizardState['context']>) => void;
@@ -49,6 +57,9 @@ export interface SurveyWizardState {
 const initialState = {
   currentStep: 1,
   objective: '',
+  mode: 'EXPLORATORY_GENERAL' as SurveyMode,
+  modeConfidence: 'LOW' as const,
+  suggestedContextQuestions: [],
   showContextStep: false,
   context: {},
   topics: ['', ''],
@@ -66,6 +77,9 @@ export const useSurveyWizardStore = create<SurveyWizardState>((set) => ({
   setCurrentStep: (step) => set({ currentStep: step }),
   
   setObjective: (objective) => set({ objective }),
+  
+  setMode: (mode, confidence, questions) =>
+    set({ mode, modeConfidence: confidence, suggestedContextQuestions: questions }),
   
   loadTemplate: (template: { objective: string; topics: string[] }) =>
     set({ objective: template.objective, topics: template.topics }),

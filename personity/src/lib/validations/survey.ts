@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const createSurveySchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(100),
   objective: z.string().min(20, 'Objective must be at least 20 characters').max(1000),
+  mode: z.enum(['PRODUCT_DISCOVERY', 'FEEDBACK_SATISFACTION', 'EXPLORATORY_GENERAL']).optional(),
   context: z
     .object({
       productDescription: z.string().max(500).optional(),

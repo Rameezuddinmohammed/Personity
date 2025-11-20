@@ -92,7 +92,7 @@ export default function SurveysPage() {
           </div>
         </div>
       ) : (
-        <SurveysList surveys={surveys} />
+        <SurveysList />
       )}
     </div>
   );

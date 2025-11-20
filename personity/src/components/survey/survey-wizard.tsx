@@ -99,6 +99,7 @@ export function SurveyWizard() {
         body: JSON.stringify({
           title,
           objective: state.objective,
+          mode: state.mode,
           ...(contextData && { context: contextData }),
           topics: validTopics,
           settings: state.settings,

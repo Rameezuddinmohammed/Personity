@@ -51,16 +51,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate master prompt
+    // Generate master prompt with mode
     const masterPrompt = generateMasterPrompt({
       objective: validatedData.objective,
       context: validatedData.context,
       topics: validatedData.topics,
       settings: validatedData.settings,
+      mode: validatedData.mode || 'EXPLORATORY_GENERAL',
     });
 
     // Create survey in database
-    const { data, error: insertError } = await supabaseAdmin
+    const { data, error: insertError} = await supabaseAdmin
       .from('Survey')
       .insert({
         userId: user.id,
@@ -72,6 +73,7 @@ export async function POST(request: NextRequest) {
         masterPrompt,
         shortUrl,
         status: 'ACTIVE',
+        mode: validatedData.mode || 'EXPLORATORY_GENERAL',
       })
       .select()
       .single();

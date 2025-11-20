@@ -1,6 +1,5 @@
 "use client";
-import React, { useRef } from "react";
-import { useMotionValueEvent, useScroll } from "framer-motion";
+import React, { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -15,37 +14,58 @@ export const StickyScroll = ({
   }[];
   contentClassName?: string;
 }) => {
-  const [activeCard, setActiveCard] = React.useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ["start start", "end end"],
-  });
+  const [activeCard, setActiveCard] = useState(0);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const cardsBreakpoints = content.map((_, index) => index / content.length);
-    const closestBreakpointIndex = cardsBreakpoints.reduce(
-      (acc, breakpoint, index) => {
-        const distance = Math.abs(latest - breakpoint);
-        if (distance < Math.abs(latest - cardsBreakpoints[acc])) {
-          return index;
-        }
-        return acc;
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = cardRefs.current.findIndex(
+              (ref) => ref === entry.target
+            );
+            if (index !== -1) {
+              setActiveCard(index);
+            }
+          }
+        });
       },
-      0
+      {
+        root: null,
+        rootMargin: "-40% 0px -40% 0px", // Trigger when element reaches center
+        threshold: 0.1,
+      }
     );
-    setActiveCard(closestBreakpointIndex);
-  });
+
+    // Observe all card refs
+    const currentRefs = cardRefs.current;
+    currentRefs.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => {
+      currentRefs.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, [content.length]);
 
   return (
-    <div ref={scrollRef} className="relative">
+    <div className="relative">
       <div className="flex gap-16 max-w-7xl mx-auto">
         {/* Left side - scrollable content */}
         <div className="flex-1 max-w-2xl">
           {content.map((item, index) => (
-            <div key={item.title + index} className="min-h-[500px] flex flex-col justify-center py-16 first:pt-0 last:pb-0">
+            <div
+              key={item.title + index}
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
+              className="min-h-[500px] flex flex-col justify-center py-16 first:pt-0 last:pb-0"
+            >
               <motion.h2
-                initial={{ opacity: 0 }}
+                initial={{ opacity: 1 }}
                 animate={{
                   opacity: activeCard === index ? 1 : 0.3,
                 }}
@@ -55,7 +75,7 @@ export const StickyScroll = ({
                 {item.title}
               </motion.h2>
               <motion.p
-                initial={{ opacity: 0 }}
+                initial={{ opacity: 1 }}
                 animate={{
                   opacity: activeCard === index ? 1 : 0.3,
                 }}

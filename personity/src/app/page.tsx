@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { WobbleCard } from '@/components/ui/wobble-card';
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
+import { ComparisonSection } from '@/components/landing/comparison-section';
+import { HowItWorksSection } from '@/components/landing/how-it-works-section';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
@@ -42,7 +44,9 @@ export default function Home() {
 
       {/* Hero Section - Full Screen */}
       <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden bg-white">
+        {/* Grid background with fade at bottom */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white pointer-events-none"></div>
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <TextGenerateEffect
             words="Interview-Level Insights at Survey-Level Speed"
@@ -87,8 +91,14 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Comparison Section */}
+      <ComparisonSection />
+
+      {/* How It Works Section */}
+      <HowItWorksSection />
+
       {/* Features - Bento Grid */}
-      <section id="features" className="py-24 px-6 bg-neutral-50">
+      <section id="features" className="py-24 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-semibold text-neutral-950 mb-4 tracking-tight">

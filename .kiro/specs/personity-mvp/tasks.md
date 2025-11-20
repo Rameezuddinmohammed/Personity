@@ -509,8 +509,14 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Add navigation between responses
   - _Requirements: 11.6_
 
-- [ ] 11. Export Functionality
-- [ ] 11.1 Implement PDF export
+- [x] 11. Export Functionality
+
+
+
+
+- [x] 11.1 Implement PDF export
+
+
   - Install PDF generation library (jsPDF or @react-pdf/renderer)
   - Create PDF template with minimal branding (following UI design system)
   - Include executive summary, themes, response summaries
@@ -521,7 +527,9 @@ This plan breaks down the Personity MVP into discrete, actionable coding tasks. 
   - Note: Supabase Storage is free (no AWS S3 needed)
   - _Requirements: 12.1, 12.2, 12.3, 12.6_
 
-- [ ] 11.2 Implement CSV export
+- [x] 11.2 Implement CSV export
+
+
   - Generate CSV with all response data
   - Include columns: timestamp, summary, themes, sentiment, quality score
   - Return as downloadable file

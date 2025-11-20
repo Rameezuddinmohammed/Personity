@@ -191,13 +191,6 @@ export default function SurveyDetailPage() {
         <div className="flex items-center gap-2">
           <Button
             variant="secondary"
-            onClick={() => router.push(`/surveys/${surveyId}/insights`)}
-          >
-            <BarChart3 className="w-4 h-4 mr-2" />
-            View Insights
-          </Button>
-          <Button
-            variant="secondary"
             onClick={handleToggleStatus}
             disabled={isUpdating}
           >
@@ -231,7 +224,7 @@ export default function SurveyDetailPage() {
             <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-blue-600" />
             </div>
-            <p className="text-sm text-neutral-500">Total Responses</p>
+            <p className="text-sm text-neutral-500">Total Engaged</p>
           </div>
           <p className="text-3xl font-semibold text-neutral-950">
             {survey.stats.totalResponses}
@@ -274,6 +267,32 @@ export default function SurveyDetailPage() {
           </p>
         </div>
       </div>
+
+      {/* View Insights CTA */}
+      {survey.stats.completedResponses > 0 && (
+        <div className="bg-white border border-blue-200 rounded-xl p-6 mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-neutral-950 mb-1">
+                {survey.stats.completedResponses} {survey.stats.completedResponses === 1 ? 'response' : 'responses'} analyzed
+              </h3>
+              <p className="text-sm text-neutral-600">
+                View insights, themes, and sentiment analysis
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => router.push(`/surveys/${surveyId}/insights`)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            View Insights
+          </Button>
+        </div>
+      )}
 
       {/* Survey Link */}
       <div className="bg-white border border-neutral-200 rounded-xl p-6 mb-8">

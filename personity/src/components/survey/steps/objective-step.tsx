@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
 
 export function ObjectiveStep() {
-  const { objective, setObjective, setShowContextStep, loadTemplate } =
+  const { objective, setObjective, setShowContextStep, setMode, loadTemplate, mode, modeConfidence } =
     useSurveyWizardStore();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasAnalyzed, setHasAnalyzed] = useState(false);
@@ -36,21 +36,24 @@ export function ObjectiveStep() {
     const timeoutId = setTimeout(async () => {
       setIsAnalyzing(true);
       try {
-        const response = await fetch('/api/surveys/detect-context', {
+        // Detect mode
+        const modeResponse = await fetch('/api/surveys/detect-mode', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ objective }),
         });
 
-        const data = await response.json();
-        if (data.success) {
-          setShowContextStep(data.data.needsContext);
+        const modeData = await modeResponse.json();
+        if (modeData.success) {
+          setMode(modeData.mode, modeData.confidence, modeData.suggestedContextQuestions);
+          setShowContextStep(modeData.suggestedContextQuestions.length > 0);
           setHasAnalyzed(true);
           lastAnalyzedObjective.current = objective;
         }
       } catch (error) {
         console.error('Failed to analyze objective:', error);
-        // Default to not showing context step on error
+        // Default to exploratory mode on error
+        setMode('EXPLORATORY_GENERAL', 'LOW', []);
         setShowContextStep(false);
       } finally {
         setIsAnalyzing(false);
@@ -132,13 +135,34 @@ export function ObjectiveStep() {
         </div>
       </div>
 
-      {/* AI Analysis Result - Only show if context is recommended */}
-      {hasAnalyzed && !isAnalyzing && useSurveyWizardStore.getState().showContextStep && (
+      {/* AI Analysis Result - Show detected mode */}
+      {hasAnalyzed && !isAnalyzing && (
         <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
-          <p className="text-sm text-n-700">
-            <span className="font-medium">AI Analysis:</span> Based on your
-            objective, we recommend providing additional context in the next step.
-          </p>
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-n-950 mb-1">
+                Research Mode Detected: {' '}
+                <span className="text-primary">
+                  {mode === 'PRODUCT_DISCOVERY' && '🔨 Product Discovery'}
+                  {mode === 'FEEDBACK_SATISFACTION' && '⭐ Feedback & Satisfaction'}
+                  {mode === 'EXPLORATORY_GENERAL' && '🔍 Exploratory Research'}
+                </span>
+              </p>
+              <p className="text-xs text-n-600">
+                {mode === 'PRODUCT_DISCOVERY' && 'Your dashboard will focus on pain points, feature requests, and user segments.'}
+                {mode === 'FEEDBACK_SATISFACTION' && 'Your dashboard will focus on satisfaction metrics, sentiment trends, and feedback analysis.'}
+                {mode === 'EXPLORATORY_GENERAL' && 'Your dashboard will focus on key themes, insights, and open-ended discoveries.'}
+              </p>
+              {useSurveyWizardStore.getState().showContextStep && (
+                <p className="text-xs text-n-600 mt-2">
+                  💡 We'll ask for additional context in the next step to improve your results.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

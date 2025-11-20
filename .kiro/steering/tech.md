@@ -5,7 +5,7 @@
 - **Framework**: Next.js 14 (App Router) with TypeScript 5.x
 - **Styling**: Tailwind CSS 3.x with shadcn/ui components
 - **Database**: PostgreSQL 15+ via Supabase (with TypeScript types)
-- **AI Provider**: Azure AI Foundry (GPT-4o via Azure OpenAI SDK)
+- **AI Provider**: Azure AI Foundry (GPT-4o via Azure OpenAI SDK) + Google Gemini 3 Pro (for AI-powered PDF reports)
 - **Hosting**: Vercel (Hobby/Free tier)
 - **Node**: 20.x LTS
 
@@ -56,18 +56,27 @@ vercel --prod              # Deploy to production
 Required in `.env.local`:
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` - Supabase (database + auth + storage)
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase client configuration
-- `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT_NAME` - Azure AI Foundry
+- `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT_NAME` - Azure AI Foundry (conversations)
+- `GEMINI_API_KEY` - Google Gemini 3 Pro (AI-powered PDF reports)
 - ~~`INSTAMOJO_API_KEY`, `INSTAMOJO_AUTH_TOKEN`, `INSTAMOJO_SALT`~~ - Payment provider (⏸️ Phase 2)
 - `RESEND_API_KEY` - Email service
 - `NEXT_PUBLIC_APP_URL` - Application URL
 
 ## AI Configuration
 
+### Azure OpenAI (Conversations)
 - Model: `gpt-4o`
 - Temperature: `0.7`
 - Max tokens: `200` (responses), `150` (analysis)
 - Token limit: `100,000` (triggers history summarization)
 - Cost tracking: $2.50/1M input tokens, $10.00/1M output tokens
+
+### Google Gemini 3 Pro (PDF Reports)
+- Model: `gemini-3-pro-preview`
+- Thinking level: `high` (deep reasoning)
+- Temperature: `1.0` (Gemini 3 optimized default)
+- Max tokens: `8000` (comprehensive reports)
+- Cost: $2-4/1M input, $12-18/1M output (~$0.10-0.30 per report)
 
 ## Performance Targets
 

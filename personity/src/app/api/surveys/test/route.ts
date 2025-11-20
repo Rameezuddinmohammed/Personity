@@ -19,6 +19,7 @@ const testRequestSchema = z.object({
     stopCondition: z.enum(['questions', 'topics_covered']),
     maxQuestions: z.number().optional(),
   }),
+  mode: z.enum(['PRODUCT_DISCOVERY', 'FEEDBACK_SATISFACTION', 'EXPLORATORY_GENERAL']).optional(),
   action: z.enum(['start', 'message']),
   message: z.string().optional(),
   history: z
@@ -36,12 +37,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = testRequestSchema.parse(body);
 
-    // Generate master prompt
+    // Generate master prompt with mode
     const masterPrompt = generateMasterPrompt({
       objective: validatedData.objective,
       context: validatedData.context,
       topics: validatedData.topics,
       settings: validatedData.settings,
+      mode: validatedData.mode || 'EXPLORATORY_GENERAL',
     });
 
     // Build conversation history
