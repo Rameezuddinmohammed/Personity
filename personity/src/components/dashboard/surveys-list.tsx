@@ -136,8 +136,8 @@ export function SurveysList() {
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <h3 className="text-lg font-bold text-[hsl(var(--color-foreground))]">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                <h3 className="text-base sm:text-lg font-bold text-[hsl(var(--color-foreground))]">
                   {survey.title}
                 </h3>
                 {getModeBadge(survey.mode)}
@@ -149,22 +149,22 @@ export function SurveysList() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
             <div>
               <p className="text-xs text-neutral-500 mb-1">Total Engaged</p>
-              <p className="text-2xl font-semibold text-neutral-950">
+              <p className="text-xl sm:text-2xl font-semibold text-neutral-950">
                 {survey.responseCount}
               </p>
             </div>
             <div>
               <p className="text-xs text-neutral-500 mb-1">Completed</p>
-              <p className="text-2xl font-semibold text-green-600">
+              <p className="text-xl sm:text-2xl font-semibold text-green-600">
                 {survey.completedCount}
               </p>
             </div>
             <div>
               <p className="text-xs text-neutral-500 mb-1">Completion Rate</p>
-              <p className="text-2xl font-semibold text-blue-600">
+              <p className="text-xl sm:text-2xl font-semibold text-blue-600">
                 {survey.completionRate}%
               </p>
             </div>
@@ -176,10 +176,10 @@ export function SurveysList() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
-            <div className="flex items-center gap-2 text-xs text-neutral-500">
-              <span>Survey Link:</span>
-              <code className="px-2 py-1 bg-neutral-100 rounded text-neutral-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-neutral-100">
+            <div className="flex items-center gap-2 text-xs text-neutral-500 overflow-hidden">
+              <span className="shrink-0">Survey Link:</span>
+              <code className="px-2 py-1 bg-neutral-100 rounded text-neutral-700 truncate max-w-[200px] sm:max-w-none">
                 {window.location.origin}/s/{survey.shortUrl}
               </code>
               <button
@@ -189,7 +189,7 @@ export function SurveysList() {
                     `${window.location.origin}/s/${survey.shortUrl}`
                   );
                 }}
-                className="p-1 hover:bg-neutral-100 rounded transition-colors"
+                className="p-1 hover:bg-neutral-100 rounded transition-colors shrink-0"
               >
                 <ExternalLink className="w-3 h-3" />
               </button>
@@ -203,6 +203,7 @@ export function SurveysList() {
                   e.stopPropagation();
                   router.push(`/surveys/${survey.id}/insights`);
                 }}
+                className="w-full sm:w-auto"
               >
                 <BarChart3 className="w-4 h-4 mr-1" />
                 Insights

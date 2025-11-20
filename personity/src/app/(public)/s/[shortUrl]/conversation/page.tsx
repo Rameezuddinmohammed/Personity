@@ -339,13 +339,13 @@ export default function ConversationPage() {
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-white border-b border-neutral-200">
-        <div className="px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="text-base font-semibold text-neutral-950">Personity</div>
-            <div className="h-5 w-px bg-neutral-200" />
-            <div className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-green-600" />
-              <span className="text-sm text-neutral-600">Active</span>
+        <div className="px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="text-sm sm:text-base font-semibold text-neutral-950">Personity</div>
+            <div className="h-4 sm:h-5 w-px bg-neutral-200" />
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="h-2 sm:h-2.5 w-2 sm:w-2.5 rounded-full bg-green-600" />
+              <span className="text-xs sm:text-sm text-neutral-600">Active</span>
             </div>
           </div>
           
@@ -399,31 +399,31 @@ export default function ConversationPage() {
         <div className="w-full max-w-[800px] flex-1 flex flex-col">
           {/* Pause Modal */}
           {pauseUrl && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-6">
-              <div className="bg-white rounded-[16px] p-8 max-w-[480px] w-full">
-                <h2 className="text-[20px] font-semibold text-[#0A0A0B] mb-4">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4 sm:px-6">
+              <div className="bg-white rounded-[16px] p-6 sm:p-8 max-w-[480px] w-full">
+                <h2 className="text-[18px] sm:text-[20px] font-semibold text-[#0A0A0B] mb-3 sm:mb-4">
                   Conversation Paused
                 </h2>
-                <p className="text-[14px] text-[#3F3F46] mb-6">
+                <p className="text-[13px] sm:text-[14px] text-[#3F3F46] mb-4 sm:mb-6">
                   Save this link to resume your conversation later:
                 </p>
-                <div className="bg-[#F4F4F5] border border-[#E4E4E7] rounded-[8px] p-4 mb-6">
-                  <p className="text-[13px] text-[#0A0A0B] break-all font-mono">
+                <div className="bg-[#F4F4F5] border border-[#E4E4E7] rounded-[8px] p-3 sm:p-4 mb-4 sm:mb-6">
+                  <p className="text-[12px] sm:text-[13px] text-[#0A0A0B] break-all font-mono">
                     {pauseUrl}
                   </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(pauseUrl);
                     }}
-                    className="flex-1 bg-[#2563EB] text-white text-[14px] font-medium px-6 py-3 rounded-[8px] hover:bg-[#1D4ED8] transition-colors duration-150"
+                    className="flex-1 bg-[#2563EB] text-white text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#1D4ED8] transition-colors duration-150"
                   >
                     Copy Link
                   </button>
                   <Link
                     href={`/s/${shortUrl}`}
-                    className="flex-1 bg-white border border-[#D4D4D8] text-[#0A0A0B] text-[14px] font-medium px-6 py-3 rounded-[8px] hover:bg-[#F4F4F5] transition-colors duration-150 text-center"
+                    className="flex-1 bg-white border border-[#D4D4D8] text-[#0A0A0B] text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#F4F4F5] transition-colors duration-150 text-center"
                   >
                     Close
                   </Link>
@@ -434,29 +434,29 @@ export default function ConversationPage() {
           
           {/* Completion Summary Modal */}
           {completionSummary && !isCompleted && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-6">
-              <div className="bg-white rounded-[16px] p-8 max-w-[560px] w-full">
-                <h2 className="text-[20px] font-semibold text-[#0A0A0B] mb-4">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4 sm:px-6">
+              <div className="bg-white rounded-[16px] p-6 sm:p-8 max-w-[560px] w-full max-h-[90vh] overflow-y-auto">
+                <h2 className="text-[18px] sm:text-[20px] font-semibold text-[#0A0A0B] mb-3 sm:mb-4">
                   Summary of Our Conversation
                 </h2>
-                <p className="text-[14px] text-[#3F3F46] mb-6">
+                <p className="text-[13px] sm:text-[14px] text-[#3F3F46] mb-4 sm:mb-6">
                   {completionSummary}
                 </p>
-                <p className="text-[13px] text-[#71717A] mb-6">
+                <p className="text-[12px] sm:text-[13px] text-[#71717A] mb-4 sm:mb-6">
                   Does this accurately capture what you shared?
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <button
                     onClick={() => handleCompleteConversation(true)}
                     disabled={isCompletingConversation}
-                    className="flex-1 bg-[#2563EB] text-white text-[14px] font-medium px-6 py-3 rounded-[8px] hover:bg-[#1D4ED8] disabled:bg-[#D4D4D8] disabled:cursor-not-allowed transition-colors duration-150"
+                    className="flex-1 bg-[#2563EB] text-white text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#1D4ED8] disabled:bg-[#D4D4D8] disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     Yes, looks good
                   </button>
                   <button
                     onClick={() => handleCompleteConversation(false)}
                     disabled={isCompletingConversation}
-                    className="flex-1 bg-white border border-[#D4D4D8] text-[#0A0A0B] text-[14px] font-medium px-6 py-3 rounded-[8px] hover:bg-[#F4F4F5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                    className="flex-1 bg-white border border-[#D4D4D8] text-[#0A0A0B] text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#F4F4F5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     Let me add more
                   </button>
@@ -466,21 +466,21 @@ export default function ConversationPage() {
           )}
           
           {/* Messages Container */}
-          <div className="flex-1 p-4 overflow-y-auto">
-            <div className="space-y-4">
+          <div className="flex-1 p-3 sm:p-4 overflow-y-auto">
+            <div className="space-y-3 sm:space-y-4">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] px-4 py-3 rounded-[12px] ${
+                    className={`max-w-[85%] sm:max-w-[80%] px-3 sm:px-4 py-2.5 sm:py-3 rounded-[12px] ${
                       message.role === 'user'
                         ? 'bg-[#2563EB]/10 text-[#0A0A0B]'
                         : 'bg-[#F4F4F5] text-[#0A0A0B]'
                     }`}
                   >
-                    <p className="text-[15px] leading-relaxed whitespace-pre-wrap">
+                    <p className="text-[14px] sm:text-[15px] leading-relaxed whitespace-pre-wrap">
                       {message.content}
                     </p>
                   </div>
@@ -505,12 +505,12 @@ export default function ConversationPage() {
           </div>
           
           {/* Input Area */}
-          <div className="sticky bottom-0 bg-white border-t border-neutral-200 p-4">
+          <div className="sticky bottom-0 bg-white border-t border-neutral-200 p-3 sm:p-4">
             {error && sessionToken && (
-              <div className="mb-3 text-sm text-red-600">{error}</div>
+              <div className="mb-2 sm:mb-3 text-xs sm:text-sm text-red-600">{error}</div>
             )}
             
-            <div className="flex items-end gap-3">
+            <div className="flex items-end gap-2 sm:gap-3">
               <textarea
                 ref={textareaRef}
                 value={inputValue}
@@ -518,7 +518,7 @@ export default function ConversationPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="Type your response..."
                 disabled={isLoading}
-                className="flex-1 resize-none px-4 py-3 border border-[#D4D4D8] rounded-[8px] text-[14px] text-[#0A0A0B] placeholder:text-[#71717A] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 disabled:bg-[#F4F4F5] disabled:cursor-not-allowed"
+                className="flex-1 resize-none px-3 sm:px-4 py-2.5 sm:py-3 border border-[#D4D4D8] rounded-[8px] text-[13px] sm:text-[14px] text-[#0A0A0B] placeholder:text-[#71717A] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 disabled:bg-[#F4F4F5] disabled:cursor-not-allowed"
                 rows={1}
                 style={{ maxHeight: '120px' }}
               />
@@ -526,9 +526,9 @@ export default function ConversationPage() {
               <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || isLoading}
-                className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-[#2563EB] text-white rounded-[8px] hover:bg-[#1D4ED8] disabled:bg-[#D4D4D8] disabled:cursor-not-allowed transition-colors duration-150"
+                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-[#2563EB] text-white rounded-[8px] hover:bg-[#1D4ED8] disabled:bg-[#D4D4D8] disabled:cursor-not-allowed transition-colors duration-150"
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>

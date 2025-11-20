@@ -129,9 +129,9 @@ export function SurveyWizard() {
   };
 
   return (
-    <div className="min-h-screen bg-n-50 py-10">
-      <div className="max-w-[800px] mx-auto px-6">
-        <div className="bg-white rounded-2xl p-12 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div className="min-h-screen bg-n-50 py-6 sm:py-10">
+      <div className="max-w-[800px] mx-auto px-4 sm:px-6">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 md:p-12 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
           {/* Progress Indicator */}
           <WizardProgress currentStep={currentStep} steps={visibleSteps} />
 

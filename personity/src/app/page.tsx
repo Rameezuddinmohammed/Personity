@@ -43,21 +43,21 @@ export default function Home() {
       </header>
 
       {/* Hero Section - Full Screen */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden bg-white">
+      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden bg-white">
         {/* Grid background with fade at bottom */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white pointer-events-none"></div>
-        <div className="max-w-5xl mx-auto text-center relative z-10">
+        <div className="max-w-5xl mx-auto text-center relative z-10 pt-16 sm:pt-0">
           <TextGenerateEffect
             words="Interview-Level Insights at Survey-Level Speed"
-            className="text-5xl md:text-6xl lg:text-7xl font-semibold mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-semibold mb-4 sm:mb-6 px-2"
           />
           
           <motion.p 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2, duration: 0.5 }}
-            className="text-lg md:text-xl text-neutral-600 mb-8 max-w-3xl mx-auto"
+            className="text-base sm:text-lg md:text-xl text-neutral-600 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
           >
             AI-powered conversational research. Get deeper insights without the time or cost.
           </motion.p>
@@ -66,12 +66,12 @@ export default function Home() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2.3, duration: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+            className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-12 px-4"
           >
             <Button
               size="lg"
               asChild
-              className="group"
+              className="group w-full sm:w-auto"
             >
               <Link href="/signup">
                 Start Free Trial
@@ -82,6 +82,7 @@ export default function Home() {
               size="lg"
               variant="outline"
               asChild
+              className="w-full sm:w-auto"
             >
               <Link href="#features">See How It Works</Link>
             </Button>
@@ -98,13 +99,13 @@ export default function Home() {
       <HowItWorksSection />
 
       {/* Features - Bento Grid */}
-      <section id="features" className="py-24 px-6 bg-white">
+      <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-semibold text-neutral-950 mb-4 tracking-tight">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-950 mb-3 sm:mb-4 tracking-tight px-4">
               Why Personity?
             </h2>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto px-4">
               Four powerful features that transform how you gather insights
             </p>
           </div>
@@ -157,25 +158,25 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 bg-white border-t border-neutral-200">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-white border-t border-neutral-200">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-semibold text-neutral-950 mb-4 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-950 mb-3 sm:mb-4 tracking-tight px-4">
             Ready to transform your research?
           </h2>
-          <p className="text-lg text-neutral-600 mb-8">
+          <p className="text-base sm:text-lg text-neutral-600 mb-6 sm:mb-8 px-4">
             Join product teams and founders gathering better insights, faster.
           </p>
           <Button
             size="lg"
             asChild
-            className="group"
+            className="group w-full sm:w-auto mx-4 sm:mx-0"
           >
             <Link href="/signup">
               Start Free Trial
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
-          <p className="text-sm text-neutral-500 mt-4">
+          <p className="text-sm text-neutral-500 mt-4 px-4">
             No credit card required • 50 free responses
           </p>
         </div>
