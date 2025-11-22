@@ -6,6 +6,7 @@ import { identifyDiscussedTopics, areAllTopicsCovered } from '@/lib/ai/topic-tra
 import { checkResponseQuality, generateReEngagementMessage, trackLowQualityResponse } from '@/lib/ai/quality-detection';
 import { checkForSpam, flagSession } from '@/lib/fraud/spam-detection';
 import { autoBanIfNeeded } from '@/lib/fraud/ip-banning';
+import { conversationRateLimit, getClientIp } from '@/lib/rate-limit';
 import { z } from 'zod';
 
 interface RouteContext {
@@ -18,30 +19,6 @@ const messageSchema = z.object({
   message: z.string().min(1).max(2000),
 });
 
-// Simple in-memory rate limiter for MVP
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-
-function checkRateLimit(ip: string): { allowed: boolean; resetTime?: number } {
-  const now = Date.now();
-  const limit = rateLimitMap.get(ip);
-  
-  if (!limit || now > limit.resetTime) {
-    // Reset or create new limit
-    rateLimitMap.set(ip, {
-      count: 1,
-      resetTime: now + 60000, // 1 minute
-    });
-    return { allowed: true };
-  }
-  
-  if (limit.count >= 30) {
-    return { allowed: false, resetTime: limit.resetTime };
-  }
-  
-  limit.count++;
-  return { allowed: true };
-}
-
 export async function POST(
   request: NextRequest,
   context: RouteContext
@@ -50,19 +27,26 @@ export async function POST(
     const { token } = await context.params;
     const supabase = await createClient();
     
-    // Rate limiting
-    const ipAddress = request.headers.get('x-forwarded-for') || 
-                      request.headers.get('x-real-ip') || 
-                      'unknown';
+    // Rate limiting with Vercel KV
+    const ipAddress = getClientIp(request);
+    const { success, limit, remaining, reset } = await conversationRateLimit.limit(ipAddress);
     
-    const rateLimit = checkRateLimit(ipAddress);
-    if (!rateLimit.allowed) {
+    if (!success) {
       return NextResponse.json(
         { 
           error: 'Too many requests. Please try again later.',
-          resetTime: rateLimit.resetTime,
+          limit,
+          remaining,
+          reset: new Date(reset).toISOString(),
         },
-        { status: 429 }
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': reset.toString(),
+          },
+        }
       );
     }
     
