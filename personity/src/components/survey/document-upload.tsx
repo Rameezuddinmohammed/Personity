@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react';
 import { Upload, FileText, X, Loader2, CheckCircle2 } from 'lucide-react';
 import { useSurveyWizardStore } from '@/lib/stores/survey-wizard-store';
-import { formatExtractedContext } from '@/lib/documents/context-extractor';
 
 export function DocumentUpload() {
   const { objective, documentContext, setDocumentContext } = useSurveyWizardStore();
@@ -34,12 +33,9 @@ export function DocumentUpload() {
         throw new Error(result.error || 'Failed to parse document');
       }
 
-      // Format extracted context for display
-      const formattedContext = formatExtractedContext(result.data.extractedContext);
-
       setDocumentContext({
         fileName: result.data.fileName,
-        extractedContext: formattedContext,
+        extractedContext: result.data.extractedContext,
         rawContent: result.data.rawContent,
       });
     } catch (err) {

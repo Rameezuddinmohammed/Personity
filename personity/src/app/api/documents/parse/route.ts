@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseDocument, validateFileSize, validateFileType } from '@/lib/documents/parser';
 import { extractContextFromDocument } from '@/lib/documents/context-extractor';
+import { formatExtractedContext } from '@/lib/documents/format-context';
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,6 +53,9 @@ export async function POST(request: NextRequest) {
       researchObjective
     );
 
+    // Format for display
+    const formattedContext = formatExtractedContext(extractedContext);
+
     return NextResponse.json({
       success: true,
       data: {
@@ -59,7 +63,7 @@ export async function POST(request: NextRequest) {
         fileType: parsedDoc.fileType,
         wordCount: parsedDoc.wordCount,
         rawContent: parsedDoc.content,
-        extractedContext,
+        extractedContext: formattedContext,
       },
     });
   } catch (error) {
