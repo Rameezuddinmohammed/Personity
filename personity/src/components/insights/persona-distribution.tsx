@@ -21,6 +21,9 @@ export function PersonaDistribution({ data, totalResponses }: PersonaDistributio
     return Math.round((count / totalResponses) * 100);
   };
 
+  // Check if there's any data
+  const hasData = totalResponses > 0;
+
   const renderBar = (label: string, count: number, intensity: 'light' | 'medium' | 'dark') => {
     const percentage = getPercentage(count);
     const barColor = intensity === 'dark' ? 'bg-neutral-950' : intensity === 'medium' ? 'bg-neutral-600' : 'bg-neutral-300';
@@ -49,11 +52,16 @@ export function PersonaDistribution({ data, totalResponses }: PersonaDistributio
   return (
     <div className="bg-white border border-neutral-200 rounded-xl p-6">
       <div className="flex items-center gap-2 mb-6">
-        <Users className="w-5 h-5 text-primary" />
+        <Users className="w-5 h-5 text-neutral-600" />
         <h2 className="text-lg font-semibold text-neutral-950">Persona Insights</h2>
       </div>
 
-      <div className="space-y-8">
+      {!hasData ? (
+        <div className="text-center py-12">
+          <p className="text-sm text-neutral-500">No persona data available yet. Complete more responses to see insights.</p>
+        </div>
+      ) : (
+        <div className="space-y-8">
         {/* Pain Level */}
         <div>
           <div className="flex items-center gap-2 mb-4">
@@ -109,6 +117,7 @@ export function PersonaDistribution({ data, totalResponses }: PersonaDistributio
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
