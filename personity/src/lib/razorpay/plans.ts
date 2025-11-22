@@ -3,11 +3,16 @@ export const PLANS = {
   FREE: {
     id: 'free',
     name: 'Free',
+    description: 'Perfect for trying out Personity',
     price: 0,
+    priceMonthly: 0,
+    priceYearly: 0,
+    priceDisplayMonthly: '₹0',
+    priceDisplayYearly: '₹0',
     currency: 'INR',
     responses: 50,
     features: [
-      '50 responses per month',
+      'Up to 50 responses/month',
       'All core features',
       'PDF & CSV export',
       'Community support',
@@ -17,12 +22,16 @@ export const PLANS = {
   STARTER: {
     id: 'starter',
     name: 'Starter',
-    price: 499900, // in paise (₹4,999)
-    priceDisplay: '₹4,999',
+    description: 'Perfect for small teams and startups',
+    price: 499900, // monthly in paise (₹4,999)
+    priceMonthly: 499900,
+    priceYearly: 5399000, // ₹53,990 (10% off from ₹59,988)
+    priceDisplayMonthly: '₹4,999',
+    priceDisplayYearly: '₹53,990',
     currency: 'INR',
     responses: 500,
     features: [
-      '500 responses per month',
+      'Up to 500 responses/month',
       'All core features',
       'Remove branding',
       'PDF & CSV export',
@@ -32,12 +41,16 @@ export const PLANS = {
   PRO: {
     id: 'pro',
     name: 'Pro',
-    price: 1499900, // in paise (₹14,999)
-    priceDisplay: '₹14,999',
+    description: 'Essential for growing teams and companies',
+    price: 1499900, // monthly in paise (₹14,999)
+    priceMonthly: 1499900,
+    priceYearly: 16199000, // ₹1,61,990 (10% off from ₹1,79,988)
+    priceDisplayMonthly: '₹14,999',
+    priceDisplayYearly: '₹1,61,990',
     currency: 'INR',
     responses: 2000,
     features: [
-      '2,000 responses per month',
+      'Up to 2,000 responses/month',
       'All core features',
       'Remove branding',
       'PDF & CSV export',
@@ -48,8 +61,12 @@ export const PLANS = {
   ENTERPRISE: {
     id: 'enterprise',
     name: 'Enterprise',
+    description: 'For large teams with custom needs',
     price: null,
-    priceDisplay: 'Custom',
+    priceMonthly: null,
+    priceYearly: null,
+    priceDisplayMonthly: 'Custom',
+    priceDisplayYearly: 'Custom',
     currency: 'INR',
     responses: null,
     features: [

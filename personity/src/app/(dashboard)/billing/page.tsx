@@ -23,6 +23,7 @@ export default function BillingPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [showEnterpriseForm, setShowEnterpriseForm] = useState(false);
   const [usage, setUsage] = useState<UserUsage | null>(null);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   useEffect(() => {
     // Fetch user usage data
@@ -189,115 +190,129 @@ export default function BillingPage() {
       )}
 
       {/* Header */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <h1 className="text-3xl font-semibold text-neutral-950 mb-3 tracking-tight">
           Choose Your Plan
         </h1>
-        <p className="text-neutral-600">
+        <p className="text-neutral-600 mb-6">
           Start free, upgrade as you grow. Cancel anytime.
         </p>
+
+        {/* Billing Cycle Toggle */}
+        <div className="inline-flex items-center gap-3 bg-neutral-100 rounded-full p-1">
+          <button
+            onClick={() => setBillingCycle('monthly')}
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+              billingCycle === 'monthly'
+                ? 'bg-white text-neutral-950 shadow-sm'
+                : 'text-neutral-600 hover:text-neutral-950'
+            }`}
+          >
+            Billed Monthly
+          </button>
+          <button
+            onClick={() => setBillingCycle('yearly')}
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+              billingCycle === 'yearly'
+                ? 'bg-white text-neutral-950 shadow-sm'
+                : 'text-neutral-600 hover:text-neutral-950'
+            }`}
+          >
+            Billed Yearly
+            <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">
+              Save 10%
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {Object.entries(PLANS).map(([key, plan]) => {
-          const isPopular = key === 'STARTER';
-          const isPro = key === 'PRO';
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        {Object.entries(PLANS)
+          .filter(([key]) => key !== 'FREE')
+          .map(([key, plan]) => {
+            const isPopular = key === 'PRO';
+            const currentPrice =
+              billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
+            const priceDisplay =
+              billingCycle === 'yearly'
+                ? plan.priceDisplayYearly
+                : plan.priceDisplayMonthly;
 
-          return (
-            <div
-              key={key}
-              className={`bg-white border rounded-2xl p-8 relative ${
-                isPopular
-                  ? 'border-blue-600 shadow-lg scale-105'
-                  : isPro
-                  ? 'border-purple-600 shadow-lg scale-105'
-                  : 'border-neutral-200'
-              }`}
-            >
-              {/* Popular Badge */}
-              {isPopular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
-                    Most Popular
-                  </span>
+            return (
+              <div
+                key={key}
+                className={`bg-white border rounded-2xl p-8 flex flex-col relative ${
+                  isPopular
+                    ? 'border-emerald-600 shadow-lg bg-gradient-to-br from-emerald-50 to-white'
+                    : 'border-neutral-200'
+                }`}
+              >
+                {/* Plan Name & Description */}
+                <div className="mb-6">
+                  <h3 className="text-2xl font-semibold text-neutral-950 mb-2">
+                    {plan.name}
+                  </h3>
+                  <p className="text-sm text-neutral-600">
+                    {(plan as any).description || ''}
+                  </p>
                 </div>
-              )}
 
-              {/* Best Value Badge */}
-              {isPro && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-purple-600 text-white text-xs font-medium px-3 py-1 rounded-full">
-                    Best Value
-                  </span>
+                {/* Price */}
+                <div className="mb-6">
+                  {currentPrice === null ? (
+                    <div className="text-4xl font-bold text-neutral-950">Custom</div>
+                  ) : (
+                    <div>
+                      <div className="text-4xl font-bold text-neutral-950">
+                        {priceDisplay}
+                      </div>
+                      <p className="text-sm text-neutral-600 mt-1">
+                        {billingCycle === 'yearly' ? 'Per year' : 'Per month'}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
 
-              {/* Icon */}
-              <div className="mb-4">{getPlanIcon(plan.id)}</div>
-
-              {/* Plan Name */}
-              <h3 className="text-xl font-semibold text-neutral-950 mb-2">
-                {plan.name}
-              </h3>
-
-              {/* Price */}
-              <div className="mb-6">
-                {plan.price === null ? (
-                  <div className="text-3xl font-semibold text-neutral-950">
-                    Custom
-                  </div>
-                ) : plan.price === 0 ? (
-                  <div className="text-3xl font-semibold text-neutral-950">
-                    Free
-                  </div>
+                {/* CTA Button */}
+                {key === 'ENTERPRISE' ? (
+                  <Button
+                    variant="default"
+                    className="w-full mb-6 bg-orange-500 hover:bg-orange-600"
+                    onClick={() => setShowEnterpriseForm(true)}
+                  >
+                    Get This Plan
+                  </Button>
                 ) : (
-                  <div>
-                    <span className="text-3xl font-semibold text-neutral-950">
-                      {plan.priceDisplay}
-                    </span>
-                    <span className="text-neutral-600 text-sm">/month</span>
-                  </div>
+                  <Button
+                    variant="default"
+                    className="w-full mb-6 bg-orange-500 hover:bg-orange-600"
+                    onClick={() => handleUpgrade(plan.id as 'starter' | 'pro')}
+                    disabled={isLoading === plan.id}
+                  >
+                    {isLoading === plan.id ? 'Processing...' : 'Get This Plan'}
+                  </Button>
                 )}
+
+                {/* Features */}
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-neutral-950 mb-4">
+                    This Plan Includes:
+                  </p>
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-start gap-3 text-sm">
+                        <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="text-neutral-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-
-              {/* Features */}
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm">
-                    <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-neutral-700">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA Button */}
-              {key === 'FREE' ? (
-                <Button variant="secondary" className="w-full" disabled>
-                  Current Plan
-                </Button>
-              ) : key === 'ENTERPRISE' ? (
-                <Button
-                  variant="default"
-                  className="w-full"
-                  onClick={() => setShowEnterpriseForm(true)}
-                >
-                  Contact Sales
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              ) : (
-                <Button
-                  variant={isPopular || isPro ? 'default' : 'secondary'}
-                  className="w-full"
-                  onClick={() => handleUpgrade(plan.id as 'starter' | 'pro')}
-                  disabled={isLoading === plan.id}
-                >
-                  {isLoading === plan.id ? 'Processing...' : 'Upgrade Now'}
-                </Button>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
 
       {/* Enterprise Contact Form Modal */}
