@@ -32,7 +32,7 @@ export default function BillingPage() {
       .then((res) => res.json())
       .then((data) => {
         console.log('Billing page - user data:', data);
-        if (data.success && data.user) {
+        if (data.user) {
           const userPlan = (data.user.plan || 'FREE').toUpperCase();
           const planConfig = PLANS[userPlan as keyof typeof PLANS];
           console.log('Plan config:', planConfig);
