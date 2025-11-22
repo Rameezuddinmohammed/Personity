@@ -283,14 +283,18 @@ export default function BillingPage() {
                       </div>
                       <div className="flex items-baseline gap-2">
                         <div className="text-4xl font-bold text-neutral-950">
-                          {priceDisplay}
+                          {billingCycle === 'yearly'
+                            ? (plan as any).priceDisplayYearlyPerMonth
+                            : priceDisplay}
                         </div>
                         <span className="bg-green-600 text-white text-xs font-medium px-2 py-1 rounded-full">
                           50% OFF
                         </span>
                       </div>
                       <p className="text-sm text-neutral-600 mt-1">
-                        {billingCycle === 'yearly' ? 'Per year' : 'Per month'}
+                        {billingCycle === 'yearly'
+                          ? `Per month, billed yearly at ${(plan as any).priceDisplayYearly}`
+                          : 'Per month'}
                       </p>
                     </div>
                   )}

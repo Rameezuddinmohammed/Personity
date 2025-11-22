@@ -28,6 +28,7 @@ export const PLANS = {
     priceYearly: 2699000, // BETA: 50% off - ₹26,990 (was ₹53,990)
     priceDisplayMonthly: '₹2,499',
     priceDisplayYearly: '₹26,990',
+    priceDisplayYearlyPerMonth: '₹2,249', // ₹26,990 / 12
     originalPriceMonthly: '₹4,999',
     originalPriceYearly: '₹59,988',
     currency: 'INR',
@@ -49,6 +50,7 @@ export const PLANS = {
     priceYearly: 8099000, // BETA: 50% off - ₹80,990 (was ₹1,61,990)
     priceDisplayMonthly: '₹7,499',
     priceDisplayYearly: '₹80,990',
+    priceDisplayYearlyPerMonth: '₹6,749', // ₹80,990 / 12
     originalPriceMonthly: '₹14,999',
     originalPriceYearly: '₹1,79,988',
     currency: 'INR',
