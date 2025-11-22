@@ -227,27 +227,38 @@ export default function BillingPage() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {Object.entries(PLANS)
-          .filter(([key]) => key !== 'FREE')
+          .filter(([key]) => key !== 'ENTERPRISE')
           .map(([key, plan]) => {
             const isPopular = key === 'PRO';
+            const isFree = key === 'FREE';
             const currentPrice =
               billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
             const priceDisplay =
               billingCycle === 'yearly'
                 ? plan.priceDisplayYearly
                 : plan.priceDisplayMonthly;
+            const monthlyPrice = plan.priceDisplayMonthly;
 
             return (
               <div
                 key={key}
                 className={`bg-white border rounded-2xl p-8 flex flex-col relative ${
                   isPopular
-                    ? 'border-emerald-600 shadow-lg bg-gradient-to-br from-emerald-50 to-white'
+                    ? 'border-blue-600 shadow-lg'
                     : 'border-neutral-200'
                 }`}
               >
+                {/* Popular Badge */}
+                {isPopular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
+                      Most Popular
+                    </span>
+                  </div>
+                )}
+
                 {/* Plan Name & Description */}
                 <div className="mb-6">
                   <h3 className="text-2xl font-semibold text-neutral-950 mb-2">
@@ -260,10 +271,15 @@ export default function BillingPage() {
 
                 {/* Price */}
                 <div className="mb-6">
-                  {currentPrice === null ? (
-                    <div className="text-4xl font-bold text-neutral-950">Custom</div>
+                  {isFree ? (
+                    <div className="text-4xl font-bold text-neutral-950">Free</div>
                   ) : (
                     <div>
+                      {billingCycle === 'yearly' && (
+                        <div className="text-sm text-neutral-500 line-through mb-1">
+                          {monthlyPrice} × 12 = ₹{(parseInt(monthlyPrice.replace(/[₹,]/g, '')) * 12).toLocaleString('en-IN')}
+                        </div>
+                      )}
                       <div className="text-4xl font-bold text-neutral-950">
                         {priceDisplay}
                       </div>
@@ -275,22 +291,18 @@ export default function BillingPage() {
                 </div>
 
                 {/* CTA Button */}
-                {key === 'ENTERPRISE' ? (
-                  <Button
-                    variant="default"
-                    className="w-full mb-6 bg-orange-500 hover:bg-orange-600"
-                    onClick={() => setShowEnterpriseForm(true)}
-                  >
-                    Get This Plan
+                {isFree ? (
+                  <Button variant="secondary" className="w-full mb-6" disabled>
+                    Current Plan
                   </Button>
                 ) : (
                   <Button
-                    variant="default"
-                    className="w-full mb-6 bg-orange-500 hover:bg-orange-600"
+                    variant={isPopular ? 'default' : 'secondary'}
+                    className="w-full mb-6"
                     onClick={() => handleUpgrade(plan.id as 'starter' | 'pro')}
                     disabled={isLoading === plan.id}
                   >
-                    {isLoading === plan.id ? 'Processing...' : 'Get This Plan'}
+                    {isLoading === plan.id ? 'Processing...' : 'Upgrade Now'}
                   </Button>
                 )}
 
@@ -302,7 +314,7 @@ export default function BillingPage() {
                   <ul className="space-y-3">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-3 text-sm">
-                        <div className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <Check className="w-3 h-3 text-white" />
                         </div>
                         <span className="text-neutral-700">{feature}</span>
@@ -313,6 +325,26 @@ export default function BillingPage() {
               </div>
             );
           })}
+      </div>
+
+      {/* Enterprise Contact Section */}
+      <div className="bg-gradient-to-r from-neutral-50 to-neutral-100 border border-neutral-200 rounded-2xl p-8 text-center mb-12">
+        <Building2 className="w-12 h-12 text-neutral-600 mx-auto mb-4" />
+        <h3 className="text-2xl font-semibold text-neutral-950 mb-2">
+          Need More Responses?
+        </h3>
+        <p className="text-neutral-600 mb-6 max-w-2xl mx-auto">
+          For teams requiring 10,000+ responses per month, custom integrations, or dedicated support, 
+          our Enterprise plan is tailored to your needs.
+        </p>
+        <Button
+          variant="default"
+          size="lg"
+          onClick={() => setShowEnterpriseForm(true)}
+        >
+          Contact Sales
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
       </div>
 
       {/* Enterprise Contact Form Modal */}
