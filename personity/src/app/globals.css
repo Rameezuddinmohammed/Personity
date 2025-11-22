@@ -18,12 +18,12 @@
   --color-neutral-800: 0 0% 15%;     /* Headings */
   --color-neutral-950: 0 0% 4%;      /* Primary text */
 
-  /* PRIMARY (Blue - CTAs, links, focus states only) */
-  --color-primary: 221 83% 53%;           /* #2563EB - Blue 600 */
-  --color-primary-hover: 221 83% 45%;     /* Hover state */
+  /* PRIMARY (Monochrome - Pure black for CTAs) */
+  --color-primary: 0 0% 4%;               /* Neutral 950 - Near black */
+  --color-primary-hover: 0 0% 15%;        /* Neutral 800 - Hover state */
   --color-primary-foreground: 0 0% 100%;  /* White text on primary */
-  --color-primary-light: 221 83% 95%;     /* Light backgrounds */
-  --color-primary-ring: 221 83% 53% / 0.2; /* Focus ring */
+  --color-primary-light: 0 0% 96%;        /* Neutral 100 - Light backgrounds */
+  --color-primary-ring: 0 0% 4% / 0.2;    /* Focus ring */
 
   /* SUCCESS (Green - Completed states) */
   --color-success: 160 84% 39%;           /* #059669 - Green 600 */
@@ -57,7 +57,7 @@
   --color-destructive-foreground: 0 0% 100%;
   --color-border: 0 0% 90%;               /* Neutral 200 */
   --color-input: 0 0% 90%;                /* Neutral 200 */
-  --color-ring: 221 83% 53%;              /* Primary */
+  --color-ring: 0 0% 4%;                  /* Neutral 950 - Black ring */
 
   /* SPACING (8px grid system) */
   --spacing-0: 0;

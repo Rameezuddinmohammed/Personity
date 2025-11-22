@@ -20,10 +20,10 @@ export const colors = {
     950: 'hsl(0 0% 4%)',
   },
   
-  // Primary (use sparingly - CTAs, links, focus only)
-  primary: 'hsl(221 83% 53%)',
-  primaryHover: 'hsl(221 83% 45%)',
-  primaryLight: 'hsl(221 83% 95%)',
+  // Primary (monochrome - black for CTAs)
+  primary: 'hsl(0 0% 4%)',        // Neutral 950
+  primaryHover: 'hsl(0 0% 15%)',  // Neutral 800
+  primaryLight: 'hsl(0 0% 96%)',  // Neutral 100
   
   // Semantic colors
   success: 'hsl(160 84% 39%)',
@@ -112,12 +112,12 @@ export const componentClasses = {
   cardHover: 'hover:border-primary hover:shadow-md transition-base',
   
   // Buttons
-  buttonPrimary: 'bg-primary text-white px-6 py-3 rounded hover:bg-primary-hover transition-fast font-medium',
+  buttonPrimary: 'bg-neutral-950 text-white px-6 py-3 rounded hover:bg-neutral-800 transition-fast font-medium',
   buttonSecondary: 'bg-white text-neutral-950 border border-neutral-300 px-6 py-3 rounded hover:border-neutral-400 transition-fast font-medium',
   buttonGhost: 'text-neutral-700 px-6 py-3 rounded hover:bg-neutral-100 transition-fast font-medium',
   
   // Inputs
-  input: 'w-full px-4 py-3 border border-neutral-300 rounded focus:border-primary focus:ring-2 focus:ring-primary-ring focus:outline-none transition-fast',
+  input: 'w-full px-4 py-3 border border-neutral-300 rounded focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/20 focus:outline-none transition-fast',
   
   // Text
   heading: 'font-semibold tracking-tight text-neutral-950',
@@ -126,7 +126,7 @@ export const componentClasses = {
   muted: 'text-xs text-neutral-500',
   
   // Focus states
-  focusRing: 'focus:outline-none focus:ring-2 focus:ring-primary-ring focus:ring-offset-2',
+  focusRing: 'focus:outline-none focus:ring-2 focus:ring-neutral-950/20 focus:ring-offset-2',
 } as const;
 
 /**

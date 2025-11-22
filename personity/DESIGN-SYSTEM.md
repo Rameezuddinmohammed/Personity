@@ -23,15 +23,15 @@ neutral-800  /* #262626 - Headings */
 neutral-950  /* #0A0A0A - Primary text */
 ```
 
-### Primary (Blue - Use Sparingly)
+### Primary (Monochrome)
 
 ```css
-primary       /* #2563EB - CTAs, links, focus states */
-primary-hover /* Hover state */
-primary-light /* Light backgrounds */
+primary       /* Neutral 950 (near-black) - CTAs, active states */
+primary-hover /* Neutral 800 - Hover state */
+primary-light /* Neutral 100 - Light backgrounds */
 ```
 
-**Usage**: CTAs, links, focus states only. Maximum 2% of interface.
+**Usage**: Pure monochrome design. No accent colors except semantic (success/error).
 
 ### Semantic Colors
 
@@ -152,8 +152,8 @@ shadow-lg  /* Modals */
 ### Buttons
 
 ```tsx
-{/* Primary CTA */}
-<button className="bg-primary text-white px-6 py-3 rounded hover:bg-primary-hover transition-fast">
+{/* Primary CTA - Black */}
+<button className="bg-neutral-950 text-white px-6 py-3 rounded hover:bg-neutral-800 transition-fast">
 
 {/* Secondary */}
 <button className="bg-white text-neutral-950 border border-neutral-300 px-6 py-3 rounded hover:border-neutral-400 transition-fast">
@@ -165,20 +165,20 @@ shadow-lg  /* Modals */
 ### Cards
 
 ```tsx
-<div className="bg-white border border-neutral-200 rounded-md p-6 hover:border-primary hover:shadow-md transition-base">
+<div className="bg-white border border-neutral-200 rounded-md p-6 hover:border-neutral-400 hover:shadow-md transition-base">
 ```
 
 ### Inputs
 
 ```tsx
-<input className="w-full px-4 py-3 border border-neutral-300 rounded focus:border-primary focus:ring-2 focus:ring-primary-ring transition-fast" />
+<input className="w-full px-4 py-3 border border-neutral-300 rounded focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/20 transition-fast" />
 ```
 
 ### Focus States
 
 ```tsx
-{/* Always include focus ring */}
-focus:outline-none focus:ring-2 focus:ring-primary-ring focus:ring-offset-2
+{/* Always include focus ring - Black */}
+focus:outline-none focus:ring-2 focus:ring-neutral-950/20 focus:ring-offset-2
 ```
 
 ---
@@ -281,7 +281,7 @@ text-neutral-500  /* Placeholder */
 /* Backgrounds */
 bg-white          /* Cards, surfaces */
 bg-neutral-50     /* Subtle backgrounds */
-bg-primary        /* CTAs only */
+bg-neutral-950    /* CTAs (black) */
 
 /* Borders */
 border-neutral-200  /* Default */
@@ -293,8 +293,8 @@ gap-6  /* Form field gaps (24px) */
 mb-12  /* Section spacing (48px) */
 
 /* Interactive */
-hover:border-primary
-focus:ring-2 focus:ring-primary-ring
+hover:border-neutral-950
+focus:ring-2 focus:ring-neutral-950/20
 transition-fast
 ```
 
