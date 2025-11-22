@@ -328,23 +328,23 @@ export default function BillingPage() {
       </div>
 
       {/* Enterprise Contact Section */}
-      <div className="bg-gradient-to-r from-neutral-50 to-neutral-100 border border-neutral-200 rounded-2xl p-8 text-center mb-12">
-        <Building2 className="w-12 h-12 text-neutral-600 mx-auto mb-4" />
-        <h3 className="text-2xl font-semibold text-neutral-950 mb-2">
-          Need More Responses?
-        </h3>
-        <p className="text-neutral-600 mb-6 max-w-2xl mx-auto">
-          For teams requiring 10,000+ responses per month, custom integrations, or dedicated support, 
-          our Enterprise plan is tailored to your needs.
-        </p>
-        <Button
-          variant="default"
-          size="lg"
-          onClick={() => setShowEnterpriseForm(true)}
-        >
-          Contact Sales
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
+      <div className="bg-gradient-to-r from-neutral-50 to-neutral-100 border border-neutral-200 rounded-xl p-6 text-center mb-12">
+        <div className="flex items-center justify-center gap-4">
+          <Building2 className="w-6 h-6 text-neutral-600" />
+          <h3 className="text-lg font-semibold text-neutral-950">
+            Need More Responses?
+          </h3>
+          <p className="text-sm text-neutral-600">
+            For teams requiring 2,000+ responses per month, custom integrations, or dedicated support.
+          </p>
+          <Button
+            variant="default"
+            onClick={() => setShowEnterpriseForm(true)}
+          >
+            Contact Sales
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
       </div>
 
       {/* Enterprise Contact Form Modal */}
