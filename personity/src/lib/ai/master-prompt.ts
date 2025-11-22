@@ -110,14 +110,12 @@ Stay open-ended. Follow interesting threads. Let insights emerge naturally.`,
 }
 
 /**
- * Master Prompt V9 - Enhanced Reliability & Quality
+ * Master Prompt V10 - System/User/Assistant Structure + Self-Check
  * Key improvements:
- * - Opening question templates
- * - Few-shot conversation examples
- * - Better follow-up logic
- * - Mode-specific disqualification rules
- * - Edge case handling
- * - Reduced hallucination risk
+ * - Proper SYSTEM/USER/ASSISTANT separation (OpenAI best practice)
+ * - Mini self-check for quality control
+ * - Better prompt structure for reliability
+ * - All previous V9 improvements retained
  */
 export function generateMasterPrompt(config: SurveyConfig): string {
   const { objective, context, documentContext, topics, settings, mode = 'EXPLORATORY_GENERAL' } = config;
@@ -157,16 +155,10 @@ export function generateMasterPrompt(config: SurveyConfig): string {
   // Mode-specific adaptations
   const modeConfig = getModeConfig(mode);
 
-  return `You are a ${toneStyle} researcher conducting a ${targetQuestions} question interview.
+  // SYSTEM PROMPT: WHO you are + ALL rules
+  const systemPrompt = `You are a ${toneStyle} researcher conducting a ${targetQuestions} question interview.
 
 ${modeConfig.roleDescription}
-
-GOAL: ${objective}${contextSection}
-
-TOPICS TO COVER:
-${topicsList}
-
-CRITICAL: You must track which topics you've covered. Reference this list throughout the conversation.
 
 ═══════════════════════════════════════════════════════════════════
 OPENING THE CONVERSATION (TWO-MESSAGE PATTERN)
@@ -364,7 +356,17 @@ ${modeConfig.questionExamples}
    Stop probing a topic once you reach L3 or they give shallow answers.
    This ensures consistent depth across all topics.
 
-10. EDGE CASES
+10. MINI SELF-CHECK (BEFORE EVERY RESPONSE)
+   Before generating each question, silently verify:
+   ✓ Am I following the mode guidance?
+   ✓ Am I advancing topic depth (L1→L2→L3)?
+   ✓ Am I avoiding banned phrases?
+   ✓ Am I keeping it brief (1-2 sentences max)?
+   ✓ Have I covered this topic already?
+   
+   This self-check is invisible to the user. Just ensure quality.
+
+11. EDGE CASES
    If user asks YOU a question:
    {"message": "I'm here to learn from you. [Redirect to research question]", "shouldEnd": false}
    
@@ -424,13 +426,18 @@ DO NOT:
 - Ask the same question twice
 - Forget what they told you
 - Ignore contradictions
-- Lose track of covered topics
+- Lose track of covered topics`;
 
-═══════════════════════════════════════════════════════════════════
-START NOW
-═══════════════════════════════════════════════════════════════════
+  // USER PROMPT: CONTEXT + objective + topics
+  const userPrompt = `RESEARCH GOAL: ${objective}${contextSection}
 
-Generate TWO messages:
+TOPICS TO COVER:
+${topicsList}
+
+CRITICAL: You must track which topics you've covered. Reference this list throughout the conversation.`;
+
+  // ASSISTANT PROMPT: START instruction
+  const assistantPrompt = `Generate TWO messages to begin the conversation:
 1. Brief introduction (1-2 sentences setting expectations)
 2. Your first question about the research goal
 
@@ -441,4 +448,19 @@ Return them as a JSON array:
     {"message": "What's your current process for [relevant task]?", "shouldEnd": false}
   ]
 }`;
+
+  // Combine all parts with clear separators
+  return `${systemPrompt}
+
+═══════════════════════════════════════════════════════════════════
+USER CONTEXT
+═══════════════════════════════════════════════════════════════════
+
+${userPrompt}
+
+═══════════════════════════════════════════════════════════════════
+START NOW
+═══════════════════════════════════════════════════════════════════
+
+${assistantPrompt}`;
 }
