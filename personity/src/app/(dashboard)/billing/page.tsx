@@ -276,13 +276,18 @@ export default function BillingPage() {
                     <div className="text-4xl font-bold text-neutral-950">Free</div>
                   ) : (
                     <div>
-                      {billingCycle === 'yearly' && (
-                        <div className="text-sm text-neutral-500 line-through mb-1">
-                          ₹{(parseInt(monthlyPrice.replace(/[₹,]/g, '')) * 12).toLocaleString('en-IN')}
+                      <div className="text-sm text-neutral-500 line-through mb-1">
+                        {billingCycle === 'yearly'
+                          ? (plan as any).originalPriceYearly
+                          : (plan as any).originalPriceMonthly}
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <div className="text-4xl font-bold text-neutral-950">
+                          {priceDisplay}
                         </div>
-                      )}
-                      <div className="text-4xl font-bold text-neutral-950">
-                        {priceDisplay}
+                        <span className="bg-green-600 text-white text-xs font-medium px-2 py-1 rounded-full">
+                          50% OFF
+                        </span>
                       </div>
                       <p className="text-sm text-neutral-600 mt-1">
                         {billingCycle === 'yearly' ? 'Per year' : 'Per month'}

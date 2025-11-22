@@ -23,11 +23,13 @@ export const PLANS = {
     id: 'starter',
     name: 'Starter',
     description: 'Perfect for small teams and startups',
-    price: 499900, // monthly in paise (₹4,999)
-    priceMonthly: 499900,
-    priceYearly: 5399000, // ₹53,990 (10% off from ₹59,988)
-    priceDisplayMonthly: '₹4,999',
-    priceDisplayYearly: '₹53,990',
+    price: 249900, // BETA: 50% off - monthly in paise (₹2,499)
+    priceMonthly: 249900,
+    priceYearly: 2699000, // BETA: 50% off - ₹26,990 (was ₹53,990)
+    priceDisplayMonthly: '₹2,499',
+    priceDisplayYearly: '₹26,990',
+    originalPriceMonthly: '₹4,999',
+    originalPriceYearly: '₹59,988',
     currency: 'INR',
     responses: 500,
     features: [
@@ -42,11 +44,13 @@ export const PLANS = {
     id: 'pro',
     name: 'Pro',
     description: 'Essential for growing teams and companies',
-    price: 1499900, // monthly in paise (₹14,999)
-    priceMonthly: 1499900,
-    priceYearly: 16199000, // ₹1,61,990 (10% off from ₹1,79,988)
-    priceDisplayMonthly: '₹14,999',
-    priceDisplayYearly: '₹1,61,990',
+    price: 749900, // BETA: 50% off - monthly in paise (₹7,499)
+    priceMonthly: 749900,
+    priceYearly: 8099000, // BETA: 50% off - ₹80,990 (was ₹1,61,990)
+    priceDisplayMonthly: '₹7,499',
+    priceDisplayYearly: '₹80,990',
+    originalPriceMonthly: '₹14,999',
+    originalPriceYearly: '₹1,79,988',
     currency: 'INR',
     responses: 2000,
     features: [
