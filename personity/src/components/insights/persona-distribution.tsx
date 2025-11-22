@@ -21,19 +21,27 @@ export function PersonaDistribution({ data, totalResponses }: PersonaDistributio
     return Math.round((count / totalResponses) * 100);
   };
 
-  const renderBar = (label: string, count: number, color: string) => {
+  const renderBar = (label: string, count: number, intensity: 'light' | 'medium' | 'dark') => {
     const percentage = getPercentage(count);
+    const barColor = intensity === 'dark' ? 'bg-neutral-950' : intensity === 'medium' ? 'bg-neutral-600' : 'bg-neutral-300';
+    
     return (
-      <div className="flex items-center gap-3">
-        <span className="text-xs text-neutral-600 w-20 text-right">{label}</span>
-        <div className="flex-1 h-6 bg-neutral-100 rounded-lg overflow-hidden">
+      <div className="flex items-center gap-4">
+        <span className="text-sm text-neutral-700 w-24 font-medium">{label}</span>
+        <div className="flex-1 h-8 bg-neutral-100 rounded overflow-hidden">
           <div
-            className={`h-full ${color} transition-all duration-500`}
+            className={`h-full ${barColor} transition-all duration-500 flex items-center justify-end pr-3`}
             style={{ width: `${percentage}%` }}
-          />
+          >
+            {percentage > 10 && (
+              <span className="text-xs font-semibold text-white">{percentage}%</span>
+            )}
+          </div>
         </div>
-        <span className="text-xs font-medium text-neutral-700 w-12">{percentage}%</span>
-        <span className="text-xs text-neutral-500 w-8">({count})</span>
+        {percentage <= 10 && (
+          <span className="text-xs font-medium text-neutral-600 w-12">{percentage}%</span>
+        )}
+        <span className="text-xs text-neutral-500 w-10 text-right">({count})</span>
       </div>
     );
   };
@@ -48,56 +56,56 @@ export function PersonaDistribution({ data, totalResponses }: PersonaDistributio
       <div className="space-y-8">
         {/* Pain Level */}
         <div>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <Zap className="w-4 h-4 text-neutral-600" />
-            <h3 className="text-sm font-medium text-neutral-700">Pain Level</h3>
+            <h3 className="text-sm font-semibold text-neutral-950">Pain Level</h3>
           </div>
-          <div className="space-y-2">
-            {renderBar('Low', data.painLevel.low, 'bg-green-500')}
-            {renderBar('Medium', data.painLevel.medium, 'bg-yellow-500')}
-            {renderBar('High', data.painLevel.high, 'bg-red-500')}
+          <div className="space-y-3">
+            {renderBar('Low', data.painLevel.low, 'light')}
+            {renderBar('Medium', data.painLevel.medium, 'medium')}
+            {renderBar('High', data.painLevel.high, 'dark')}
           </div>
         </div>
 
         {/* Experience Level */}
         <div>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-4 h-4 text-neutral-600" />
-            <h3 className="text-sm font-medium text-neutral-700">Experience Level</h3>
+            <h3 className="text-sm font-semibold text-neutral-950">Experience Level</h3>
           </div>
-          <div className="space-y-2">
-            {renderBar('Novice', data.experience.novice, 'bg-blue-300')}
-            {renderBar('Intermediate', data.experience.intermediate, 'bg-blue-500')}
-            {renderBar('Expert', data.experience.expert, 'bg-blue-700')}
+          <div className="space-y-3">
+            {renderBar('Novice', data.experience.novice, 'light')}
+            {renderBar('Intermediate', data.experience.intermediate, 'medium')}
+            {renderBar('Expert', data.experience.expert, 'dark')}
           </div>
         </div>
 
         {/* Decision Readiness */}
         <div>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <Target className="w-4 h-4 text-neutral-600" />
-            <h3 className="text-sm font-medium text-neutral-700">Decision Readiness</h3>
+            <h3 className="text-sm font-semibold text-neutral-950">Decision Readiness</h3>
           </div>
-          <div className="space-y-2">
-            {renderBar('Cold', data.readiness.cold, 'bg-gray-400')}
-            {renderBar('Warm', data.readiness.warm, 'bg-orange-400')}
-            {renderBar('Hot', data.readiness.hot, 'bg-red-600')}
+          <div className="space-y-3">
+            {renderBar('Cold', data.readiness.cold, 'light')}
+            {renderBar('Warm', data.readiness.warm, 'medium')}
+            {renderBar('Hot', data.readiness.hot, 'dark')}
           </div>
-          <p className="text-xs text-neutral-500 mt-3">
+          <p className="text-xs text-neutral-500 mt-4 pl-28">
             {getPercentage(data.readiness.hot)}% are ready to make a decision
           </p>
         </div>
 
         {/* Clarity */}
         <div>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <MessageCircle className="w-4 h-4 text-neutral-600" />
-            <h3 className="text-sm font-medium text-neutral-700">Response Clarity</h3>
+            <h3 className="text-sm font-semibold text-neutral-950">Response Clarity</h3>
           </div>
-          <div className="space-y-2">
-            {renderBar('Low', data.clarity.low, 'bg-neutral-300')}
-            {renderBar('Medium', data.clarity.medium, 'bg-neutral-500')}
-            {renderBar('High', data.clarity.high, 'bg-neutral-700')}
+          <div className="space-y-3">
+            {renderBar('Low', data.clarity.low, 'light')}
+            {renderBar('Medium', data.clarity.medium, 'medium')}
+            {renderBar('High', data.clarity.high, 'dark')}
           </div>
         </div>
       </div>
