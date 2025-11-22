@@ -11,6 +11,10 @@ export interface StructuredConversationResponse {
   shouldEnd: boolean;
   reason?: 'completed' | 'disqualified' | 'low_quality' | 'max_questions';
   summary?: string;
+  messages?: Array<{
+    message: string;
+    shouldEnd: boolean;
+  }>;
 }
 
 /**
@@ -69,6 +73,16 @@ Set shouldEnd to false if:
 
     const parsed = JSON.parse(jsonMatch[0]);
 
+    // Handle multi-message response (for opening)
+    if (parsed.messages && Array.isArray(parsed.messages)) {
+      return {
+        message: parsed.messages[0]?.message || response.content,
+        shouldEnd: false,
+        messages: parsed.messages,
+      };
+    }
+
+    // Handle single message response (normal conversation)
     return {
       message: parsed.message || response.content,
       shouldEnd: parsed.shouldEnd === true,

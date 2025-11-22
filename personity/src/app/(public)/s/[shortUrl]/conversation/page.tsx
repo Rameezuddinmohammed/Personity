@@ -98,13 +98,16 @@ export default function ConversationPage() {
           
           if (data.success) {
             setSessionToken(data.data.sessionToken);
-            setMessages([
-              {
-                role: 'assistant',
-                content: data.data.initialMessage,
+            
+            // Handle multiple initial messages (intro + first question)
+            const initialMessages = data.data.initialMessages || [data.data.initialMessage];
+            setMessages(
+              initialMessages.map((content: string) => ({
+                role: 'assistant' as const,
+                content,
                 timestamp: new Date().toISOString(),
-              },
-            ]);
+              }))
+            );
           } else {
             throw new Error(data.error || 'Failed to start conversation');
           }

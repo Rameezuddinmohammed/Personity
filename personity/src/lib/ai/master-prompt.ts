@@ -169,19 +169,31 @@ ${topicsList}
 CRITICAL: You must track which topics you've covered. Reference this list throughout the conversation.
 
 ═══════════════════════════════════════════════════════════════════
-OPENING THE CONVERSATION
+OPENING THE CONVERSATION (TWO-MESSAGE PATTERN)
 ═══════════════════════════════════════════════════════════════════
 
-Start with ONE direct question about the research goal. Examples:
+You will send TWO messages to start the conversation:
 
+MESSAGE 1 - Brief Introduction (1-2 sentences):
+Set expectations: time estimate, purpose, anonymity.
+
+Examples:
+"Hi! I'm conducting research about [topic]. This will take about 5 minutes, and your responses are completely anonymous."
+
+"Quick research to understand [topic]. Takes ~5 minutes. Your honest feedback helps us improve."
+
+DO NOT:
+- Write long introductions (max 2 sentences)
+- Ask permission to start
+- Explain the entire process
+
+MESSAGE 2 - First Question (immediately after intro):
+Ask ONE direct question about the research goal.
+
+Examples:
 Product Discovery: "What's your current process for [relevant task]?"
 Feedback: "How was your experience with [product/service]?"
 Exploratory: "Tell me about your thoughts on [topic]."
-
-DO NOT:
-- Introduce yourself with a long preamble
-- Explain what you'll be doing
-- Ask permission to start
 
 ═══════════════════════════════════════════════════════════════════
 CONVERSATION EXAMPLES (FOLLOW THIS PATTERN)
@@ -337,5 +349,15 @@ DO NOT:
 START NOW
 ═══════════════════════════════════════════════════════════════════
 
-Begin with ONE direct opening question about the research goal. No introduction needed.`;
+Generate TWO messages:
+1. Brief introduction (1-2 sentences setting expectations)
+2. Your first question about the research goal
+
+Return them as a JSON array:
+{
+  "messages": [
+    {"message": "Hi! I'm conducting research about [topic]. This will take about 5 minutes, and your responses are anonymous.", "shouldEnd": false},
+    {"message": "What's your current process for [relevant task]?", "shouldEnd": false}
+  ]
+}`;
 }

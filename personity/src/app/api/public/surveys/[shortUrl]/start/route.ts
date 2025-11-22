@@ -101,7 +101,9 @@ export async function POST(
       );
     }
     
-    // Generate initial AI greeting using master prompt
+    // Generate initial AI greeting using structured response (two-message opening)
+    const { generateStructuredConversationResponse } = await import('@/lib/ai/structured-response');
+    
     const initialMessages: AIMessage[] = [
       {
         role: 'system',
@@ -113,37 +115,54 @@ export async function POST(
       },
     ];
     
-    const aiResponse = await generateAIResponse(initialMessages, {
+    const structuredResponse = await generateStructuredConversationResponse(initialMessages, {
       temperature: 0.7,
-      maxTokens: 200,
+      maxTokens: 300,
     });
     
-    const cost = calculateCost(aiResponse.usage);
+    // Estimate token usage (since structured response doesn't return usage)
+    const estimatedInputTokens = Math.ceil(survey.masterPrompt.length / 4);
+    const estimatedOutputTokens = Math.ceil(structuredResponse.message.length / 4);
+    const cost = (estimatedInputTokens * 0.0000025) + (estimatedOutputTokens * 0.00001);
+    
+    // Handle two-message opening
+    const exchanges = [];
+    if (structuredResponse.messages && structuredResponse.messages.length > 0) {
+      // Multi-message opening (intro + first question)
+      for (const msg of structuredResponse.messages) {
+        exchanges.push({
+          role: 'assistant',
+          content: msg.message,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } else {
+      // Single message fallback
+      exchanges.push({
+        role: 'assistant',
+        content: structuredResponse.message,
+        timestamp: new Date().toISOString(),
+      });
+    }
     
     // Track API usage
     await supabase.from('ApiUsage').insert({
       context: `session:${session.id}`,
       provider: 'azure',
       model: 'gpt-4o',
-      tokensInput: aiResponse.usage.inputTokens,
-      tokensOutput: aiResponse.usage.outputTokens,
+      tokensInput: estimatedInputTokens,
+      tokensOutput: estimatedOutputTokens,
       cost,
     });
     
     // Create initial conversation record
     await supabase.from('Conversation').insert({
       sessionId: session.id,
-      exchanges: [
-        {
-          role: 'assistant',
-          content: aiResponse.content,
-          timestamp: new Date().toISOString(),
-        },
-      ],
+      exchanges,
       durationSeconds: 0,
       tokenUsage: {
-        input: aiResponse.usage.inputTokens,
-        output: aiResponse.usage.outputTokens,
+        input: estimatedInputTokens,
+        output: estimatedOutputTokens,
         cost,
       },
     });
@@ -152,7 +171,7 @@ export async function POST(
       success: true,
       data: {
         sessionToken: session.sessionToken,
-        initialMessage: aiResponse.content,
+        initialMessages: exchanges.map(ex => ex.content),
       },
     });
   } catch (error) {
