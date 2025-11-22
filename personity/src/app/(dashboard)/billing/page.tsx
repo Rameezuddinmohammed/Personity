@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Sparkles, Zap, Building2, ArrowRight, TrendingUp } from 'lucide-react';
+import { Check, Sparkles, Zap, Building2, ArrowRight, TrendingUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PLANS } from '@/lib/razorpay/plans';
 
@@ -24,6 +24,7 @@ export default function BillingPage() {
   const [showEnterpriseForm, setShowEnterpriseForm] = useState(false);
   const [usage, setUsage] = useState<UserUsage | null>(null);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
     // Fetch user usage data
@@ -277,7 +278,7 @@ export default function BillingPage() {
                     <div>
                       {billingCycle === 'yearly' && (
                         <div className="text-sm text-neutral-500 line-through mb-1">
-                          {monthlyPrice} × 12 = ₹{(parseInt(monthlyPrice.replace(/[₹,]/g, '')) * 12).toLocaleString('en-IN')}
+                          ₹{(parseInt(monthlyPrice.replace(/[₹,]/g, '')) * 12).toLocaleString('en-IN')}
                         </div>
                       )}
                       <div className="text-4xl font-bold text-neutral-950">
@@ -481,43 +482,50 @@ export default function BillingPage() {
       )}
 
       {/* FAQ Section */}
-      <div className="bg-white border border-neutral-200 rounded-2xl p-8">
-        <h2 className="text-xl font-semibold text-neutral-950 mb-6">
+      <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-neutral-950 mb-4">
           Frequently Asked Questions
         </h2>
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-medium text-neutral-950 mb-2">
-              Can I change plans later?
-            </h3>
-            <p className="text-sm text-neutral-600">
-              Yes! You can upgrade or downgrade at any time. Changes take effect immediately.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium text-neutral-950 mb-2">
-              What happens if I exceed my response limit?
-            </h3>
-            <p className="text-sm text-neutral-600">
-              You'll be notified when you reach 80% of your limit. Once exceeded, you'll need to upgrade to continue collecting responses.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium text-neutral-950 mb-2">
-              Do you offer refunds?
-            </h3>
-            <p className="text-sm text-neutral-600">
-              We offer a 7-day money-back guarantee if you're not satisfied with the service.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium text-neutral-950 mb-2">
-              Is my data secure?
-            </h3>
-            <p className="text-sm text-neutral-600">
-              Yes. All data is encrypted at rest and in transit. We comply with Indian data protection laws.
-            </p>
-          </div>
+        <div className="space-y-3">
+          {[
+            {
+              question: 'Can I change plans later?',
+              answer: 'Yes! You can upgrade or downgrade at any time. Changes take effect immediately.',
+            },
+            {
+              question: 'What happens if I exceed my response limit?',
+              answer: "You'll be notified when you reach 80% of your limit. Once exceeded, you'll need to upgrade to continue collecting responses.",
+            },
+            {
+              question: 'Do you offer refunds?',
+              answer: "We offer a 7-day money-back guarantee if you're not satisfied with the service.",
+            },
+            {
+              question: 'Is my data secure?',
+              answer: 'Yes. All data is encrypted at rest and in transit. We comply with Indian data protection laws.',
+            },
+          ].map((faq, index) => (
+            <div key={index} className="border-b border-neutral-200 last:border-0 pb-3 last:pb-0">
+              <button
+                onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                className="w-full flex items-center justify-between text-left py-2 hover:text-blue-600 transition-colors"
+              >
+                <h3 className="text-sm font-medium text-neutral-950">
+                  {faq.question}
+                </h3>
+                <ChevronDown
+                  className={`w-4 h-4 text-neutral-600 transition-transform ${
+                    openFaq === index ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              {openFaq === index && (
+                <p className="text-sm text-neutral-600 mt-2 pb-2">
+                  {faq.answer}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
