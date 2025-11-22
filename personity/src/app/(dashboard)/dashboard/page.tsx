@@ -151,7 +151,7 @@ export default function DashboardPage() {
       {/* Personalized Greeting */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-neutral-950 tracking-tight">
-          {greeting}, {user?.name?.split(' ')[0] || 'there'}! 👋
+          {greeting}, {user?.name?.split(' ')[0] || 'there'}!
         </h1>
         <p className="text-neutral-600 mt-1">
           Here's what's happening with your surveys today
