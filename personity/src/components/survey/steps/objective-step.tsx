@@ -196,21 +196,17 @@ export function ObjectiveStep() {
               <p className="text-sm font-medium text-n-950 mb-1">
                 Research Mode Detected: {' '}
                 <span className="text-primary">
-                  {mode === 'PRODUCT_DISCOVERY' && '🔨 Product Discovery'}
-                  {mode === 'FEEDBACK_SATISFACTION' && '⭐ Feedback & Satisfaction'}
-                  {mode === 'EXPLORATORY_GENERAL' && '🔍 Exploratory Research'}
+                  {mode === 'PRODUCT_DISCOVERY' && 'Product Discovery'}
+                  {mode === 'FEEDBACK_SATISFACTION' && 'Feedback & Satisfaction'}
+                  {mode === 'EXPLORATORY_GENERAL' && 'Exploratory Research'}
                 </span>
               </p>
               <p className="text-xs text-n-600">
                 {mode === 'PRODUCT_DISCOVERY' && 'Your dashboard will focus on pain points, feature requests, and user segments.'}
                 {mode === 'FEEDBACK_SATISFACTION' && 'Your dashboard will focus on satisfaction metrics, sentiment trends, and feedback analysis.'}
                 {mode === 'EXPLORATORY_GENERAL' && 'Your dashboard will focus on key themes, insights, and open-ended discoveries.'}
+                {useSurveyWizardStore.getState().showContextStep && ' Additional context required for better results.'}
               </p>
-              {useSurveyWizardStore.getState().showContextStep && (
-                <p className="text-xs text-n-600 mt-2">
-                  💡 We'll ask for additional context in the next step to improve your results.
-                </p>
-              )}
             </div>
           </div>
         </div>
