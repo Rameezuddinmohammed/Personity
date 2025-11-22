@@ -137,13 +137,13 @@ export function SurveysList() {
             </div>
             <div>
               <p className="text-xs text-neutral-500 mb-1">Completed</p>
-              <p className="text-xl sm:text-2xl font-semibold text-green-600">
+              <p className="text-xl sm:text-2xl font-semibold text-neutral-950">
                 {survey.completedCount}
               </p>
             </div>
             <div>
               <p className="text-xs text-neutral-500 mb-1">Completion Rate</p>
-              <p className="text-xl sm:text-2xl font-semibold text-blue-600">
+              <p className="text-xl sm:text-2xl font-semibold text-neutral-950">
                 {survey.completionRate}%
               </p>
             </div>
