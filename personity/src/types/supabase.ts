@@ -353,7 +353,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_responses_used: {
+        Args: { user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       Plan: "FREE" | "STARTER" | "PRO" | "BUSINESS"

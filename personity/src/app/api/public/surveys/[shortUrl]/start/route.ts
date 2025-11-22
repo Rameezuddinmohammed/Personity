@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { generateAIResponse, calculateCost, AIMessage } from '@/lib/ai/azure-openai';
 import { nanoid } from 'nanoid';
+import { checkUsageLimit } from '@/lib/usage/limits';
 
 interface RouteContext {
   params: Promise<{
@@ -29,6 +30,22 @@ export async function POST(
       return NextResponse.json(
         { error: 'Survey not found or inactive' },
         { status: 404 }
+      );
+    }
+    
+    // Check usage limit for survey creator
+    const usageCheck = await checkUsageLimit(survey.userId);
+    if (!usageCheck.allowed) {
+      return NextResponse.json(
+        { 
+          error: usageCheck.reason,
+          usageLimit: {
+            currentUsage: usageCheck.currentUsage,
+            limit: usageCheck.limit,
+            plan: usageCheck.plan,
+          }
+        },
+        { status: 403 }
       );
     }
     

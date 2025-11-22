@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Sparkles, Zap, Building2, ArrowRight } from 'lucide-react';
+import { Check, Sparkles, Zap, Building2, ArrowRight, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PLANS } from '@/lib/razorpay/client';
+import { PLANS } from '@/lib/razorpay/plans';
 
 declare global {
   interface Window {
@@ -12,10 +12,35 @@ declare global {
   }
 }
 
+interface UserUsage {
+  plan: string;
+  responsesUsedThisMonth: number;
+  limit: number;
+}
+
 export default function BillingPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [showEnterpriseForm, setShowEnterpriseForm] = useState(false);
+  const [usage, setUsage] = useState<UserUsage | null>(null);
+
+  useEffect(() => {
+    // Fetch user usage data
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.user) {
+          const userPlan = data.user.plan || 'FREE';
+          const planConfig = PLANS[userPlan as keyof typeof PLANS];
+          setUsage({
+            plan: userPlan,
+            responsesUsedThisMonth: data.user.responsesUsedThisMonth || 0,
+            limit: planConfig.responses || 0,
+          });
+        }
+      })
+      .catch((error) => console.error('Failed to fetch usage:', error));
+  }, []);
 
   const handleUpgrade = async (planId: 'starter' | 'pro') => {
     setIsLoading(planId);
@@ -105,8 +130,64 @@ export default function BillingPage() {
     }
   };
 
+  const usagePercentage = usage
+    ? Math.min((usage.responsesUsedThisMonth / usage.limit) * 100, 100)
+    : 0;
+
   return (
     <div className="max-w-7xl mx-auto">
+      {/* Usage Display */}
+      {usage && (
+        <div className="bg-white border border-neutral-200 rounded-2xl p-6 mb-8">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-neutral-950 mb-1">
+                Current Usage
+              </h2>
+              <p className="text-sm text-neutral-600">
+                {usage.plan} Plan • Resets monthly
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <TrendingUp className="w-4 h-4 text-neutral-600" />
+              <span className="font-medium text-neutral-950">
+                {usage.responsesUsedThisMonth} / {usage.limit}
+              </span>
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="relative w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
+            <div
+              className={`absolute top-0 left-0 h-full transition-all duration-300 ${
+                usagePercentage >= 100
+                  ? 'bg-red-600'
+                  : usagePercentage >= 80
+                  ? 'bg-yellow-600'
+                  : 'bg-blue-600'
+              }`}
+              style={{ width: `${usagePercentage}%` }}
+            />
+          </div>
+
+          {/* Warning Messages */}
+          {usagePercentage >= 100 && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800">
+                <strong>Limit reached!</strong> Upgrade your plan to continue collecting responses.
+              </p>
+            </div>
+          )}
+          {usagePercentage >= 80 && usagePercentage < 100 && (
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                <strong>Almost there!</strong> You've used {Math.round(usagePercentage)}% of your monthly limit.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-3xl font-semibold text-neutral-950 mb-3 tracking-tight">
