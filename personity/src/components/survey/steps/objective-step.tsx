@@ -49,6 +49,26 @@ export function ObjectiveStep() {
           setShowContextStep(modeData.suggestedContextQuestions.length > 0);
           setHasAnalyzed(true);
           lastAnalyzedObjective.current = objective;
+          
+          // Auto-generate title from objective if title is empty
+          if (!title.trim()) {
+            // Create a clean title from objective
+            // Remove "I want to understand" or similar phrases
+            let cleanTitle = objective
+              .replace(/^(I want to|I'd like to|I need to|We want to|We need to)\s+(understand|learn|know|find out|discover|explore)\s+/i, '')
+              .trim();
+            
+            // Capitalize first letter
+            cleanTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+            
+            // Limit to 60 chars and add "Survey" if not too long
+            if (cleanTitle.length < 50) {
+              cleanTitle = cleanTitle + ' Survey';
+            }
+            cleanTitle = cleanTitle.substring(0, 60);
+            
+            setTitle(cleanTitle);
+          }
         }
       } catch (error) {
         console.error('Failed to analyze objective:', error);
@@ -61,7 +81,7 @@ export function ObjectiveStep() {
     }, 2000); // Wait 2s after user stops typing (reduced API calls)
 
     return () => clearTimeout(timeoutId);
-  }, [objective, setShowContextStep]);
+  }, [objective, title, setShowContextStep, setTitle]);
 
   return (
     <div>
@@ -75,34 +95,36 @@ export function ObjectiveStep() {
         </p>
       </div>
 
-      {/* Survey Title */}
-      <div className="mb-6">
-        <label
-          htmlFor="title"
-          className="block text-[13px] font-medium text-n-700 mb-2"
-        >
-          Survey Title <span className="text-red-600">*</span>
-        </label>
-        <input
-          id="title"
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g., Shopping Cart Abandonment Survey"
-          className="
-            w-full px-4 py-3 text-sm text-n-950 bg-white
-            border border-n-300 rounded-lg font-sans
-            transition-all duration-150 ease-out
-            placeholder:text-n-400
-            hover:border-n-400
-            focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
-          "
-          maxLength={100}
-        />
-        <p className="text-xs text-n-500 mt-2">
-          This is what respondents will see when they start the survey
-        </p>
-      </div>
+      {/* Survey Title - Auto-generated, editable */}
+      {title && (
+        <div className="mb-6">
+          <label
+            htmlFor="title"
+            className="block text-[13px] font-medium text-n-700 mb-2"
+          >
+            Survey Title <span className="text-xs text-n-500 font-normal">(AI-generated, editable)</span>
+          </label>
+          <input
+            id="title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g., Shopping Cart Abandonment Survey"
+            className="
+              w-full px-4 py-3 text-sm text-n-950 bg-white
+              border border-n-300 rounded-lg font-sans
+              transition-all duration-150 ease-out
+              placeholder:text-n-400
+              hover:border-n-400
+              focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
+            "
+            maxLength={100}
+          />
+          <p className="text-xs text-n-500 mt-2">
+            This is what respondents will see. Edit if needed.
+          </p>
+        </div>
+      )}
 
       {/* Example Templates */}
       {!objective && (
