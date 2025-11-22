@@ -187,18 +187,18 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-sm text-neutral-600">
-              © 2024 Personity. All rights reserved.
+              © 2025 Personity. All rights reserved.
             </div>
             <div className="flex gap-6 text-sm text-neutral-600">
-              <Link href="/signup" className="hover:text-neutral-950 transition-colors">
+              <Link href="/privacy" className="hover:text-neutral-950 transition-colors">
                 Privacy
               </Link>
-              <Link href="/signup" className="hover:text-neutral-950 transition-colors">
+              <Link href="/terms" className="hover:text-neutral-950 transition-colors">
                 Terms
               </Link>
-              <Link href="/signup" className="hover:text-neutral-950 transition-colors">
+              <a href="mailto:support@personity.app" className="hover:text-neutral-950 transition-colors">
                 Contact
-              </Link>
+              </a>
             </div>
           </div>
         </div>
