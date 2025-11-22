@@ -1,17 +1,95 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Sparkles, AlertCircle, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SurveysList } from '@/components/dashboard/surveys-list';
-import { UsageCard } from '@/components/dashboard/usage-card';
 import { StickyBanner } from '@/components/ui/sticky-banner';
+import { useEffect, useState } from 'react';
+import { PLANS } from '@/lib/razorpay/plans';
 
 export default function DashboardPage() {
   const router = useRouter();
+  const [usage, setUsage] = useState<{
+    plan: string;
+    used: number;
+    limit: number;
+  } | null>(null);
+  const [dismissedWarning, setDismissedWarning] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.user) {
+          const userPlan = (data.user.plan || 'FREE').toUpperCase();
+          const planConfig = PLANS[userPlan as keyof typeof PLANS];
+          setUsage({
+            plan: userPlan,
+            used: data.user.responsesUsedThisMonth || 0,
+            limit: planConfig?.responses || 50,
+          });
+        }
+      })
+      .catch((error) => console.error('Failed to fetch usage:', error));
+  }, []);
+
+  const usagePercentage = usage ? (usage.used / usage.limit) * 100 : 0;
+  const showWarning = usage && usagePercentage >= 80 && !dismissedWarning;
 
   return (
     <div className="animate-fade-in">
+      {/* Usage Warning Banners */}
+      {showWarning && (
+        <div className="-mx-6 md:-mx-10 mb-8">
+          {usagePercentage >= 100 ? (
+            <StickyBanner
+              className="bg-gradient-to-r from-red-600 to-red-700"
+              onDismiss={() => setDismissedWarning(true)}
+            >
+              <div className="flex items-center justify-between gap-4 text-white w-full">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <p className="text-sm font-medium">
+                    <span className="font-bold">Limit Reached!</span> You've used all {usage.limit} responses this month. Upgrade to continue.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="shrink-0"
+                  onClick={() => router.push('/billing')}
+                >
+                  Upgrade Now
+                </Button>
+              </div>
+            </StickyBanner>
+          ) : (
+            <StickyBanner
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600"
+              onDismiss={() => setDismissedWarning(true)}
+            >
+              <div className="flex items-center justify-between gap-4 text-white w-full">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 shrink-0" />
+                  <p className="text-sm font-medium">
+                    <span className="font-bold">Almost There!</span> You've used {usage.used}/{usage.limit} responses ({Math.round(usagePercentage)}%). Consider upgrading.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="shrink-0"
+                  onClick={() => router.push('/billing')}
+                >
+                  View Plans
+                </Button>
+              </div>
+            </StickyBanner>
+          )}
+        </div>
+      )}
+
       {/* Beta Announcement Banner */}
       <div className="-mx-6 md:-mx-10 mb-8">
         <StickyBanner className="bg-gradient-to-r from-emerald-500 to-teal-600">
@@ -44,18 +122,8 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Surveys List - Takes 2 columns on large screens */}
-        <div className="lg:col-span-2">
-          <SurveysList />
-        </div>
-
-        {/* Sidebar - Takes 1 column on large screens */}
-        <div className="space-y-6">
-          <UsageCard />
-        </div>
-      </div>
+      {/* Surveys List */}
+      <SurveysList />
     </div>
   );
 }
