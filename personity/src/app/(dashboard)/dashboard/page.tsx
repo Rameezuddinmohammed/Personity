@@ -234,12 +234,13 @@ export default function DashboardPage() {
                         <BarChart3 className="w-3 h-3" />
                         {survey.completedCount || 0} responses
                       </span>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        survey.status === 'ACTIVE'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-neutral-100 text-neutral-700'
-                      }`}>
-                        {survey.status}
+                      <span className="flex items-center gap-1.5">
+                        <span className={`w-2 h-2 rounded-full ${
+                          survey.status === 'ACTIVE' ? 'bg-green-600' : 'bg-neutral-400'
+                        }`} />
+                        <span className="text-xs text-neutral-700">
+                          {survey.status === 'ACTIVE' ? 'Active' : survey.status.charAt(0) + survey.status.slice(1).toLowerCase()}
+                        </span>
                       </span>
                     </div>
                   </div>
