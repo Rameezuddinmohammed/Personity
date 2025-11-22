@@ -27,13 +27,20 @@ export async function createRazorpayOrder(
   userId: string
 ) {
   const razorpay = getRazorpayInstance();
+  
+  // Generate short receipt ID (max 40 chars)
+  // Use first 8 chars of userId + timestamp
+  const shortUserId = userId.substring(0, 8);
+  const timestamp = Date.now().toString().substring(5); // Last 8 digits
+  const receipt = `ord_${shortUserId}_${timestamp}`; // ~20 chars
+  
   const order = await razorpay.orders.create({
     amount, // in paise
     currency: 'INR',
-    receipt: `order_${userId}_${Date.now()}`,
+    receipt,
     notes: {
       plan_id: planId,
-      user_id: userId,
+      user_id: userId, // Full userId in notes for reference
     },
   });
 

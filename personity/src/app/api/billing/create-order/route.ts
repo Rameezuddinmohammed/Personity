@@ -61,8 +61,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check Razorpay credentials
+    console.log('Razorpay credentials check:', {
+      hasKeyId: !!process.env.RAZORPAY_KEY_ID,
+      hasKeySecret: !!process.env.RAZORPAY_KEY_SECRET,
+    });
+
     // Create Razorpay order
-    console.log('Creating Razorpay order...');
+    console.log('Creating Razorpay order with amount:', price);
     const order = await createRazorpayOrder(price, planId, user.id);
     console.log('Razorpay order created:', order.id);
 
