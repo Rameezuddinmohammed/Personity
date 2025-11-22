@@ -389,28 +389,33 @@ export async function POST(
         const completionCheckMessages: AIMessage[] = [
           {
             role: 'system',
-            content: `You are analyzing a conversation to determine if it has naturally concluded.
-            
+            content: `You are analyzing a research conversation to determine if it should end.
+
 Respond with ONLY "COMPLETE" or "CONTINUE".
 
-Respond "COMPLETE" if:
-- The AI is wrapping up or summarizing
-- The AI is thanking the respondent
-- The AI is disqualifying the respondent (e.g., "not the best fit", "might not be right for you")
-- The conversation has reached a natural conclusion
+Respond "COMPLETE" if the AI interviewer:
+- Is wrapping up with a summary
+- Is thanking the respondent and ending
+- Is disqualifying the respondent (e.g., "not the best fit", "not qualified")
+- Has clearly signaled the conversation is over
+- Is saying goodbye or closing remarks
 
 Respond "CONTINUE" if:
+- The AI is asking another question
 - The conversation is mid-flow
-- More depth is needed`,
+- More information is being gathered`,
           },
           {
             role: 'user',
-            content: `Topics covered: ${updatedState.topicsCovered.length} of ${surveyTopics.length}
-All topics covered: ${allTopicsCovered ? 'Yes' : 'No'}
+            content: `Context:
+- Topics covered: ${updatedState.topicsCovered.length} of ${surveyTopics.length}
+- All topics covered: ${allTopicsCovered ? 'Yes' : 'No'}
+- Exchange count: ${updatedState.exchangeCount}
 
-Latest AI response: "${aiResponse.content}"
+Latest AI response:
+"${aiResponse.content}"
 
-Has this conversation naturally concluded? Respond with only COMPLETE or CONTINUE.`,
+Should this conversation end now? Respond with only COMPLETE or CONTINUE.`,
           },
         ];
         
@@ -421,23 +426,17 @@ Has this conversation naturally concluded? Respond with only COMPLETE or CONTINU
         
         const aiSaysComplete = completionCheck.content.trim().toUpperCase() === 'COMPLETE';
         
-        // Only end if all topics covered AND AI signals completion
-        shouldEnd = allTopicsCovered && aiSaysComplete;
+        // Trust the AI's decision - end if it says the conversation is complete
+        // This handles both natural completion AND disqualification
+        shouldEnd = aiSaysComplete;
         
         if (shouldEnd) {
           summary = aiResponse.content;
         }
       } catch (error) {
         console.error('Error checking completion:', error);
-        // Fallback: check for completion or disqualification keywords
-        const completionSignals = ['thank you for sharing', 'thank you for your time', 'to summarize'];
-        const disqualificationSignals = ['not the best fit', 'might not be the best fit', 'not be right for you', 'not a good fit'];
-        const lowerResponse = aiResponse.content.toLowerCase();
-        const hasCompletionSignal = completionSignals.some(signal => lowerResponse.includes(signal));
-        const hasDisqualificationSignal = disqualificationSignals.some(signal => lowerResponse.includes(signal));
-        
-        // End if all topics covered with completion signal, OR if disqualified
-        shouldEnd = (allTopicsCovered && hasCompletionSignal) || hasDisqualificationSignal;
+        // Fallback: only end if all topics covered (conservative approach)
+        shouldEnd = allTopicsCovered;
         if (shouldEnd) {
           summary = aiResponse.content;
         }
