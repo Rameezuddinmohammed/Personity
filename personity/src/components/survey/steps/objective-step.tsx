@@ -102,7 +102,7 @@ export function ObjectiveStep() {
             htmlFor="title"
             className="block text-[13px] font-medium text-n-700 mb-2"
           >
-            Survey Title <span className="text-xs text-n-500 font-normal">(AI-generated, editable)</span>
+            Survey Title
           </label>
           <input
             id="title"
