@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { TrendingUp, Calendar, AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { TrendingUp, Calendar, AlertCircle, ArrowRight } from 'lucide-react';
+import { PLANS } from '@/lib/razorpay/plans';
+import { Button } from '@/components/ui/button';
 
 interface UsageData {
   plan: string;
@@ -12,6 +15,7 @@ interface UsageData {
 }
 
 export function UsageCard() {
+  const router = useRouter();
   const [usage, setUsage] = useState<UsageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,15 +30,14 @@ export function UsageCard() {
         const data = await response.json();
         const user = data.user;
         
-        // Calculate max responses based on plan
-        let maxResponses = 50; // Free plan
-        if (user.plan === 'starter') maxResponses = 400;
-        else if (user.plan === 'pro') maxResponses = 1500;
-        else if (user.plan === 'business') maxResponses = 5000;
+        // Get max responses from PLANS configuration
+        const userPlan = (user.plan || 'FREE').toUpperCase();
+        const planConfig = PLANS[userPlan as keyof typeof PLANS];
+        const maxResponses = planConfig?.responses || 50;
 
         // Calculate days remaining for free plan
         let daysRemaining;
-        if (user.plan === 'free') {
+        if (user.plan === 'FREE' || user.plan === 'free') {
           const createdAt = new Date(user.createdAt);
           const expiryDate = new Date(createdAt);
           expiryDate.setDate(expiryDate.getDate() + 30);
@@ -76,13 +79,8 @@ export function UsageCard() {
   const isNearLimit = usagePercentage >= 80;
 
   const getPlanName = (plan: string) => {
-    const names: Record<string, string> = {
-      free: 'Free',
-      starter: 'Starter',
-      pro: 'Pro',
-      business: 'Business',
-    };
-    return names[plan] || plan;
+    const planKey = plan.toUpperCase() as keyof typeof PLANS;
+    return PLANS[planKey]?.name || plan;
   };
 
   return (
@@ -123,11 +121,42 @@ export function UsageCard() {
         </div>
 
         {isNearLimit && (
-          <div className="flex items-center gap-2 mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0" />
-            <p className="text-xs text-yellow-800">
-              You're approaching your plan limit. Consider upgrading to continue collecting responses.
-            </p>
+          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-start gap-2 mb-2">
+              <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-yellow-800">
+                You're approaching your plan limit. Upgrade to continue collecting responses.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="default"
+              className="w-full mt-2 bg-yellow-600 hover:bg-yellow-700"
+              onClick={() => router.push('/billing')}
+            >
+              Upgrade Plan
+              <ArrowRight className="w-3 h-3 ml-1" />
+            </Button>
+          </div>
+        )}
+
+        {usagePercentage >= 100 && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-2 mb-2">
+              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-red-800 font-medium">
+                Limit reached! Upgrade now to continue collecting responses.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="default"
+              className="w-full mt-2 bg-red-600 hover:bg-red-700"
+              onClick={() => router.push('/billing')}
+            >
+              Upgrade Now
+              <ArrowRight className="w-3 h-3 ml-1" />
+            </Button>
           </div>
         )}
       </div>
