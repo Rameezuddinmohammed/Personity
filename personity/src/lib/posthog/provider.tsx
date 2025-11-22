@@ -11,6 +11,11 @@ if (typeof window !== 'undefined') {
     person_profiles: 'identified_only',
     capture_pageview: false, // We'll capture manually
     capture_pageleave: true,
+    disable_session_recording: false,
+    autocapture: true,
+    // Disable feature flags to avoid 400 errors with proxy
+    advanced_disable_feature_flags: true,
+    advanced_disable_feature_flags_on_first_load: true,
   });
 }
 
