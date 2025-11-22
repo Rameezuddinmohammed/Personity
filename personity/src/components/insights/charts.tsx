@@ -123,13 +123,16 @@ export function ThemeChart({ data }: { data: { theme: string; count: number; per
 
 // Quality Gauge Component
 export function QualityGauge({ score, context }: { score: number; context: string }) {
+  // Handle NaN or invalid scores
+  const validScore = isNaN(score) || !isFinite(score) ? 0 : score;
+  
   // Calculate percentage for the gauge (0-100)
-  const percentage = (score / 10) * 100;
+  const percentage = (validScore / 10) * 100;
   
   // Determine color based on score
   const getColor = () => {
-    if (score >= 7) return '#059669'; // Green
-    if (score >= 5) return '#eab308'; // Yellow
+    if (validScore >= 7) return '#059669'; // Green
+    if (validScore >= 5) return '#eab308'; // Yellow
     return '#dc2626'; // Red
   };
 
@@ -166,7 +169,7 @@ export function QualityGauge({ score, context }: { score: number; context: strin
         </svg>
         {/* Score display */}
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-2">
-          <div className="text-4xl font-semibold text-neutral-950">{score.toFixed(1)}</div>
+          <div className="text-4xl font-semibold text-neutral-950">{validScore.toFixed(1)}</div>
           <div className="text-sm text-neutral-500">out of 10</div>
         </div>
       </div>
