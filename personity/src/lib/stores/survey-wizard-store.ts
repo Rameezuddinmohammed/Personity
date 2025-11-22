@@ -21,6 +21,7 @@ export interface SurveyWizardState {
     productDescription?: string;
     userInfo?: string;
     knownIssues?: string;
+    additional?: string; // For 4th question if present
   };
   
   // Document upload (optional)

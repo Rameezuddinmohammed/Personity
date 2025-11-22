@@ -46,39 +46,53 @@ export function ContextStep() {
 
       {/* Dynamic Form Fields based on suggested questions */}
       <div className="flex flex-col gap-6">
-        {questions.map((question, index) => (
-          <div key={index}>
-            <label
-              htmlFor={`context-${index}`}
-              className="block text-[13px] font-medium text-n-700 mb-2"
-            >
-              {question}
-            </label>
-            <textarea
-              id={`context-${index}`}
-              value={
-                index === 0 ? (context.productDescription || '') :
-                index === 1 ? (context.userInfo || '') :
-                (context.knownIssues || '')
-              }
-              onChange={(e) => {
-                if (index === 0) setContext({ productDescription: e.target.value });
-                else if (index === 1) setContext({ userInfo: e.target.value });
-                else setContext({ knownIssues: e.target.value });
-              }}
-              placeholder="Your answer..."
-              className="
-                w-full min-h-[100px] px-4 py-4 text-sm text-n-950 bg-white
-                border border-n-300 rounded-lg resize-y font-sans leading-relaxed
-                transition-all duration-150 ease-out
-                placeholder:text-n-400
-                hover:border-n-400
-                focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
-              "
-              rows={4}
-            />
-          </div>
-        ))}
+        {questions.slice(0, 4).map((question, index) => {
+          // Map index to context field
+          const getFieldValue = () => {
+            switch (index) {
+              case 0: return context.productDescription || '';
+              case 1: return context.userInfo || '';
+              case 2: return context.knownIssues || '';
+              case 3: return context.additional || '';
+              default: return '';
+            }
+          };
+
+          const handleChange = (value: string) => {
+            switch (index) {
+              case 0: setContext({ productDescription: value }); break;
+              case 1: setContext({ userInfo: value }); break;
+              case 2: setContext({ knownIssues: value }); break;
+              case 3: setContext({ additional: value }); break;
+            }
+          };
+
+          return (
+            <div key={index}>
+              <label
+                htmlFor={`context-${index}`}
+                className="block text-[13px] font-medium text-n-700 mb-2"
+              >
+                {question}
+              </label>
+              <textarea
+                id={`context-${index}`}
+                value={getFieldValue()}
+                onChange={(e) => handleChange(e.target.value)}
+                placeholder="Your answer..."
+                className="
+                  w-full min-h-[100px] px-4 py-4 text-sm text-n-950 bg-white
+                  border border-n-300 rounded-lg resize-y font-sans leading-relaxed
+                  transition-all duration-150 ease-out
+                  placeholder:text-n-400
+                  hover:border-n-400
+                  focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
+                "
+                rows={4}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
