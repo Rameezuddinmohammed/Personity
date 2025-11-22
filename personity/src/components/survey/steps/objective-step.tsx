@@ -50,24 +50,24 @@ export function ObjectiveStep() {
           setHasAnalyzed(true);
           lastAnalyzedObjective.current = objective;
           
-          // Auto-generate title from objective if title is empty
+          // Auto-generate title using AI if title is empty
           if (!title.trim()) {
-            // Create a clean title from objective
-            // Remove "I want to understand" or similar phrases
-            let cleanTitle = objective
-              .replace(/^(I want to|I'd like to|I need to|We want to|We need to)\s+(understand|learn|know|find out|discover|explore)\s+/i, '')
-              .trim();
-            
-            // Capitalize first letter
-            cleanTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
-            
-            // Limit to 60 chars and add "Survey" if not too long
-            if (cleanTitle.length < 50) {
-              cleanTitle = cleanTitle + ' Survey';
+            try {
+              const titleResponse = await fetch('/api/surveys/generate-title', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ objective }),
+              });
+              
+              const titleData = await titleResponse.json();
+              if (titleData.success && titleData.title) {
+                setTitle(titleData.title);
+              }
+            } catch (error) {
+              console.error('Failed to generate title:', error);
+              // Fallback: use first 60 chars of objective
+              setTitle(objective.substring(0, 60));
             }
-            cleanTitle = cleanTitle.substring(0, 60);
-            
-            setTitle(cleanTitle);
           }
         }
       } catch (error) {
