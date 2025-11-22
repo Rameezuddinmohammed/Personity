@@ -5,6 +5,7 @@ interface SurveyConfig {
     userInfo?: string;
     knownIssues?: string;
   };
+  documentContext?: string;
   topics: string[];
   settings: {
     length: 'quick' | 'standard' | 'deep';
@@ -113,7 +114,7 @@ Stay open-ended. Follow interesting threads. Let insights emerge naturally.`,
  * Key changes: Adapts conversation strategy based on research mode
  */
 export function generateMasterPrompt(config: SurveyConfig): string {
-  const { objective, context, topics, settings, mode = 'EXPLORATORY_GENERAL' } = config;
+  const { objective, context, documentContext, topics, settings, mode = 'EXPLORATORY_GENERAL' } = config;
 
   const toneStyle = {
     professional: 'professional but warm',
@@ -128,6 +129,13 @@ export function generateMasterPrompt(config: SurveyConfig): string {
   }[settings.length];
 
   let contextSection = '';
+  
+  // Add document context if available (prioritize this)
+  if (documentContext) {
+    contextSection += `\n\nDOCUMENT CONTEXT:\n${documentContext}`;
+  }
+  
+  // Add manual context fields
   if (context?.productDescription) {
     contextSection += `\nProduct: ${context.productDescription}`;
   }

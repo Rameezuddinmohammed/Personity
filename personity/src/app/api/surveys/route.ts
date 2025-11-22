@@ -51,10 +51,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate master prompt with mode
+    // Generate master prompt with mode and document context
     const masterPrompt = generateMasterPrompt({
       objective: validatedData.objective,
       context: validatedData.context,
+      documentContext: validatedData.documentContext,
       topics: validatedData.topics,
       settings: validatedData.settings,
       mode: validatedData.mode || 'EXPLORATORY_GENERAL',
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest) {
         title: validatedData.title,
         objective: validatedData.objective,
         context: validatedData.context || null,
+        documentContext: validatedData.documentContext || null,
         topics: validatedData.topics as any,
         settings: validatedData.settings as any,
         masterPrompt,

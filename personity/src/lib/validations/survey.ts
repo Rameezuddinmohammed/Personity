@@ -11,6 +11,7 @@ export const createSurveySchema = z.object({
       knownIssues: z.string().max(500).optional(),
     })
     .optional(),
+  documentContext: z.string().max(10000).optional(),
   topics: z
     .array(z.string().min(1))
     .min(2, 'At least 2 topics are required')

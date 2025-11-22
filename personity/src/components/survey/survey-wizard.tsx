@@ -99,6 +99,9 @@ export function SurveyWizard() {
           objective: state.objective,
           mode: state.mode,
           ...(contextData && { context: contextData }),
+          ...(state.documentContext?.extractedContext && { 
+            documentContext: state.documentContext.extractedContext 
+          }),
           topics: validTopics,
           settings: state.settings,
         }),

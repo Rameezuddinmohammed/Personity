@@ -1,6 +1,7 @@
 'use client';
 
 import { useSurveyWizardStore } from '@/lib/stores/survey-wizard-store';
+import { DocumentUpload } from '../document-upload';
 
 export function ContextStep() {
   const { context, setContext, mode, suggestedContextQuestions } = useSurveyWizardStore();
@@ -26,6 +27,21 @@ export function ContextStep() {
           {mode === 'FEEDBACK_SATISFACTION' && 'Provide context about what you\'re evaluating and any known concerns.'}
           {mode === 'EXPLORATORY_GENERAL' && 'Share background information to help guide the conversation.'}
         </p>
+      </div>
+
+      {/* Document Upload */}
+      <div className="mb-8">
+        <DocumentUpload />
+      </div>
+
+      {/* Divider */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-n-200"></div>
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="px-3 bg-white text-n-500">Or answer these questions</span>
+        </div>
       </div>
 
       {/* Dynamic Form Fields based on suggested questions */}

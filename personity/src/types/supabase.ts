@@ -251,6 +251,7 @@ export type Database = {
         Row: {
           context: Json | null
           createdAt: string
+          documentContext: string | null
           id: string
           masterPrompt: string
           mode: Database["public"]["Enums"]["SurveyMode"]
@@ -266,6 +267,7 @@ export type Database = {
         Insert: {
           context?: Json | null
           createdAt?: string
+          documentContext?: string | null
           id?: string
           masterPrompt: string
           mode?: Database["public"]["Enums"]["SurveyMode"]
@@ -281,6 +283,7 @@ export type Database = {
         Update: {
           context?: Json | null
           createdAt?: string
+          documentContext?: string | null
           id?: string
           masterPrompt?: string
           mode?: Database["public"]["Enums"]["SurveyMode"]

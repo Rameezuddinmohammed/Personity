@@ -23,6 +23,13 @@ export interface SurveyWizardState {
     knownIssues?: string;
   };
   
+  // Document upload (optional)
+  documentContext?: {
+    fileName: string;
+    extractedContext: string;
+    rawContent: string;
+  };
+  
   // Step 3: Topics
   topics: string[];
   
@@ -45,6 +52,7 @@ export interface SurveyWizardState {
   loadTemplate: (template: { objective: string; topics: string[] }) => void;
   setShowContextStep: (show: boolean) => void;
   setContext: (context: Partial<SurveyWizardState['context']>) => void;
+  setDocumentContext: (documentContext: SurveyWizardState['documentContext']) => void;
   setTopics: (topics: string[]) => void;
   addTopic: () => void;
   removeTopic: (index: number) => void;
@@ -95,6 +103,8 @@ export const useSurveyWizardStore = create<SurveyWizardState>((set) => ({
     set((state) => ({
       context: { ...state.context, ...context },
     })),
+  
+  setDocumentContext: (documentContext) => set({ documentContext }),
   
   setTopics: (topics) => set({ topics }),
   

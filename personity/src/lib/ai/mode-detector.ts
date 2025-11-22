@@ -42,7 +42,9 @@ Respond with ONLY a JSON object in this exact format:
   "suggestedContextQuestions": ["question 1", "question 2", "question 3"]
 }
 
-The suggestedContextQuestions should be 2-4 specific questions that would help gather relevant context for this type of research.`;
+The suggestedContextQuestions should be 2-4 specific questions ASKING THE SURVEY CREATOR about their research context. 
+These questions should help the creator provide additional details about their research goals, target audience, or specific areas of focus.
+Phrase them as questions TO the creator (e.g., "What specific features are you considering?", "Who is your target audience?", "What metrics matter most to you?").`;
 
   try {
     const messages: AIMessage[] = [
@@ -104,9 +106,9 @@ The suggestedContextQuestions should be 2-4 specific questions that would help g
         confidence: 'MEDIUM',
         reasoning: 'Detected product-related keywords',
         suggestedContextQuestions: [
-          'What is the product or idea you\'re validating?',
-          'Who is your target user?',
-          'What problem does this solve?',
+          'What product or idea are you validating?',
+          'Who is your target user or customer?',
+          'What specific problem does your product solve?',
         ],
       };
     }
@@ -126,9 +128,9 @@ The suggestedContextQuestions should be 2-4 specific questions that would help g
         confidence: 'MEDIUM',
         reasoning: 'Detected feedback/satisfaction keywords',
         suggestedContextQuestions: [
-          'What specific experience are they evaluating?',
-          'Are there known issues or concerns?',
-          'What is the current satisfaction baseline?',
+          'What specific experience or service are you evaluating?',
+          'Are there any known issues or concerns you want to explore?',
+          'What is your current satisfaction baseline or benchmark?',
         ],
       };
     }
@@ -139,9 +141,9 @@ The suggestedContextQuestions should be 2-4 specific questions that would help g
       confidence: 'LOW',
       reasoning: 'General research objective detected',
       suggestedContextQuestions: [
-        'What are the main themes you want to explore?',
-        'Who is your target audience?',
-        'What insights are you hoping to gain?',
+        'What are the main themes or topics you want to explore?',
+        'Who is your target audience for this research?',
+        'What specific insights are you hoping to uncover?',
       ],
     };
   }
