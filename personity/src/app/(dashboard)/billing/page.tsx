@@ -142,57 +142,7 @@ export default function BillingPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Usage Display */}
-      {usage && (
-        <div className="bg-white border border-neutral-200 rounded-2xl p-6 mb-8">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h2 className="text-lg font-semibold text-neutral-950 mb-1">
-                Current Usage
-              </h2>
-              <p className="text-sm text-neutral-600">
-                {usage.plan} Plan • Resets monthly
-              </p>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <TrendingUp className="w-4 h-4 text-neutral-600" />
-              <span className="font-medium text-neutral-950">
-                {usage.responsesUsedThisMonth} / {usage.limit}
-              </span>
-            </div>
-          </div>
 
-          {/* Progress Bar */}
-          <div className="relative w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
-            <div
-              className={`absolute top-0 left-0 h-full transition-all duration-300 ${
-                usagePercentage >= 100
-                  ? 'bg-red-600'
-                  : usagePercentage >= 80
-                  ? 'bg-yellow-600'
-                  : 'bg-blue-600'
-              }`}
-              style={{ width: `${usagePercentage}%` }}
-            />
-          </div>
-
-          {/* Warning Messages */}
-          {usagePercentage >= 100 && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-800">
-                <strong>Limit reached!</strong> Upgrade your plan to continue collecting responses.
-              </p>
-            </div>
-          )}
-          {usagePercentage >= 80 && usagePercentage < 100 && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800">
-                <strong>Almost there!</strong> You've used {Math.round(usagePercentage)}% of your monthly limit.
-              </p>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Header */}
       <div className="text-center mb-8">
@@ -304,8 +254,39 @@ export default function BillingPage() {
                   )}
                 </div>
 
+                {/* Usage Bar - Only show for current plan */}
+                {usage && usage.plan === key && (
+                  <div className="mb-6 p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-neutral-600">Current Usage</span>
+                      <span className="text-xs font-medium text-neutral-950">
+                        {usage.responsesUsedThisMonth} / {usage.limit}
+                      </span>
+                    </div>
+                    <div className="relative w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
+                      <div
+                        className={`absolute top-0 left-0 h-full transition-all duration-300 ${
+                          usagePercentage >= 100
+                            ? 'bg-red-600'
+                            : usagePercentage >= 80
+                            ? 'bg-yellow-600'
+                            : 'bg-blue-600'
+                        }`}
+                        style={{ width: `${Math.min(usagePercentage, 100)}%` }}
+                      />
+                    </div>
+                    {usagePercentage >= 80 && (
+                      <p className="text-xs text-neutral-600 mt-2">
+                        {usagePercentage >= 100
+                          ? 'Limit reached! Upgrade to continue.'
+                          : `${Math.round(usagePercentage)}% used`}
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {/* CTA Button */}
-                {isFree ? (
+                {usage && usage.plan === key ? (
                   <Button variant="secondary" className="w-full mb-6" disabled>
                     Current Plan
                   </Button>
@@ -314,9 +295,9 @@ export default function BillingPage() {
                     variant={isPopular ? 'default' : 'secondary'}
                     className="w-full mb-6"
                     onClick={() => handleUpgrade(plan.id as 'starter' | 'pro')}
-                    disabled={isLoading === plan.id}
+                    disabled={isLoading === plan.id || isFree}
                   >
-                    {isLoading === plan.id ? 'Processing...' : 'Upgrade Now'}
+                    {isLoading === plan.id ? 'Processing...' : isFree ? 'Current Plan' : 'Upgrade Now'}
                   </Button>
                 )}
 
