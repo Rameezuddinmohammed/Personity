@@ -56,12 +56,13 @@ export default function BillingPage() {
       const response = await fetch('/api/billing/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId }),
+        body: JSON.stringify({ planId, billingCycle }),
       });
 
       const data = await response.json();
 
       if (!data.success) {
+        console.error('Order creation failed:', data);
         throw new Error(data.error || 'Failed to create order');
       }
 

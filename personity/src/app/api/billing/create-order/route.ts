@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 const createOrderSchema = z.object({
   planId: z.enum(['starter', 'pro']),
+  billingCycle: z.enum(['monthly', 'yearly']).optional().default('monthly'),
 });
 
 export async function POST(request: NextRequest) {
@@ -26,20 +27,30 @@ export async function POST(request: NextRequest) {
 
     // Validate request
     const body = await request.json();
-    const { planId } = createOrderSchema.parse(body);
+    const { planId, billingCycle } = createOrderSchema.parse(body);
 
     // Get plan details
     const plan = PLANS[planId.toUpperCase() as keyof typeof PLANS];
     
-    if (!plan || !plan.price) {
+    if (!plan) {
       return NextResponse.json(
         { success: false, error: 'Invalid plan' },
         { status: 400 }
       );
     }
 
+    // Get price based on billing cycle
+    const price = billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
+    
+    if (!price) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid plan pricing' },
+        { status: 400 }
+      );
+    }
+
     // Create Razorpay order
-    const order = await createRazorpayOrder(plan.price, planId, user.id);
+    const order = await createRazorpayOrder(price, planId, user.id);
 
     // Get user details
     const { data: userData } = await supabase
