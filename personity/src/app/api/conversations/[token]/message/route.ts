@@ -396,6 +396,7 @@ Respond with ONLY "COMPLETE" or "CONTINUE".
 Respond "COMPLETE" if:
 - The AI is wrapping up or summarizing
 - The AI is thanking the respondent
+- The AI is disqualifying the respondent (e.g., "not the best fit", "might not be right for you")
 - The conversation has reached a natural conclusion
 
 Respond "CONTINUE" if:
@@ -428,11 +429,15 @@ Has this conversation naturally concluded? Respond with only COMPLETE or CONTINU
         }
       } catch (error) {
         console.error('Error checking completion:', error);
-        // Fallback: end only if all topics covered and has completion keywords
+        // Fallback: check for completion or disqualification keywords
         const completionSignals = ['thank you for sharing', 'thank you for your time', 'to summarize'];
+        const disqualificationSignals = ['not the best fit', 'might not be the best fit', 'not be right for you', 'not a good fit'];
         const lowerResponse = aiResponse.content.toLowerCase();
         const hasCompletionSignal = completionSignals.some(signal => lowerResponse.includes(signal));
-        shouldEnd = allTopicsCovered && hasCompletionSignal;
+        const hasDisqualificationSignal = disqualificationSignals.some(signal => lowerResponse.includes(signal));
+        
+        // End if all topics covered with completion signal, OR if disqualified
+        shouldEnd = (allTopicsCovered && hasCompletionSignal) || hasDisqualificationSignal;
         if (shouldEnd) {
           summary = aiResponse.content;
         }

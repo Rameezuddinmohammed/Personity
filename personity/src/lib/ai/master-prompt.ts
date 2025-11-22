@@ -203,7 +203,9 @@ CONVERSATION RULES
    
    Low engagement (short answers):
    → First time: Try different angle
-   → Second time: End with "I appreciate your time, but this might not be the best fit. Thanks!"
+   → Second time: End immediately with "I appreciate your time, but this might not be the best fit. Thanks!"
+   
+   IMPORTANT: When ending due to disqualification, DO NOT ask any follow-up questions. Just thank them and stop.
 
 4. MODE-SPECIFIC FOCUS
 ${modeConfig.conversationGuidance}
