@@ -156,7 +156,7 @@ export function SurveysList() {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-neutral-100">
-            <div className="flex items-center gap-2 text-xs text-neutral-500 overflow-hidden">
+            <div className="flex items-center gap-2 text-sm text-neutral-500 overflow-hidden">
               <span className="shrink-0">Survey Link:</span>
               <div className="px-2 py-1 bg-neutral-100 rounded flex items-center gap-2">
                 <a
@@ -164,7 +164,7 @@ export function SurveysList() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="text-neutral-600 hover:text-primary hover:underline truncate max-w-[200px] sm:max-w-none text-xs"
+                  className="text-neutral-600 hover:text-primary hover:underline truncate max-w-[200px] sm:max-w-none text-sm"
                 >
                   {window.location.origin}/s/{survey.shortUrl}
                 </a>
@@ -177,7 +177,7 @@ export function SurveysList() {
                   }}
                   className="hover:text-primary transition-colors shrink-0"
                 >
-                  <ExternalLink className="w-3 h-3" />
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
