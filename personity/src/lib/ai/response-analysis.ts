@@ -136,12 +136,14 @@ Respond with ONLY the JSON object, no additional text.`;
  * @param conversationId - The conversation ID
  * @param analysis - The analysis results
  * @param isFlagged - Whether the conversation was flagged for quality issues
+ * @param personaInsights - Optional persona insights from the conversation
  * @returns The created analysis record ID
  */
 export async function saveAnalysis(
   conversationId: string,
   analysis: ResponseAnalysisResult,
-  isFlagged: boolean = false
+  isFlagged: boolean = false,
+  personaInsights?: any
 ): Promise<string | null> {
   const supabase = await createClient();
   
@@ -158,6 +160,7 @@ export async function saveAnalysis(
         opportunities: analysis.opportunities,
         qualityScore: analysis.qualityScore,
         isFlagged,
+        personaInsights: personaInsights || null,
       })
       .select('id')
       .single();

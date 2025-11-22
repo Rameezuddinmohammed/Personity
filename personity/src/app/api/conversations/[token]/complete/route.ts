@@ -12,6 +12,13 @@ interface RouteContext {
 
 const completeSchema = z.object({
   confirmed: z.boolean(),
+  persona: z.object({
+    painLevel: z.enum(['low', 'medium', 'high']).optional(),
+    experience: z.enum(['novice', 'intermediate', 'expert']).optional(),
+    sentiment: z.enum(['positive', 'neutral', 'negative']).optional(),
+    readiness: z.enum(['cold', 'warm', 'hot']).optional(),
+    clarity: z.enum(['low', 'medium', 'high']).optional(),
+  }).optional(),
 });
 
 export async function POST(
@@ -126,8 +133,8 @@ export async function POST(
           survey.objective
         );
         
-        // Save analysis to database
-        await saveAnalysis(conversation.id, analysis, isFlagged);
+        // Save analysis to database with persona data
+        await saveAnalysis(conversation.id, analysis, isFlagged, body.persona);
         
         console.log(`Analysis completed for conversation ${conversation.id} (duration: ${durationSeconds}s)`);
         

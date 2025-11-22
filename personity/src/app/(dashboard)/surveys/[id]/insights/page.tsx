@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { SentimentChart, ThemeChart, QualityGauge } from '@/components/insights/charts';
 import { PainPointsHeatmap } from '@/components/dashboard/pain-points-heatmap';
 import { ModeSummary } from '@/components/insights/mode-summary';
+import { PersonaDistribution } from '@/components/insights/persona-distribution';
 
 interface AggregateAnalysis {
   id: string;
@@ -64,6 +65,7 @@ export default function InsightsPage() {
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [analysis, setAnalysis] = useState<AggregateAnalysis | null>(null);
   const [responses, setResponses] = useState<ResponseAnalysis[]>([]);
+  const [personaData, setPersonaData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingResponses, setIsLoadingResponses] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -82,6 +84,7 @@ export default function InsightsPage() {
         const data = await response.json();
         setSurvey(data.survey);
         setAnalysis(data.analysis);
+        setPersonaData(data.personaData);
       } else if (response.status === 404) {
         router.push('/dashboard');
       }
@@ -645,6 +648,16 @@ export default function InsightsPage() {
           />
         </div>
       </div>
+
+      {/* Persona Insights */}
+      {personaData && (
+        <div className="mb-6">
+          <PersonaDistribution 
+            data={personaData} 
+            totalResponses={analysis.responseCount} 
+          />
+        </div>
+      )}
 
       {/* Pain Points Heatmap - Product Discovery & Feedback modes */}
       {shouldShowWidget('painPoints') && <PainPointsHeatmap responses={responses} />}

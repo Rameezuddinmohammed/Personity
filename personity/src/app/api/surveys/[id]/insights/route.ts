@@ -54,6 +54,53 @@ export async function GET(
     // Fetch latest aggregate analysis
     const analysis = await getLatestAggregateAnalysis(surveyId);
 
+    // Aggregate persona insights from all responses
+    // First get all conversation IDs for this survey
+    const { data: sessions } = await supabase
+      .from('ConversationSession')
+      .select('id')
+      .eq('surveyId', surveyId)
+      .eq('status', 'COMPLETED');
+
+    const sessionIds = sessions?.map(s => s.id) || [];
+
+    // Then get conversations for those sessions
+    const { data: conversations } = await supabase
+      .from('Conversation')
+      .select('id')
+      .in('sessionId', sessionIds);
+
+    const conversationIds = conversations?.map(c => c.id) || [];
+
+    // Finally get persona insights from response analysis
+    const { data: responses } = await supabase
+      .from('ResponseAnalysis')
+      .select('personaInsights')
+      .in('conversationId', conversationIds)
+      .not('personaInsights', 'is', null);
+
+    // Aggregate persona data
+    const personaData = {
+      painLevel: { low: 0, medium: 0, high: 0 },
+      experience: { novice: 0, intermediate: 0, expert: 0 },
+      sentiment: { positive: 0, neutral: 0, negative: 0 },
+      readiness: { cold: 0, warm: 0, hot: 0 },
+      clarity: { low: 0, medium: 0, high: 0 },
+    };
+
+    if (responses && responses.length > 0) {
+      responses.forEach((response: any) => {
+        const persona = response.personaInsights;
+        if (persona) {
+          if (persona.painLevel) personaData.painLevel[persona.painLevel]++;
+          if (persona.experience) personaData.experience[persona.experience]++;
+          if (persona.sentiment) personaData.sentiment[persona.sentiment]++;
+          if (persona.readiness) personaData.readiness[persona.readiness]++;
+          if (persona.clarity) personaData.clarity[persona.clarity]++;
+        }
+      });
+    }
+
     return NextResponse.json({
       success: true,
       survey: {
@@ -63,6 +110,7 @@ export async function GET(
         status: survey.status,
       },
       analysis,
+      personaData,
     });
   } catch (error) {
     console.error('Error fetching insights:', error);
