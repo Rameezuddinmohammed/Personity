@@ -401,6 +401,7 @@ export async function POST(
         shouldEnd,
         summary,
         reason: structuredResponse.reason,
+        persona: structuredResponse.persona,
         topicsCovered: updatedState.topicsCovered,
       },
     });

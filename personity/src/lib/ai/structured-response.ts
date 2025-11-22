@@ -6,11 +6,20 @@
 
 import { generateAIResponse, AIMessage } from './azure-openai';
 
+export interface PersonaInsights {
+  painLevel?: 'low' | 'medium' | 'high';
+  experience?: 'novice' | 'intermediate' | 'expert';
+  sentiment?: 'positive' | 'neutral' | 'negative';
+  readiness?: 'cold' | 'warm' | 'hot';
+  clarity?: 'low' | 'medium' | 'high';
+}
+
 export interface StructuredConversationResponse {
   message: string;
   shouldEnd: boolean;
   reason?: 'completed' | 'disqualified' | 'low_quality' | 'max_questions';
   summary?: string;
+  persona?: PersonaInsights;
   messages?: Array<{
     message: string;
     shouldEnd: boolean;
@@ -88,6 +97,7 @@ Set shouldEnd to false if:
       shouldEnd: parsed.shouldEnd === true,
       reason: parsed.reason,
       summary: parsed.summary,
+      persona: parsed.persona,
     };
   } catch (error) {
     console.error('Error parsing structured response:', error);
