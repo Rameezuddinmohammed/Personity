@@ -248,17 +248,17 @@ export default function InsightsPage() {
       PRODUCT_DISCOVERY: { 
         Icon: Hammer, 
         label: 'Product Discovery', 
-        color: 'bg-blue-50 text-blue-700 border-blue-200' 
+        color: 'bg-neutral-100 text-neutral-700 border-neutral-200' 
       },
       FEEDBACK_SATISFACTION: { 
         Icon: ThumbsUp, 
         label: 'Feedback & Satisfaction', 
-        color: 'bg-green-50 text-green-700 border-green-200' 
+        color: 'bg-neutral-100 text-neutral-700 border-neutral-200' 
       },
       EXPLORATORY_GENERAL: { 
         Icon: Search, 
         label: 'Exploratory Research', 
-        color: 'bg-purple-50 text-purple-700 border-purple-200' 
+        color: 'bg-neutral-100 text-neutral-700 border-neutral-200' 
       },
     };
     
@@ -450,8 +450,8 @@ export default function InsightsPage() {
       {/* Executive Summary */}
       <div className="bg-white border border-neutral-200 rounded-xl p-8 mb-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-blue-600" />
+          <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-neutral-600" />
           </div>
           <h2 className="text-lg font-semibold text-neutral-950">
             Executive Summary
@@ -466,7 +466,7 @@ export default function InsightsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white border border-neutral-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <MessageSquare className="w-5 h-5 text-blue-600" />
+            <MessageSquare className="w-5 h-5 text-neutral-600" />
             <span className="text-sm text-neutral-600">Total Responses</span>
           </div>
           <div className="text-3xl font-semibold text-neutral-950">{analysis.responseCount}</div>
@@ -474,7 +474,7 @@ export default function InsightsPage() {
 
         <div className="bg-white border border-neutral-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="w-5 h-5 text-purple-600" />
+            <TrendingUp className="w-5 h-5 text-neutral-600" />
             <span className="text-sm text-neutral-600">Avg Depth</span>
           </div>
           <div className="text-3xl font-semibold text-neutral-950">
@@ -491,7 +491,7 @@ export default function InsightsPage() {
             return (
               <div className="bg-white border border-neutral-200 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <Smile className="w-5 h-5 text-green-600" />
+                  <Smile className="w-5 h-5 text-neutral-600" />
                   <span className="text-sm text-neutral-600">Satisfied</span>
                 </div>
                 <div className="text-3xl font-semibold text-neutral-950">
@@ -507,7 +507,7 @@ export default function InsightsPage() {
             return (
               <div className="bg-white border border-neutral-200 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <Frown className="w-5 h-5 text-red-600" />
+                  <Frown className="w-5 h-5 text-neutral-600" />
                   <span className="text-sm text-neutral-600">Pain Points</span>
                 </div>
                 <div className="text-3xl font-semibold text-neutral-950">
@@ -521,7 +521,7 @@ export default function InsightsPage() {
             return (
               <div className="bg-white border border-neutral-200 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
+                  <Sparkles className="w-5 h-5 text-neutral-600" />
                   <span className="text-sm text-neutral-600">Perspectives</span>
                 </div>
                 <div className="text-3xl font-semibold text-neutral-950">
@@ -534,7 +534,7 @@ export default function InsightsPage() {
 
         <div className="bg-white border border-neutral-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <Star className="w-5 h-5 text-yellow-600" />
+            <Star className="w-5 h-5 text-neutral-600" />
             <span className="text-sm text-neutral-600">Top Themes</span>
           </div>
           <div className="text-3xl font-semibold text-neutral-950">{analysis.topThemes.length}</div>
