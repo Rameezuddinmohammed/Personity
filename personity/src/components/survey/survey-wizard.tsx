@@ -116,6 +116,12 @@ export function SurveyWizard() {
         throw new Error(data.error || 'Failed to create survey');
       }
 
+      // Track survey creation
+      if (typeof window !== 'undefined') {
+        const { trackSurveyCreated } = await import('@/lib/posthog/events');
+        trackSurveyCreated(data.data.id, state.mode, validTopics.length);
+      }
+
       // Redirect to survey detail page
       window.location.href = `/surveys/${data.data.id}`;
     } catch (err) {

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { PostHogProvider } from "@/lib/posthog/provider";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Personity - AI-Powered Conversational Research",
@@ -14,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        {children}
+        <Suspense fallback={null}>
+          <PostHogProvider>{children}</PostHogProvider>
+        </Suspense>
       </body>
     </html>
   );
