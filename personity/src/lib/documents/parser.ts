@@ -4,9 +4,6 @@
  * Extracts text content from uploaded documents (PDF, DOCX, TXT)
  */
 
-import pdfParse from 'pdf-parse';
-import mammoth from 'mammoth';
-
 export type SupportedFileType = 'pdf' | 'docx' | 'txt';
 
 export interface ParsedDocument {
@@ -59,6 +56,9 @@ export async function parseDocument(
  * Parse PDF file
  */
 async function parsePDF(file: File): Promise<string> {
+  // Use require for CommonJS library
+  const pdfParse = require('pdf-parse');
+  
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   
@@ -70,6 +70,9 @@ async function parsePDF(file: File): Promise<string> {
  * Parse DOCX file
  */
 async function parseDOCX(file: File): Promise<string> {
+  // Use require for CommonJS library
+  const mammoth = require('mammoth');
+  
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   
