@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
 
 export function ObjectiveStep() {
-  const { objective, setObjective, setShowContextStep, setMode, loadTemplate, mode, modeConfidence } =
+  const { title, setTitle, objective, setObjective, setShowContextStep, setMode, loadTemplate, mode, modeConfidence } =
     useSurveyWizardStore();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasAnalyzed, setHasAnalyzed] = useState(false);
@@ -68,11 +68,39 @@ export function ObjectiveStep() {
       {/* Step Header */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-n-950 mb-2">
-          What's your research objective?
+          Let's create your survey
         </h2>
         <p className="text-sm text-n-600 leading-relaxed">
-          Describe what you want to learn from your respondents. Be specific about
-          your goals and what insights you're seeking.
+          Give your survey a title and describe what you want to learn
+        </p>
+      </div>
+
+      {/* Survey Title */}
+      <div className="mb-6">
+        <label
+          htmlFor="title"
+          className="block text-[13px] font-medium text-n-700 mb-2"
+        >
+          Survey Title <span className="text-red-600">*</span>
+        </label>
+        <input
+          id="title"
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="e.g., Shopping Cart Abandonment Survey"
+          className="
+            w-full px-4 py-3 text-sm text-n-950 bg-white
+            border border-n-300 rounded-lg font-sans
+            transition-all duration-150 ease-out
+            placeholder:text-n-400
+            hover:border-n-400
+            focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
+          "
+          maxLength={100}
+        />
+        <p className="text-xs text-n-500 mt-2">
+          This is what respondents will see when they start the survey
         </p>
       </div>
 

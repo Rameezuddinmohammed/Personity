@@ -6,7 +6,8 @@ export interface SurveyWizardState {
   // Current step (1-5)
   currentStep: number;
   
-  // Step 1: Objective
+  // Step 1: Title & Objective
+  title: string;
   objective: string;
   
   // Detected mode
@@ -38,6 +39,7 @@ export interface SurveyWizardState {
   
   // Actions
   setCurrentStep: (step: number) => void;
+  setTitle: (title: string) => void;
   setObjective: (objective: string) => void;
   setMode: (mode: SurveyMode, confidence: 'HIGH' | 'MEDIUM' | 'LOW', questions: string[]) => void;
   loadTemplate: (template: { objective: string; topics: string[] }) => void;
@@ -56,6 +58,7 @@ export interface SurveyWizardState {
 
 const initialState = {
   currentStep: 1,
+  title: '',
   objective: '',
   mode: 'EXPLORATORY_GENERAL' as SurveyMode,
   modeConfidence: 'LOW' as const,
@@ -75,6 +78,8 @@ export const useSurveyWizardStore = create<SurveyWizardState>((set) => ({
   ...initialState,
   
   setCurrentStep: (step) => set({ currentStep: step }),
+  
+  setTitle: (title) => set({ title }),
   
   setObjective: (objective) => set({ objective }),
   

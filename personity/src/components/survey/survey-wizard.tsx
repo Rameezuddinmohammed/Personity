@@ -21,6 +21,7 @@ const WIZARD_STEPS = [
 export function SurveyWizard() {
   const {
     currentStep,
+    title,
     objective,
     topics,
     showContextStep,
@@ -37,7 +38,7 @@ export function SurveyWizard() {
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
-        return objective.trim().length > 0;
+        return title.trim().length > 0 && objective.trim().length > 0;
       case 2:
         return true; // Context is optional
       case 3:
@@ -64,9 +65,6 @@ export function SurveyWizard() {
       
       // Filter out empty topics
       const validTopics = state.topics.filter((t) => t.trim().length > 0);
-
-      // Generate title from objective (first 100 chars)
-      const title = state.objective.substring(0, 100);
 
       // Prepare context - only include if there's actual content
       let contextData = undefined;
@@ -97,7 +95,7 @@ export function SurveyWizard() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title,
+          title: state.title,
           objective: state.objective,
           mode: state.mode,
           ...(contextData && { context: contextData }),
