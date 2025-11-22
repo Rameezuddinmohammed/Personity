@@ -159,7 +159,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="bg-white border border-neutral-200 rounded-xl p-6">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-medium text-neutral-600">Total Surveys</p>
@@ -176,17 +176,6 @@ export default function DashboardPage() {
           </div>
           <p className="text-3xl font-bold text-neutral-950">{usage?.used || 0}</p>
           <p className="text-xs text-neutral-500 mt-1">This month</p>
-        </div>
-
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-neutral-600">Usage</p>
-            <TrendingUp className="w-5 h-5 text-purple-600" />
-          </div>
-          <p className="text-3xl font-bold text-neutral-950">{Math.round(usagePercentage)}%</p>
-          <p className="text-xs text-neutral-500 mt-1">
-            {usage?.used || 0} / {usage?.limit || 50} limit
-          </p>
         </div>
       </div>
 
