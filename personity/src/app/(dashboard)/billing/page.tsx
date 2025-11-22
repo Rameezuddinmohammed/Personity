@@ -256,7 +256,7 @@ export default function BillingPage() {
 
                 {/* Usage Bar - Only show for current plan */}
                 {usage && usage.plan === key && (
-                  <div className="mb-6 p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+                  <div className="mb-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-medium text-neutral-600">Current Usage</span>
                       <span className="text-xs font-medium text-neutral-950">
