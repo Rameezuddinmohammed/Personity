@@ -92,11 +92,21 @@ export async function GET(
       responses.forEach((response: any) => {
         const persona = response.personaInsights;
         if (persona) {
-          if (persona.painLevel) personaData.painLevel[persona.painLevel]++;
-          if (persona.experience) personaData.experience[persona.experience]++;
-          if (persona.sentiment) personaData.sentiment[persona.sentiment]++;
-          if (persona.readiness) personaData.readiness[persona.readiness]++;
-          if (persona.clarity) personaData.clarity[persona.clarity]++;
+          if (persona.painLevel && persona.painLevel in personaData.painLevel) {
+            personaData.painLevel[persona.painLevel as keyof typeof personaData.painLevel]++;
+          }
+          if (persona.experience && persona.experience in personaData.experience) {
+            personaData.experience[persona.experience as keyof typeof personaData.experience]++;
+          }
+          if (persona.sentiment && persona.sentiment in personaData.sentiment) {
+            personaData.sentiment[persona.sentiment as keyof typeof personaData.sentiment]++;
+          }
+          if (persona.readiness && persona.readiness in personaData.readiness) {
+            personaData.readiness[persona.readiness as keyof typeof personaData.readiness]++;
+          }
+          if (persona.clarity && persona.clarity in personaData.clarity) {
+            personaData.clarity[persona.clarity as keyof typeof personaData.clarity]++;
+          }
         }
       });
     }

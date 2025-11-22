@@ -193,6 +193,10 @@ export default function HelpPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [contactForm, setContactForm] = useState({ subject: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const filteredArticles = articles.filter((article) => {
     const matchesSearch =
@@ -369,9 +373,116 @@ export default function HelpPage() {
             <p className="text-neutral-600 mb-6">
               Can't find what you're looking for? Our support team is here to help.
             </p>
-            <Button variant="default" size="lg">
+            <Button 
+              variant="default" 
+              size="lg"
+              onClick={() => setShowContactForm(true)}
+            >
               Contact Support
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Contact Form Modal */}
+      {showContactForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-lg w-full p-6">
+            <h3 className="text-xl font-semibold text-neutral-950 mb-4">
+              Contact Support
+            </h3>
+
+            {submitSuccess ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p className="text-neutral-700 mb-6">
+                  Thanks! We'll get back to you within 24 hours.
+                </p>
+                <Button onClick={() => {
+                  setShowContactForm(false);
+                  setSubmitSuccess(false);
+                  setContactForm({ subject: '', message: '' });
+                }}>
+                  Close
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                setIsSubmitting(true);
+                
+                try {
+                  const response = await fetch('/api/support/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(contactForm),
+                  });
+
+                  if (response.ok) {
+                    setSubmitSuccess(true);
+                  } else {
+                    alert('Failed to send message. Please try again.');
+                  }
+                } catch (error) {
+                  alert('Failed to send message. Please try again.');
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={contactForm.subject}
+                      onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                      placeholder="What do you need help with?"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Message
+                    </label>
+                    <textarea
+                      required
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      rows={5}
+                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 resize-none"
+                      placeholder="Describe your issue or question..."
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setShowContactForm(false)}
+                    disabled={isSubmitting}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1"
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
