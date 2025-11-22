@@ -11,6 +11,7 @@ const createOrderSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== Create Order API Called ===');
     const supabase = await createClient();
     
     // Verify authentication
@@ -18,7 +19,10 @@ export async function POST(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
+    console.log('User authenticated:', user?.id);
+
     if (!user) {
+      console.error('No user found');
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
@@ -27,12 +31,18 @@ export async function POST(request: NextRequest) {
 
     // Validate request
     const body = await request.json();
+    console.log('Request body:', body);
+    
     const { planId, billingCycle } = createOrderSchema.parse(body);
+    console.log('Parsed:', { planId, billingCycle });
 
     // Get plan details
-    const plan = PLANS[planId.toUpperCase() as keyof typeof PLANS];
+    const planKey = planId.toUpperCase() as keyof typeof PLANS;
+    const plan = PLANS[planKey];
+    console.log('Plan lookup:', planKey, plan);
     
     if (!plan) {
+      console.error('Plan not found:', planKey);
       return NextResponse.json(
         { success: false, error: 'Invalid plan' },
         { status: 400 }
@@ -41,8 +51,10 @@ export async function POST(request: NextRequest) {
 
     // Get price based on billing cycle
     const price = billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
+    console.log('Price selected:', price, 'for cycle:', billingCycle);
     
     if (!price) {
+      console.error('No price found for plan');
       return NextResponse.json(
         { success: false, error: 'Invalid plan pricing' },
         { status: 400 }
@@ -50,7 +62,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Razorpay order
+    console.log('Creating Razorpay order...');
     const order = await createRazorpayOrder(price, planId, user.id);
+    console.log('Razorpay order created:', order.id);
 
     // Get user details
     const { data: userData } = await supabase
@@ -58,6 +72,8 @@ export async function POST(request: NextRequest) {
       .select('email, name')
       .eq('id', user.id)
       .single();
+
+    console.log('User data fetched:', userData?.email);
 
     return NextResponse.json({
       success: true,
@@ -69,8 +85,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Create order error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
     return NextResponse.json(
-      { success: false, error: 'Failed to create order' },
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to create order',
+        details: error instanceof Error ? error.stack : String(error)
+      },
       { status: 500 }
     );
   }
