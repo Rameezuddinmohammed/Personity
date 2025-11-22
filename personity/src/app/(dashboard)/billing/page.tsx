@@ -31,14 +31,18 @@ export default function BillingPage() {
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
+        console.log('Billing page - user data:', data);
         if (data.success && data.user) {
-          const userPlan = data.user.plan || 'FREE';
+          const userPlan = (data.user.plan || 'FREE').toUpperCase();
           const planConfig = PLANS[userPlan as keyof typeof PLANS];
+          console.log('Plan config:', planConfig);
           setUsage({
             plan: userPlan,
             responsesUsedThisMonth: data.user.responsesUsedThisMonth || 0,
-            limit: planConfig.responses || 0,
+            limit: planConfig?.responses || 50,
           });
+        } else {
+          console.error('No user data in response:', data);
         }
       })
       .catch((error) => console.error('Failed to fetch usage:', error));
