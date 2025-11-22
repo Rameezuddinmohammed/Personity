@@ -115,18 +115,18 @@ font-semibold /* 600 - Headings */
 ## 🔲 Border Radius
 
 ```css
-rounded-sm  /* 6px  - Small elements */
-rounded     /* 8px  - Default */
-rounded-md  /* 12px - Cards */
-rounded-lg  /* 16px - Modals */
-rounded-xl  /* 24px - Large containers */
+rounded-sm  /* 4px  - Small elements */
+rounded     /* 6px  - Default */
+rounded-md  /* 8px  - Cards */
+rounded-lg  /* 12px - Modals */
+rounded-xl  /* 16px - Large containers */
 rounded-full /* Fully rounded */
 ```
 
 **Examples**:
-- Buttons: `rounded` (8px)
-- Cards: `rounded-md` (12px)
-- Modals: `rounded-lg` (16px)
+- Buttons: `rounded` (6px)
+- Cards: `rounded-md` (8px)
+- Modals: `rounded-lg` (12px)
 
 ---
 

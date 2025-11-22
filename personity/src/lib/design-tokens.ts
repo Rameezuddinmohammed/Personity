@@ -52,11 +52,11 @@ export const spacing = {
 } as const;
 
 export const borderRadius = {
-  sm: '0.375rem',  // 6px
-  default: '0.5rem',    // 8px
-  md: '0.75rem',   // 12px
-  lg: '1rem',      // 16px
-  xl: '1.5rem',    // 24px
+  sm: '0.25rem',   // 4px
+  default: '0.375rem',   // 6px
+  md: '0.5rem',    // 8px
+  lg: '0.75rem',   // 12px
+  xl: '1rem',      // 16px
   full: '9999px',
 } as const;
 
