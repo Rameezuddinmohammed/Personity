@@ -158,9 +158,9 @@ export function SurveysList() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-neutral-100">
             <div className="flex items-center gap-2 text-sm text-neutral-500 overflow-hidden">
               <span className="shrink-0">Survey Link:</span>
-              <code className="px-2 py-1 bg-neutral-100 rounded text-neutral-700 truncate max-w-[200px] sm:max-w-none text-sm">
+              <span className="px-2 py-1 bg-neutral-100 rounded text-neutral-700 truncate max-w-[200px] sm:max-w-none text-sm font-medium">
                 {window.location.origin}/s/{survey.shortUrl}
-              </code>
+              </span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
