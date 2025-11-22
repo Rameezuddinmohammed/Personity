@@ -57,7 +57,8 @@ export async function parseDocument(
  */
 async function parsePDF(file: File): Promise<string> {
   // Use require for CommonJS library
-  const pdfParse = require('pdf-parse');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const pdfParse = require('pdf-parse') as (buffer: Buffer) => Promise<{ text: string }>;
   
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
@@ -71,7 +72,8 @@ async function parsePDF(file: File): Promise<string> {
  */
 async function parseDOCX(file: File): Promise<string> {
   // Use require for CommonJS library
-  const mammoth = require('mammoth');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const mammoth = require('mammoth') as { extractRawText: (options: { buffer: Buffer }) => Promise<{ value: string }> };
   
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
