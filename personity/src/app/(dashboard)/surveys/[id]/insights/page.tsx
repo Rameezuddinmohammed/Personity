@@ -589,7 +589,7 @@ export default function InsightsPage() {
                           <div className="text-sm text-neutral-700 mb-1">{item.painPoint}</div>
                           <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-red-500 rounded-full"
+                              className="h-full bg-neutral-950 rounded-full"
                               style={{ width: `${(item.count / responses.length) * 100}%` }}
                             />
                           </div>
@@ -617,7 +617,7 @@ export default function InsightsPage() {
                         <div className="text-sm text-neutral-700 mb-1">{theme.theme}</div>
                         <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-purple-500 rounded-full"
+                            className="h-full bg-neutral-950 rounded-full"
                             style={{ width: `${theme.percentage}%` }}
                           />
                         </div>
