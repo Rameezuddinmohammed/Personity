@@ -221,8 +221,8 @@ export default function SurveyDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white border border-neutral-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+              <Users className="w-5 h-5 text-neutral-600" />
             </div>
             <p className="text-sm text-neutral-500">Total Engaged</p>
           </div>
@@ -233,36 +233,36 @@ export default function SurveyDetailPage() {
 
         <div className="bg-white border border-neutral-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-green-600/10 rounded-lg flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-neutral-600" />
             </div>
             <p className="text-sm text-neutral-500">Completed</p>
           </div>
-          <p className="text-3xl font-semibold text-green-600">
+          <p className="text-3xl font-semibold text-neutral-950">
             {survey.stats.completedResponses}
           </p>
         </div>
 
         <div className="bg-white border border-neutral-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-yellow-600/10 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-yellow-600" />
+            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-neutral-600" />
             </div>
             <p className="text-sm text-neutral-500">Active</p>
           </div>
-          <p className="text-3xl font-semibold text-yellow-600">
+          <p className="text-3xl font-semibold text-neutral-950">
             {survey.stats.activeResponses}
           </p>
         </div>
 
         <div className="bg-white border border-neutral-200 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-neutral-600" />
             </div>
             <p className="text-sm text-neutral-500">Completion Rate</p>
           </div>
-          <p className="text-3xl font-semibold text-blue-600">
+          <p className="text-3xl font-semibold text-neutral-950">
             {survey.stats.completionRate}%
           </p>
         </div>
