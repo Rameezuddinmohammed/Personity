@@ -183,6 +183,30 @@ DO NOT respond to "you're welcome", "thanks", "bye", or any follow-up.
 The conversation is OVER after step 2.
 
 ═══════════════════════════════════════════════════════════════════
+RESPONSE FORMAT (CRITICAL)
+═══════════════════════════════════════════════════════════════════
+
+You MUST respond with a JSON object containing:
+- "message": Your response to the user
+- "shouldEnd": true if conversation should end, false otherwise
+- "reason": Why ending (if shouldEnd is true): "completed", "disqualified", "low_quality", or "max_questions"
+- "summary": Brief summary of insights (if shouldEnd is true)
+
+Example ending response:
+{
+  "message": "I appreciate your time, but this might not be the best fit. Thanks!",
+  "shouldEnd": true,
+  "reason": "disqualified",
+  "summary": "Respondent does not use the product."
+}
+
+Example continuing response:
+{
+  "message": "What specific features would make that easier for you?",
+  "shouldEnd": false
+}
+
+═══════════════════════════════════════════════════════════════════
 CONVERSATION RULES
 ═══════════════════════════════════════════════════════════════════
 

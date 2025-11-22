@@ -267,13 +267,19 @@ export async function POST(
       },
     ];
     
-    // Generate AI response
-    const aiResponse = await generateAIResponse(messages, {
+    // Generate AI response with structured output
+    const { generateStructuredConversationResponse } = await import('@/lib/ai/structured-response');
+    
+    const structuredResponse = await generateStructuredConversationResponse(messages, {
       temperature: 0.7,
-      maxTokens: 200,
+      maxTokens: 300,
     });
     
-    const cost = calculateCost(aiResponse.usage);
+    // For cost calculation, we need to make a regular call to get usage stats
+    // This is a limitation - we'll estimate based on message length
+    const estimatedInputTokens = messages.reduce((sum, m) => sum + Math.ceil(m.content.length / 4), 0);
+    const estimatedOutputTokens = Math.ceil(structuredResponse.message.length / 4);
+    const cost = (estimatedInputTokens * 0.0000025) + (estimatedOutputTokens * 0.00001);
     
     // Update conversation with new exchanges
     const updatedExchanges = [
@@ -285,7 +291,7 @@ export async function POST(
       },
       {
         role: 'assistant',
-        content: aiResponse.content,
+        content: structuredResponse.message,
         timestamp: new Date().toISOString(),
       },
     ];
@@ -298,8 +304,8 @@ export async function POST(
     };
     
     const updatedTokenUsage = {
-      input: currentTokenUsage.input + aiResponse.usage.inputTokens,
-      output: currentTokenUsage.output + aiResponse.usage.outputTokens,
+      input: currentTokenUsage.input + estimatedInputTokens,
+      output: currentTokenUsage.output + estimatedOutputTokens,
       cost: currentTokenUsage.cost + cost,
     };
     
@@ -348,8 +354,8 @@ export async function POST(
       context: `session:${session.id}`,
       provider: 'azure',
       model: 'gpt-4o',
-      tokensInput: aiResponse.usage.inputTokens,
-      tokensOutput: aiResponse.usage.outputTokens,
+      tokensInput: estimatedInputTokens,
+      tokensOutput: estimatedOutputTokens,
       cost,
     });
     
@@ -375,81 +381,26 @@ export async function POST(
     }
     
     // Determine if conversation should end
-    let shouldEnd = false;
-    let summary: string | undefined;
+    // Use the AI's explicit signal from structured response
+    let shouldEnd = structuredResponse.shouldEnd;
+    let summary = structuredResponse.summary || structuredResponse.message;
     
+    // Override: Always end if max questions reached
     if (surveySettings.stopCondition === 'questions' && surveySettings.maxQuestions) {
-      shouldEnd = updatedState.exchangeCount >= surveySettings.maxQuestions;
-    } else {
-      // For topics_covered, check if all topics are covered AND AI signals completion
-      const allTopicsCovered = areAllTopicsCovered(updatedState.topicsCovered, surveyTopics);
-      
-      // Use AI to detect if conversation is complete
-      try {
-        const completionCheckMessages: AIMessage[] = [
-          {
-            role: 'system',
-            content: `You are analyzing a research conversation to determine if it should end.
-
-Respond with ONLY "COMPLETE" or "CONTINUE".
-
-Respond "COMPLETE" if the AI interviewer:
-- Is wrapping up with a summary
-- Is thanking the respondent and ending
-- Is disqualifying the respondent (e.g., "not the best fit", "not qualified")
-- Has clearly signaled the conversation is over
-- Is saying goodbye or closing remarks
-
-Respond "CONTINUE" if:
-- The AI is asking another question
-- The conversation is mid-flow
-- More information is being gathered`,
-          },
-          {
-            role: 'user',
-            content: `Context:
-- Topics covered: ${updatedState.topicsCovered.length} of ${surveyTopics.length}
-- All topics covered: ${allTopicsCovered ? 'Yes' : 'No'}
-- Exchange count: ${updatedState.exchangeCount}
-
-Latest AI response:
-"${aiResponse.content}"
-
-Should this conversation end now? Respond with only COMPLETE or CONTINUE.`,
-          },
-        ];
-        
-        const completionCheck = await generateAIResponse(completionCheckMessages, {
-          temperature: 0.3,
-          maxTokens: 10,
-        });
-        
-        const aiSaysComplete = completionCheck.content.trim().toUpperCase() === 'COMPLETE';
-        
-        // Trust the AI's decision - end if it says the conversation is complete
-        // This handles both natural completion AND disqualification
-        shouldEnd = aiSaysComplete;
-        
-        if (shouldEnd) {
-          summary = aiResponse.content;
-        }
-      } catch (error) {
-        console.error('Error checking completion:', error);
-        // Fallback: only end if all topics covered (conservative approach)
-        shouldEnd = allTopicsCovered;
-        if (shouldEnd) {
-          summary = aiResponse.content;
-        }
+      if (updatedState.exchangeCount >= surveySettings.maxQuestions) {
+        shouldEnd = true;
+        summary = summary || 'Maximum questions reached. Thank you for your time!';
       }
     }
     
     return NextResponse.json({
       success: true,
       data: {
-        aiResponse: aiResponse.content,
+        aiResponse: structuredResponse.message,
         progress,
         shouldEnd,
         summary,
+        reason: structuredResponse.reason,
         topicsCovered: updatedState.topicsCovered,
       },
     });
