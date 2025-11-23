@@ -147,21 +147,21 @@ export default function BillingPage() {
 
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-semibold text-neutral-950 mb-3 tracking-tight">
+        <h1 className="text-3xl font-semibold text-neutral-950 dark:text-neutral-50 mb-3 tracking-tight">
           Choose Your Plan
         </h1>
-        <p className="text-neutral-600 mb-6">
+        <p className="text-neutral-600 dark:text-neutral-400 mb-6">
           Start free, upgrade as you grow. Cancel anytime.
         </p>
 
         {/* Billing Cycle Toggle */}
-        <div className="inline-flex items-center gap-3 bg-neutral-100 rounded-full p-1">
+        <div className="inline-flex items-center gap-3 bg-neutral-100 dark:bg-zinc-800 rounded-full p-1">
           <button
             onClick={() => setBillingCycle('monthly')}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
               billingCycle === 'monthly'
-                ? 'bg-white text-neutral-950 shadow-sm'
-                : 'text-neutral-600 hover:text-neutral-950'
+                ? 'bg-white dark:bg-zinc-900 text-neutral-950 dark:text-neutral-50 shadow-sm'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50'
             }`}
           >
             Billed Monthly
@@ -170,8 +170,8 @@ export default function BillingPage() {
             onClick={() => setBillingCycle('yearly')}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
               billingCycle === 'yearly'
-                ? 'bg-white text-neutral-950 shadow-sm'
-                : 'text-neutral-600 hover:text-neutral-950'
+                ? 'bg-white dark:bg-zinc-900 text-neutral-950 dark:text-neutral-50 shadow-sm'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50'
             }`}
           >
             Billed Yearly
@@ -200,16 +200,16 @@ export default function BillingPage() {
             return (
               <div
                 key={key}
-                className={`bg-white border rounded-2xl p-8 flex flex-col relative ${
+                className={`bg-white dark:bg-zinc-900 border rounded-2xl p-8 flex flex-col relative ${
                   isPopular
-                    ? 'border-blue-600 shadow-lg'
-                    : 'border-neutral-200'
+                    ? 'border-blue-600 dark:border-blue-500 shadow-lg'
+                    : 'border-neutral-200 dark:border-zinc-800'
                 }`}
               >
                 {/* Popular Badge */}
                 {isPopular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">
+                    <span className="bg-blue-600 dark:bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
                       Most Popular
                     </span>
                   </div>
@@ -217,10 +217,10 @@ export default function BillingPage() {
 
                 {/* Plan Name & Description */}
                 <div className="mb-6">
-                  <h3 className="text-2xl font-semibold text-neutral-950 mb-2">
+                  <h3 className="text-2xl font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
                     {plan.name}
                   </h3>
-                  <p className="text-sm text-neutral-600">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
                     {(plan as any).description || ''}
                   </p>
                 </div>
@@ -228,25 +228,25 @@ export default function BillingPage() {
                 {/* Price */}
                 <div className="mb-6">
                   {isFree ? (
-                    <div className="text-4xl font-bold text-neutral-950">Free</div>
+                    <div className="text-4xl font-bold text-neutral-950 dark:text-neutral-50">Free</div>
                   ) : (
                     <div>
-                      <div className="text-sm text-neutral-500 line-through mb-1">
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400 line-through mb-1">
                         {billingCycle === 'yearly'
                           ? (plan as any).originalPriceYearly
                           : (plan as any).originalPriceMonthly}
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <div className="text-4xl font-bold text-neutral-950">
+                        <div className="text-4xl font-bold text-neutral-950 dark:text-neutral-50">
                           {billingCycle === 'yearly'
                             ? (plan as any).priceDisplayYearlyPerMonth
                             : priceDisplay}
                         </div>
-                        <span className="bg-green-600 text-white text-xs font-medium px-2 py-1 rounded-full">
+                        <span className="bg-green-600 dark:bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full">
                           50% OFF
                         </span>
                       </div>
-                      <p className="text-sm text-neutral-600 mt-1">
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
                         {billingCycle === 'yearly'
                           ? `Per month, billed yearly at ${(plan as any).priceDisplayYearly}`
                           : 'Per month'}
@@ -259,12 +259,12 @@ export default function BillingPage() {
                 {usage && usage.plan === key && (
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium text-neutral-600">Current Usage</span>
-                      <span className="text-xs font-medium text-neutral-950">
+                      <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">Current Usage</span>
+                      <span className="text-xs font-medium text-neutral-950 dark:text-neutral-50">
                         {usage.responsesUsedThisMonth} / {usage.limit}
                       </span>
                     </div>
-                    <div className="relative w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
+                    <div className="relative w-full h-2 bg-neutral-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                       <div
                         className={`absolute top-0 left-0 h-full transition-all duration-300 ${
                           usagePercentage >= 100
@@ -277,7 +277,7 @@ export default function BillingPage() {
                       />
                     </div>
                     {usagePercentage >= 80 && (
-                      <p className="text-xs text-neutral-600 mt-2">
+                      <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-2">
                         {usagePercentage >= 100
                           ? 'Limit reached! Upgrade to continue.'
                           : `${Math.round(usagePercentage)}% used`}
@@ -304,16 +304,16 @@ export default function BillingPage() {
 
                 {/* Features */}
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-neutral-950 mb-4">
+                  <p className="text-sm font-medium text-neutral-950 dark:text-neutral-50 mb-4">
                     This Plan Includes:
                   </p>
                   <ul className="space-y-3">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-3 text-sm">
-                        <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <div className="w-5 h-5 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <Check className="w-3 h-3 text-white" />
                         </div>
-                        <span className="text-neutral-700">{feature}</span>
+                        <span className="text-neutral-700 dark:text-neutral-300">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -324,13 +324,13 @@ export default function BillingPage() {
       </div>
 
       {/* Enterprise Contact Section */}
-      <div className="bg-gradient-to-r from-neutral-50 to-neutral-100 border border-neutral-200 rounded-xl p-6 text-center mb-12">
+      <div className="bg-gradient-to-r from-neutral-50 to-neutral-100 dark:from-zinc-900 dark:to-zinc-800 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 text-center mb-12">
         <div className="flex items-center justify-center gap-4">
-          <Building2 className="w-6 h-6 text-neutral-600" />
-          <h3 className="text-lg font-semibold text-neutral-950">
+          <Building2 className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
+          <h3 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">
             Need More Responses?
           </h3>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
             For teams requiring 2,000+ responses per month, custom integrations, or dedicated support.
           </p>
           <Button
@@ -345,12 +345,12 @@ export default function BillingPage() {
 
       {/* Enterprise Contact Form Modal */}
       {showEnterpriseForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
-            <h2 className="text-2xl font-semibold text-neutral-950 mb-4">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 px-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl p-8 max-w-md w-full border border-transparent dark:border-zinc-800">
+            <h2 className="text-2xl font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
               Contact Sales
             </h2>
-            <p className="text-neutral-600 mb-6">
+            <p className="text-neutral-600 dark:text-neutral-400 mb-6">
               Tell us about your needs and we'll get back to you within 24 hours.
             </p>
 
@@ -382,49 +382,49 @@ export default function BillingPage() {
               className="space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Name *
                 </label>
                 <input
                   type="text"
                   name="name"
                   required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Email *
                 </label>
                 <input
                   type="email"
                   name="email"
                   required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Company Name *
                 </label>
                 <input
                   type="text"
                   name="company"
                   required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Company Size *
                 </label>
                 <select
                   name="companySize"
                   required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                 >
                   <option value="">Select size</option>
                   <option value="50-200">50-200 employees</option>
@@ -434,7 +434,7 @@ export default function BillingPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Expected Monthly Responses *
                 </label>
                 <input
@@ -442,18 +442,18 @@ export default function BillingPage() {
                   name="expectedResponses"
                   required
                   placeholder="e.g., 5000"
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   Message (Optional)
                 </label>
                 <textarea
                   name="message"
                   rows={3}
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                   placeholder="Tell us about your use case..."
                 />
               </div>
@@ -477,8 +477,8 @@ export default function BillingPage() {
       )}
 
       {/* FAQ Section */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-neutral-950 mb-4">
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
           Frequently Asked Questions
         </h2>
         <div className="space-y-3">
@@ -500,22 +500,22 @@ export default function BillingPage() {
               answer: 'Yes. All data is encrypted at rest and in transit. We comply with Indian data protection laws.',
             },
           ].map((faq, index) => (
-            <div key={index} className="border-b border-neutral-200 last:border-0 pb-3 last:pb-0">
+            <div key={index} className="border-b border-neutral-200 dark:border-zinc-800 last:border-0 pb-3 last:pb-0">
               <button
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                className="w-full flex items-center justify-between text-left py-2 hover:text-blue-600 transition-colors"
+                className="w-full flex items-center justify-between text-left py-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               >
-                <h3 className="text-sm font-medium text-neutral-950">
+                <h3 className="text-sm font-medium text-neutral-950 dark:text-neutral-50">
                   {faq.question}
                 </h3>
                 <ChevronDown
-                  className={`w-4 h-4 text-neutral-600 transition-transform ${
+                  className={`w-4 h-4 text-neutral-600 dark:text-neutral-400 transition-transform ${
                     openFaq === index ? 'rotate-180' : ''
                   }`}
                 />
               </button>
               {openFaq === index && (
-                <p className="text-sm text-neutral-600 mt-2 pb-2">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 pb-2">
                   {faq.answer}
                 </p>
               )}
