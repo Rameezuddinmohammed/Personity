@@ -59,6 +59,8 @@
   --color-input: 0 0% 90%;                /* Neutral 200 */
   --color-ring: 0 0% 4%;                  /* Neutral 950 - Black ring */
 
+
+
   /* SPACING (8px grid system) */
   --spacing-0: 0;
   --spacing-1: 0.125rem;    /* 2px */
@@ -132,6 +134,32 @@
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
+}
+
+/* ============================================
+   DARK MODE OVERRIDES
+   ============================================ */
+.dark {
+  --color-background: 0 0% 4%;          /* Near black */
+  --color-foreground: 0 0% 98%;         /* Off white */
+  --color-card: 0 0% 7%;                /* Zinc 900 - Slightly lighter */
+  --color-card-foreground: 0 0% 98%;
+  --color-popover: 0 0% 7%;
+  --color-popover-foreground: 0 0% 98%;
+  --color-primary: 0 0% 98%;            /* White in dark mode */
+  --color-primary-hover: 0 0% 90%;
+  --color-primary-foreground: 0 0% 4%;  /* Black text on white */
+  --color-primary-light: 0 0% 15%;
+  --color-primary-ring: 0 0% 98% / 0.2;
+  --color-secondary: 0 0% 15%;
+  --color-secondary-foreground: 0 0% 98%;
+  --color-muted: 0 0% 15%;
+  --color-muted-foreground: 0 0% 64%;
+  --color-accent: 0 0% 15%;
+  --color-accent-foreground: 0 0% 98%;
+  --color-border: 0 0% 15%;             /* Zinc 800 */
+  --color-input: 0 0% 15%;
+  --color-ring: 0 0% 98%;
 }
 
 * {

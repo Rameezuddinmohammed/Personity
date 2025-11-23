@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, Lock, Trash2 } from 'lucide-react';
+import { User, Lock, Trash2, Monitor, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useTheme } from '@/lib/theme-provider';
 
 interface UserData {
   name: string;
@@ -14,6 +15,7 @@ interface UserData {
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -159,7 +161,7 @@ export default function SettingsPage() {
 
       <div className="space-y-6">
         {/* Profile Section */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
               <User className="w-5 h-5 text-blue-600" />
@@ -210,8 +212,68 @@ export default function SettingsPage() {
           </form>
         </div>
 
+        {/* Appearance Section */}
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950 rounded-lg flex items-center justify-center">
+              <Monitor className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">Appearance</h2>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">Customize how Personity looks</p>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
+              Theme
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                onClick={() => setTheme('light')}
+                className={`flex items-center gap-2 p-3 rounded-lg border transition-colors ${
+                  theme === 'light'
+                    ? 'border-neutral-950 dark:border-neutral-50 bg-neutral-50 dark:bg-zinc-800'
+                    : 'border-neutral-200 dark:border-zinc-700 hover:border-neutral-300 dark:hover:border-zinc-600'
+                }`}
+              >
+                <Sun className="w-4 h-4" />
+                <span className="text-sm">Light</span>
+              </button>
+              <button
+                onClick={() => setTheme('dark')}
+                className={`flex items-center gap-2 p-3 rounded-lg border transition-colors ${
+                  theme === 'dark'
+                    ? 'border-neutral-950 dark:border-neutral-50 bg-neutral-50 dark:bg-zinc-800'
+                    : 'border-neutral-200 dark:border-zinc-700 hover:border-neutral-300 dark:hover:border-zinc-600'
+                }`}
+              >
+                <Moon className="w-4 h-4" />
+                <span className="text-sm">Dark</span>
+              </button>
+              <button
+                onClick={() => setTheme('system')}
+                className={`flex items-center gap-2 p-3 rounded-lg border transition-colors ${
+                  theme === 'system'
+                    ? 'border-neutral-950 dark:border-neutral-50 bg-neutral-50 dark:bg-zinc-800'
+                    : 'border-neutral-200 dark:border-zinc-700 hover:border-neutral-300 dark:hover:border-zinc-600'
+                }`}
+              >
+                <Monitor className="w-4 h-4" />
+                <span className="text-sm">System</span>
+              </button>
+            </div>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
+              {theme === 'system' 
+                ? 'Automatically matches your device settings'
+                : `Always use ${theme} mode`
+              }
+            </p>
+          </div>
+        </div>
+
         {/* Plan & Billing Section */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
