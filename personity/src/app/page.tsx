@@ -13,13 +13,13 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-50 dark:bg-zinc-950">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-200">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-neutral-200 dark:border-zinc-800">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
-            className="text-xl font-semibold text-neutral-950 hover:text-blue-600 transition-colors"
+            className="text-xl font-semibold text-neutral-950 dark:text-neutral-50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             Personity
           </Link>
@@ -43,10 +43,10 @@ export default function Home() {
       </header>
 
       {/* Hero Section - Full Screen */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden bg-white">
+      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden bg-white dark:bg-zinc-950">
         {/* Grid background with fade at bottom */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-zinc-950 pointer-events-none"></div>
         <div className="max-w-5xl mx-auto text-center relative z-10 pt-16 sm:pt-0">
           <TextGenerateEffect
             words="Interview-Level Insights at Survey-Level Speed"
@@ -57,7 +57,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2, duration: 0.5 }}
-            className="text-base sm:text-lg md:text-xl text-neutral-600 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
+            className="text-base sm:text-lg md:text-xl text-neutral-600 dark:text-neutral-400 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
           >
             AI-powered conversational research. Get deeper insights without the time or cost.
           </motion.p>
@@ -99,13 +99,13 @@ export default function Home() {
       <HowItWorksSection />
 
       {/* Features - Bento Grid */}
-      <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-white">
+      <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-white dark:bg-zinc-950">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-950 mb-3 sm:mb-4 tracking-tight px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-950 dark:text-neutral-50 mb-3 sm:mb-4 tracking-tight px-4">
               Why Personity?
             </h2>
-            <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto px-4">
+            <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto px-4">
               Four powerful features that transform how you gather insights
             </p>
           </div>
@@ -158,12 +158,12 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-white border-t border-neutral-200">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-white dark:bg-zinc-950 border-t border-neutral-200 dark:border-zinc-800">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-950 mb-3 sm:mb-4 tracking-tight px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-neutral-950 dark:text-neutral-50 mb-3 sm:mb-4 tracking-tight px-4">
             Ready to transform your research?
           </h2>
-          <p className="text-base sm:text-lg text-neutral-600 mb-6 sm:mb-8 px-4">
+          <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 mb-6 sm:mb-8 px-4">
             Join product teams and founders gathering better insights, faster.
           </p>
           <Button
@@ -176,27 +176,27 @@ export default function Home() {
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
-          <p className="text-sm text-neutral-500 mt-4 px-4">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-4 px-4">
             No credit card required • 50 free responses
           </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-200 bg-white">
+      <footer className="border-t border-neutral-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-neutral-600">
+            <div className="text-sm text-neutral-600 dark:text-neutral-400">
               © 2025 Personity. All rights reserved.
             </div>
-            <div className="flex gap-6 text-sm text-neutral-600">
-              <Link href="/privacy" className="hover:text-neutral-950 transition-colors">
+            <div className="flex gap-6 text-sm text-neutral-600 dark:text-neutral-400">
+              <Link href="/privacy" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
                 Privacy
               </Link>
-              <Link href="/terms" className="hover:text-neutral-950 transition-colors">
+              <Link href="/terms" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
                 Terms
               </Link>
-              <a href="mailto:support@personity.app" className="hover:text-neutral-950 transition-colors">
+              <a href="mailto:support@personity.app" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
                 Contact
               </a>
             </div>

@@ -56,7 +56,7 @@ export function SurveysList() {
     return (
       <div className="flex items-center gap-2">
         <div className={`w-2 h-2 rounded-full ${statusConfig.color}`} />
-        <span className="text-sm font-medium text-neutral-700">{statusConfig.text}</span>
+        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{statusConfig.text}</span>
       </div>
     );
   };
@@ -74,10 +74,10 @@ export function SurveysList() {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white border border-neutral-200 rounded-xl p-6 animate-pulse">
-            <div className="h-6 bg-neutral-200 rounded w-1/3 mb-4"></div>
-            <div className="h-4 bg-neutral-200 rounded w-2/3 mb-2"></div>
-            <div className="h-4 bg-neutral-200 rounded w-1/2"></div>
+          <div key={i} className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 animate-pulse">
+            <div className="h-6 bg-neutral-200 dark:bg-zinc-800 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-neutral-200 dark:bg-zinc-800 rounded w-2/3 mb-2"></div>
+            <div className="h-4 bg-neutral-200 dark:bg-zinc-800 rounded w-1/2"></div>
           </div>
         ))}
       </div>
@@ -130,32 +130,32 @@ export function SurveysList() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
             <div>
-              <p className="text-xs text-neutral-500 mb-1">Total Engaged</p>
-              <p className="text-xl sm:text-2xl font-semibold text-neutral-950">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Total Engaged</p>
+              <p className="text-xl sm:text-2xl font-semibold text-neutral-950 dark:text-neutral-50">
                 {survey.responseCount}
               </p>
             </div>
             <div>
-              <p className="text-xs text-neutral-500 mb-1">Completed</p>
-              <p className="text-xl sm:text-2xl font-semibold text-neutral-950">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Completed</p>
+              <p className="text-xl sm:text-2xl font-semibold text-neutral-950 dark:text-neutral-50">
                 {survey.completedCount}
               </p>
             </div>
             <div>
-              <p className="text-xs text-neutral-500 mb-1">Completion Rate</p>
-              <p className="text-xl sm:text-2xl font-semibold text-neutral-950">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Completion Rate</p>
+              <p className="text-xl sm:text-2xl font-semibold text-neutral-950 dark:text-neutral-50">
                 {survey.completionRate}%
               </p>
             </div>
             <div>
-              <p className="text-xs text-neutral-500 mb-1">Created</p>
-              <p className="text-sm font-medium text-neutral-700">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Created</p>
+              <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                 {formatDate(survey.createdAt)}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-neutral-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-neutral-100 dark:border-zinc-800">
             <div className="flex items-center gap-2 text-sm text-neutral-500 overflow-hidden">
               <span className="shrink-0">Survey Link:</span>
               <div className="px-2 py-1 bg-neutral-100 rounded flex items-center gap-2">

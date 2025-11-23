@@ -150,39 +150,39 @@ export default function DashboardPage() {
 
       {/* Personalized Greeting */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-950 tracking-tight">
+        <h1 className="text-3xl font-bold text-neutral-950 dark:text-neutral-50 tracking-tight">
           {greeting}, {user?.name?.split(' ')[0] || 'there'}!
         </h1>
-        <p className="text-neutral-600 mt-1">
+        <p className="text-neutral-600 dark:text-neutral-400 mt-1">
           Here's what's happening with your surveys today
         </p>
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-neutral-600">Total Surveys</p>
-            <MessageSquare className="w-5 h-5 text-neutral-400" />
+            <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total Surveys</p>
+            <MessageSquare className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
           </div>
-          <p className="text-3xl font-bold text-neutral-950">{recentSurveys.length}</p>
-          <p className="text-xs text-neutral-500 mt-1">Active surveys</p>
+          <p className="text-3xl font-bold text-neutral-950 dark:text-neutral-50">{recentSurveys.length}</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Active surveys</p>
         </div>
 
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-neutral-600">Responses</p>
-            <BarChart3 className="w-5 h-5 text-neutral-400" />
+            <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Responses</p>
+            <BarChart3 className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
           </div>
-          <p className="text-3xl font-bold text-neutral-950">{usage?.used || 0}</p>
-          <p className="text-xs text-neutral-500 mt-1">This month</p>
+          <p className="text-3xl font-bold text-neutral-950 dark:text-neutral-50">{usage?.used || 0}</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">This month</p>
         </div>
       </div>
 
       {/* Recent Surveys */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-neutral-950">Recent Surveys</h2>
+          <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-50">Recent Surveys</h2>
           <Button
             variant="ghost"
             size="sm"
@@ -194,14 +194,14 @@ export default function DashboardPage() {
         </div>
 
         {recentSurveys.length === 0 ? (
-          <div className="bg-white border border-neutral-200 rounded-xl p-12 text-center">
-            <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 text-neutral-400" />
+          <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-12 text-center">
+            <div className="w-16 h-16 bg-neutral-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Plus className="w-8 h-8 text-neutral-400 dark:text-neutral-500" />
             </div>
-            <h3 className="text-lg font-semibold text-neutral-950 mb-2">
+            <h3 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
               No surveys yet
             </h3>
-            <p className="text-sm text-neutral-600 mb-6">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
               Create your first survey to start gathering insights
             </p>
             <Button onClick={() => router.push('/surveys/create')}>
@@ -214,18 +214,18 @@ export default function DashboardPage() {
             {recentSurveys.map((survey) => (
               <div
                 key={survey.id}
-                className="bg-white border border-neutral-200 rounded-xl p-6 hover:border-blue-600 hover:shadow-md transition-all cursor-pointer group"
+                className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 hover:border-blue-600 dark:hover:border-blue-500 hover:shadow-md transition-all cursor-pointer group"
                 onClick={() => router.push(`/surveys/${survey.id}`)}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-neutral-950 group-hover:text-blue-600 transition-colors mb-1">
+                    <h3 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">
                       {survey.title}
                     </h3>
-                    <p className="text-sm text-neutral-600 line-clamp-2 mb-3">
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 mb-3">
                       {survey.objective}
                     </p>
-                    <div className="flex items-center gap-4 text-xs text-neutral-500">
+                    <div className="flex items-center gap-4 text-xs text-neutral-500 dark:text-neutral-400">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {new Date(survey.createdAt).toLocaleDateString()}
@@ -236,9 +236,9 @@ export default function DashboardPage() {
                       </span>
                       <span className="flex items-center gap-1.5">
                         <span className={`w-2 h-2 rounded-full ${
-                          survey.status === 'ACTIVE' ? 'bg-green-600' : 'bg-neutral-400'
+                          survey.status === 'ACTIVE' ? 'bg-green-600' : 'bg-neutral-400 dark:bg-neutral-500'
                         }`} />
-                        <span className="text-xs text-neutral-700">
+                        <span className="text-xs text-neutral-700 dark:text-neutral-300">
                           {survey.status === 'ACTIVE' ? 'Active' : survey.status.charAt(0) + survey.status.slice(1).toLowerCase()}
                         </span>
                       </span>
@@ -264,41 +264,41 @@ export default function DashboardPage() {
 
       {/* Getting Started Resources */}
       {recentSurveys.length < 3 && (
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 bg-blue-600 dark:bg-blue-700 rounded-lg flex items-center justify-center flex-shrink-0">
               <BookOpen className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-neutral-950 mb-2">
+              <h3 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
                 Getting Started with Personity
               </h3>
-              <p className="text-sm text-neutral-600 mb-4">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
                 Learn how to create effective surveys and gather meaningful insights
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <button
                   onClick={() => router.push('/help')}
-                  className="flex items-center gap-2 p-3 bg-white rounded-lg hover:shadow-md transition-all text-left"
+                  className="flex items-center gap-2 p-3 bg-white dark:bg-zinc-900 rounded-lg hover:shadow-md transition-all text-left"
                 >
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <span className="text-sm font-bold text-blue-600">1</span>
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">1</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-neutral-950">Create Your First Survey</p>
-                    <p className="text-xs text-neutral-600">5 min guide</p>
+                    <p className="text-sm font-medium text-neutral-950 dark:text-neutral-50">Create Your First Survey</p>
+                    <p className="text-xs text-neutral-600 dark:text-neutral-400">5 min guide</p>
                   </div>
                 </button>
                 <button
                   onClick={() => router.push('/help')}
-                  className="flex items-center gap-2 p-3 bg-white rounded-lg hover:shadow-md transition-all text-left"
+                  className="flex items-center gap-2 p-3 bg-white dark:bg-zinc-900 rounded-lg hover:shadow-md transition-all text-left"
                 >
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <span className="text-sm font-bold text-blue-600">2</span>
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">2</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-neutral-950">Understanding Insights</p>
-                    <p className="text-xs text-neutral-600">3 min read</p>
+                    <p className="text-sm font-medium text-neutral-950 dark:text-neutral-50">Understanding Insights</p>
+                    <p className="text-xs text-neutral-600 dark:text-neutral-400">3 min read</p>
                   </div>
                 </button>
               </div>
