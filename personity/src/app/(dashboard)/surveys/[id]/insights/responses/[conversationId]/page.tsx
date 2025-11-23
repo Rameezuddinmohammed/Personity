@@ -123,10 +123,10 @@ export default function ResponseDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 bg-neutral-200 rounded w-1/4 animate-pulse"></div>
-        <div className="bg-white border border-neutral-200 rounded-xl p-6 animate-pulse">
-          <div className="h-6 bg-neutral-200 rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-neutral-200 rounded w-2/3"></div>
+        <div className="h-8 bg-neutral-200 dark:bg-zinc-800 rounded w-1/4 animate-pulse"></div>
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 animate-pulse">
+          <div className="h-6 bg-neutral-200 dark:bg-zinc-800 rounded w-1/3 mb-4"></div>
+          <div className="h-4 bg-neutral-200 dark:bg-zinc-800 rounded w-2/3"></div>
         </div>
       </div>
     );
@@ -135,7 +135,7 @@ export default function ResponseDetailPage() {
   if (!survey || !response) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-600">Response not found</p>
+        <p className="text-neutral-600 dark:text-neutral-400">Response not found</p>
       </div>
     );
   }
@@ -145,7 +145,7 @@ export default function ResponseDetailPage() {
       {/* Back Button */}
       <button
         onClick={() => router.push(`/surveys/${surveyId}/insights/responses`)}
-        className="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-950 mb-6 transition-colors"
+        className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Responses
@@ -154,10 +154,10 @@ export default function ResponseDetailPage() {
       {/* Header with Navigation */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-neutral-950 tracking-tight mb-2">
+          <h1 className="text-2xl font-semibold text-neutral-950 dark:text-neutral-50 tracking-tight mb-2">
             Response Detail
           </h1>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {survey.title}
             {navigation && (
               <span className="ml-2">
@@ -195,8 +195,8 @@ export default function ResponseDetailPage() {
       {/* Analysis Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Sentiment */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-4">
-          <p className="text-xs text-neutral-500 mb-2">Sentiment</p>
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-4">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">Sentiment</p>
           <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${getSentimentColor(response.sentiment)}`}>
             {getSentimentIcon(response.sentiment)}
             <span className="text-sm font-medium capitalize">
@@ -206,22 +206,22 @@ export default function ResponseDetailPage() {
         </div>
 
         {/* Duration */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-4">
-          <p className="text-xs text-neutral-500 mb-2">Duration</p>
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-4">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">Duration</p>
           <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-blue-600" />
-            <span className="text-lg font-semibold text-neutral-950">
+            <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <span className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">
               {formatDuration(response.conversation.durationSeconds)}
             </span>
           </div>
         </div>
 
         {/* Exchanges */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-4">
-          <p className="text-xs text-neutral-500 mb-2">Exchanges</p>
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-4">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">Exchanges</p>
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-purple-600" />
-            <span className="text-lg font-semibold text-neutral-950">
+            <MessageSquare className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <span className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">
               {response.conversation.exchanges.filter(e => e.role === 'user').length}
             </span>
           </div>
@@ -244,23 +244,23 @@ export default function ResponseDetailPage() {
       )}
 
       {/* Summary */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-6 mb-6">
-        <h2 className="text-lg font-semibold text-neutral-950 mb-3">Summary</h2>
-        <p className="text-neutral-700 leading-relaxed">{response.summary}</p>
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 mb-6">
+        <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-3">Summary</h2>
+        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed">{response.summary}</p>
       </div>
 
       {/* Key Themes */}
       {response.keyThemes.length > 0 && (
-        <div className="bg-white border border-neutral-200 rounded-xl p-6 mb-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-green-600" />
-            <h2 className="text-lg font-semibold text-neutral-950">Key Themes</h2>
+            <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">Key Themes</h2>
           </div>
           <div className="flex flex-wrap gap-2">
             {response.keyThemes.map((theme, index) => (
               <span
                 key={index}
-                className="px-3 py-1.5 bg-neutral-100 text-neutral-700 text-sm rounded-lg"
+                className="px-3 py-1.5 bg-neutral-100 dark:bg-zinc-800 text-neutral-700 dark:text-neutral-300 text-sm rounded-lg"
               >
                 {theme}
               </span>
@@ -271,16 +271,16 @@ export default function ResponseDetailPage() {
 
       {/* Top Quotes */}
       {response.topQuotes.length > 0 && (
-        <div className="bg-white border border-neutral-200 rounded-xl p-6 mb-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <Quote className="w-5 h-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-neutral-950">Top Quotes</h2>
+            <Quote className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">Top Quotes</h2>
           </div>
           <div className="space-y-4">
             {response.topQuotes.map((quote, index) => (
-              <div key={index} className="border-l-4 border-blue-600 pl-4">
-                <p className="text-neutral-700 italic mb-2">"{quote.quote}"</p>
-                <p className="text-sm text-neutral-500">{quote.context}</p>
+              <div key={index} className="border-l-4 border-blue-600 dark:border-blue-400 pl-4">
+                <p className="text-neutral-700 dark:text-neutral-300 italic mb-2">"{quote.quote}"</p>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">{quote.context}</p>
               </div>
             ))}
           </div>
@@ -291,15 +291,15 @@ export default function ResponseDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Pain Points */}
         {response.painPoints.length > 0 && (
-          <div className="bg-white border border-neutral-200 rounded-xl p-6">
+          <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
-              <AlertCircle className="w-5 h-5 text-red-600" />
-              <h2 className="text-lg font-semibold text-neutral-950">Pain Points</h2>
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">Pain Points</h2>
             </div>
             <ul className="space-y-2">
               {response.painPoints.map((point, index) => (
-                <li key={index} className="flex items-start gap-2 text-sm text-neutral-700">
-                  <span className="text-red-600 mt-0.5">•</span>
+                <li key={index} className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+                  <span className="text-red-600 dark:text-red-400 mt-0.5">•</span>
                   <span>{point}</span>
                 </li>
               ))}
@@ -309,15 +309,15 @@ export default function ResponseDetailPage() {
 
         {/* Opportunities */}
         {response.opportunities.length > 0 && (
-          <div className="bg-white border border-neutral-200 rounded-xl p-6">
+          <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Lightbulb className="w-5 h-5 text-yellow-600" />
-              <h2 className="text-lg font-semibold text-neutral-950">Opportunities</h2>
+              <Lightbulb className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+              <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">Opportunities</h2>
             </div>
             <ul className="space-y-2">
               {response.opportunities.map((opportunity, index) => (
-                <li key={index} className="flex items-start gap-2 text-sm text-neutral-700">
-                  <span className="text-yellow-600 mt-0.5">•</span>
+                <li key={index} className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+                  <span className="text-yellow-600 dark:text-yellow-400 mt-0.5">•</span>
                   <span>{opportunity}</span>
                 </li>
               ))}
@@ -327,18 +327,18 @@ export default function ResponseDetailPage() {
       </div>
 
       {/* Conversation Transcript */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-6">
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
         <button
           onClick={() => setIsTranscriptExpanded(!isTranscriptExpanded)}
           className="w-full flex items-center justify-between hover:opacity-70 transition-opacity"
         >
-          <h2 className="text-lg font-semibold text-neutral-950">
+          <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">
             Full Transcript
           </h2>
           {isTranscriptExpanded ? (
-            <ChevronUp className="w-5 h-5 text-neutral-600" />
+            <ChevronUp className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-neutral-600" />
+            <ChevronDown className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
           )}
         </button>
         
@@ -352,15 +352,15 @@ export default function ResponseDetailPage() {
                 <div
                   className={`max-w-[80%] rounded-lg px-4 py-3 ${
                     exchange.role === 'user'
-                      ? 'bg-blue-600/10 text-neutral-950'
-                      : 'bg-neutral-100 text-neutral-950'
+                      ? 'bg-blue-600/10 text-neutral-950 dark:text-neutral-50'
+                      : 'bg-neutral-100 dark:bg-zinc-800 text-neutral-950 dark:text-neutral-50'
                   }`}
                 >
-                  <p className="text-xs font-medium text-neutral-500 mb-1">
+                  <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-1">
                     {exchange.role === 'user' ? 'Respondent' : 'AI'}
                   </p>
                   <p className="text-sm leading-relaxed">{exchange.content}</p>
-                  <p className="text-xs text-neutral-400 mt-2">
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2">
                     {new Date(exchange.timestamp).toLocaleTimeString('en-US', {
                       hour: 'numeric',
                       minute: '2-digit',

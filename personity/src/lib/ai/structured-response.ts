@@ -44,23 +44,20 @@ export async function generateStructuredConversationResponse(
       ...lastMessage,
       content: `${lastMessage.content}
 
-IMPORTANT: Respond with ONLY a JSON object in this exact format:
-{
-  "message": "Your response to the user",
-  "shouldEnd": true/false,
-  "reason": "completed" | "disqualified" | "low_quality" | "max_questions" (only if shouldEnd is true),
-  "summary": "Brief summary of key insights" (only if shouldEnd is true)
-}
+CRITICAL JSON REQUIREMENTS:
+1. ALWAYS return valid JSON
+2. NO markdown code blocks (no \`\`\`json)
+3. NO explanations before or after JSON
+4. NO extra characters outside JSON object
+5. If unsure, return: {"message": "Could you clarify that?", "shouldEnd": false}
 
-Set shouldEnd to true if:
-- You've covered all topics and are wrapping up
-- The respondent is not qualified or not a good fit
-- The respondent is giving consistently low-quality answers
-- You've reached the maximum number of questions
+REQUIRED FORMAT - START WITH { AND END WITH }:
+{"message": "Your question", "shouldEnd": false}
 
-Set shouldEnd to false if:
-- The conversation should continue
-- You're asking another question`,
+OR when ending:
+{"message": "Thanks!", "shouldEnd": true, "reason": "completed", "summary": "Brief summary", "persona": {"painLevel": "high", "experience": "intermediate", "sentiment": "negative", "readiness": "hot", "clarity": "high"}}
+
+RETURN ONLY THE JSON OBJECT. NO OTHER TEXT.`,
     },
   ];
 
@@ -70,12 +67,19 @@ Set shouldEnd to false if:
       maxTokens: options.maxTokens ?? 300,
     });
 
+    // Clean response - remove markdown code blocks if present
+    let cleanedContent = response.content.trim();
+    cleanedContent = cleanedContent.replace(/```json\s*/g, '');
+    cleanedContent = cleanedContent.replace(/```\s*/g, '');
+    cleanedContent = cleanedContent.trim();
+
     // Parse JSON response
-    const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+    const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
+      console.warn('No JSON found in response:', cleanedContent);
       // Fallback: treat as regular message, don't end
       return {
-        message: response.content,
+        message: cleanedContent || 'Could you clarify that?',
         shouldEnd: false,
       };
     }

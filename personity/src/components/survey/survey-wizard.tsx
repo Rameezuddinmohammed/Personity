@@ -136,9 +136,9 @@ export function SurveyWizard() {
   };
 
   return (
-    <div className="min-h-screen bg-n-50 py-6 sm:py-10">
+    <div className="min-h-screen bg-neutral-50 dark:bg-zinc-950 py-6 sm:py-10">
       <div className="max-w-[800px] mx-auto px-4 sm:px-6">
-        <div className="bg-white rounded-2xl p-6 sm:p-8 md:p-12 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 sm:p-8 md:p-12 shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-neutral-200 dark:border-zinc-800">
           {/* Progress Indicator */}
           <WizardProgress currentStep={currentStep} steps={visibleSteps} />
 
@@ -153,8 +153,8 @@ export function SurveyWizard() {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-error/10 border border-error/20 rounded-lg">
-              <p className="text-sm text-error">{error}</p>
+            <div className="mb-6 p-4 bg-red-600/10 border border-red-600/20 rounded-lg">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
 

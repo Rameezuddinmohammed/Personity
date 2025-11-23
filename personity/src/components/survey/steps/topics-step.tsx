@@ -15,10 +15,10 @@ export function TopicsStep() {
     <div>
       {/* Step Header */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold text-n-950 mb-2">
+        <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
           What topics do you want to explore?
         </h2>
-        <p className="text-sm text-n-600 leading-relaxed">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
           List 2-10 key topics or areas you want the AI to cover in the
           conversation. The AI will ensure all topics are discussed.
         </p>
@@ -34,11 +34,11 @@ export function TopicsStep() {
               onChange={(e) => updateTopic(index, e.target.value)}
               placeholder={`Topic ${index + 1}`}
               className="
-                flex-1 px-4 py-3 text-sm text-n-950 bg-white
-                border border-n-300 rounded-lg
+                flex-1 px-4 py-3 text-sm text-neutral-950 dark:text-neutral-50 bg-white dark:bg-zinc-800
+                border border-neutral-300 dark:border-zinc-700 rounded-lg
                 transition-all duration-150 ease-out
-                placeholder:text-n-400
-                hover:border-n-400
+                placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+                hover:border-neutral-400 dark:hover:border-zinc-600
                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
               "
             />
@@ -48,8 +48,8 @@ export function TopicsStep() {
                 onClick={() => removeTopic(index)}
                 className="
                   w-9 h-9 flex items-center justify-center
-                  rounded-md text-n-500 transition-all duration-150 ease-out
-                  hover:bg-n-100 hover:text-error
+                  rounded-md text-neutral-500 dark:text-neutral-400 transition-all duration-150 ease-out
+                  hover:bg-neutral-100 dark:hover:bg-zinc-800 hover:text-red-600 dark:hover:text-red-400
                 "
                 aria-label="Remove topic"
               >
@@ -68,9 +68,9 @@ export function TopicsStep() {
           className="
             inline-flex items-center gap-2 px-4 py-2
             text-[13px] font-medium text-primary
-            bg-transparent border border-dashed border-n-300 rounded-lg
+            bg-transparent border border-dashed border-neutral-300 dark:border-zinc-700 rounded-lg
             transition-all duration-150 ease-out
-            hover:border-primary hover:bg-primary/5
+            hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10
           "
         >
           <Plus className="w-4 h-4" />
@@ -79,18 +79,18 @@ export function TopicsStep() {
       )}
 
       {/* Validation Message */}
-      <div className="mt-6 p-4 bg-n-50 rounded-lg border border-n-200">
-        <p className="text-xs text-n-600">
-          <span className="font-medium text-n-700">
+      <div className="mt-6 p-4 bg-neutral-50 dark:bg-zinc-800 rounded-lg border border-neutral-200 dark:border-zinc-700">
+        <p className="text-xs text-neutral-600 dark:text-neutral-400">
+          <span className="font-medium text-neutral-700 dark:text-neutral-300">
             {validTopics.length} of 2-10 topics
           </span>
           {validTopics.length < 2 && (
-            <span className="text-error ml-2">
+            <span className="text-red-600 dark:text-red-400 ml-2">
               (Add at least {2 - validTopics.length} more)
             </span>
           )}
           {validTopics.length >= 2 && (
-            <span className="text-success ml-2">(Ready to proceed)</span>
+            <span className="text-green-600 dark:text-green-400 ml-2">(Ready to proceed)</span>
           )}
         </p>
       </div>

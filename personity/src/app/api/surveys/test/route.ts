@@ -78,10 +78,30 @@ export async function POST(request: NextRequest) {
       maxTokens: 200,
     });
 
+    // Parse JSON response from AI (master prompt returns structured format)
+    const parseMessages = (content: string): string[] => {
+      try {
+        const parsed = JSON.parse(content);
+        if (parsed.messages && Array.isArray(parsed.messages)) {
+          // Initial greeting returns array of messages
+          return parsed.messages.map((m: any) => m.message).filter(Boolean);
+        } else if (parsed.message) {
+          // Regular response returns single message
+          return [parsed.message];
+        }
+        return [content];
+      } catch {
+        // If not JSON, use content as-is
+        return [content];
+      }
+    };
+
+    const parsedMessages = parseMessages(response.content);
+
     return NextResponse.json({
       success: true,
       data: {
-        message: response.content,
+        messages: parsedMessages, // Return array of messages
         usage: response.usage,
       },
     });

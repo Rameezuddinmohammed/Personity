@@ -66,7 +66,20 @@ Guidelines:
 - Top Quotes: Select 1-3 most insightful or representative quotes with context
 - Pain Points: Identify problems, frustrations, or challenges mentioned
 - Opportunities: Identify potential improvements, desires, or unmet needs
-- Quality Score: Rate 1-10 based on depth, specificity, and usefulness of responses
+- Quality Score: Rate 1-10 based on:
+  * 1-3: Spam, trolling, nonsense, one-word answers, or completely off-topic
+  * 4-5: Low effort, vague, or minimal engagement
+  * 6-7: Adequate responses with some useful information
+  * 8-9: Thoughtful, detailed, and on-topic responses
+  * 10: Exceptional depth, specificity, and actionable insights
+
+RED FLAGS for low scores (1-4):
+- Gibberish, random characters, or nonsensical text
+- Obvious trolling or joke responses
+- Repeated one-word answers or "I don't know"
+- Completely off-topic or irrelevant responses
+- Copy-pasted text or spam
+- Hostile, abusive, or inappropriate content
 
 Respond with ONLY the JSON object, no additional text.`;
 
@@ -245,10 +258,13 @@ export async function getAnalysesForSurvey(surveyId: string) {
   }
   
   // Get analyses for these conversations
+  // ONLY include quality responses (score >= 6 and not flagged)
   const { data: analyses, error: analysesError } = await supabase
     .from('ResponseAnalysis')
     .select('*')
     .in('conversationId', conversationIds)
+    .gte('qualityScore', 6)
+    .eq('isFlagged', false)
     .order('createdAt', { ascending: false });
   
   if (analysesError) {

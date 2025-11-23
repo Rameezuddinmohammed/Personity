@@ -48,8 +48,14 @@ export async function generateAIResponse(
         outputTokens: response.usage?.completion_tokens ?? 0,
       },
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Azure OpenAI API error:', error);
+    
+    // Handle content filter errors
+    if (error?.code === 'content_filter' || error?.status === 400) {
+      throw new Error('CONTENT_FILTERED');
+    }
+    
     throw new Error('Failed to generate AI response');
   }
 }

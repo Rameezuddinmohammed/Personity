@@ -87,10 +87,10 @@ export function ObjectiveStep() {
     <div>
       {/* Step Header */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold text-n-950 mb-2">
+        <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
           Let's create your survey
         </h2>
-        <p className="text-sm text-n-600 leading-relaxed">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
           Give your survey a title and describe what you want to learn
         </p>
       </div>
@@ -100,7 +100,7 @@ export function ObjectiveStep() {
         <div className="mb-6">
           <label
             htmlFor="title"
-            className="block text-[13px] font-medium text-n-700 mb-2"
+            className="block text-[13px] font-medium text-neutral-700 dark:text-neutral-300 mb-2"
           >
             Survey Title
           </label>
@@ -111,16 +111,16 @@ export function ObjectiveStep() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g., Shopping Cart Abandonment Survey"
             className="
-              w-full px-4 py-3 text-sm text-n-950 bg-white
-              border border-n-300 rounded-lg font-sans
+              w-full px-4 py-3 text-sm text-neutral-950 dark:text-neutral-50 bg-white dark:bg-zinc-800
+              border border-neutral-300 dark:border-zinc-700 rounded-lg font-sans
               transition-all duration-150 ease-out
-              placeholder:text-n-400
-              hover:border-n-400
+              placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+              hover:border-neutral-400 dark:hover:border-zinc-600
               focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
             "
             maxLength={100}
           />
-          <p className="text-xs text-n-500 mt-2">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
             This is what respondents will see. Edit if needed.
           </p>
         </div>
@@ -128,10 +128,10 @@ export function ObjectiveStep() {
 
       {/* Example Templates */}
       {!objective && (
-        <div className="mb-6 p-4 bg-n-50 border border-n-200 rounded-lg">
+        <div className="mb-6 p-4 bg-neutral-50 dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 rounded-lg">
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-n-700">
+            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
               Start with a template
             </span>
           </div>
@@ -140,7 +140,7 @@ export function ObjectiveStep() {
               <button
                 key={template.label}
                 onClick={() => handleUseTemplate(template)}
-                className="px-3 py-1.5 text-xs font-medium text-n-700 bg-white border border-n-300 rounded-md hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors duration-150"
+                className="px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-zinc-900 border border-neutral-300 dark:border-zinc-700 rounded-md hover:border-primary hover:text-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-150"
               >
                 {template.label}
               </button>
@@ -153,7 +153,7 @@ export function ObjectiveStep() {
       <div>
         <label
           htmlFor="objective"
-          className="block text-[13px] font-medium text-n-700 mb-2"
+          className="block text-[13px] font-medium text-neutral-700 dark:text-neutral-300 mb-2"
         >
           Research Objective
         </label>
@@ -163,17 +163,17 @@ export function ObjectiveStep() {
           onChange={(e) => setObjective(e.target.value)}
           placeholder="Example: I want to understand why users abandon their shopping carts and what would motivate them to complete their purchase."
           className="
-            w-full min-h-[120px] px-4 py-4 text-sm text-n-950 bg-white
-            border border-n-300 rounded-lg resize-y font-sans leading-relaxed
+            w-full min-h-[120px] px-4 py-4 text-sm text-neutral-950 dark:text-neutral-50 bg-white dark:bg-zinc-800
+            border border-neutral-300 dark:border-zinc-700 rounded-lg resize-y font-sans leading-relaxed
             transition-all duration-150 ease-out
-            placeholder:text-n-400
-            hover:border-n-400
+            placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+            hover:border-neutral-400 dark:hover:border-zinc-600
             focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
           "
           rows={5}
         />
         <div className="flex items-center justify-between mt-2">
-          <p className="text-xs text-n-500">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
             Tip: A clear objective helps the AI ask better questions
           </p>
           {isAnalyzing && (
@@ -187,13 +187,13 @@ export function ObjectiveStep() {
 
       {/* AI Analysis Result - Show detected mode */}
       {hasAnalyzed && !isAnalyzing && (
-        <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+        <div className="mt-6 p-4 bg-primary/5 dark:bg-primary/10 rounded-lg border border-primary/20 dark:border-primary/30">
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <div className="flex-shrink-0 w-8 h-8 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-n-950 mb-1">
+              <p className="text-sm font-medium text-neutral-950 dark:text-neutral-50 mb-1">
                 Research Mode Detected: {' '}
                 <span className="text-primary">
                   {mode === 'PRODUCT_DISCOVERY' && 'Product Discovery'}
@@ -201,7 +201,7 @@ export function ObjectiveStep() {
                   {mode === 'EXPLORATORY_GENERAL' && 'Exploratory Research'}
                 </span>
               </p>
-              <p className="text-xs text-n-600">
+              <p className="text-xs text-neutral-600 dark:text-neutral-400">
                 {mode === 'PRODUCT_DISCOVERY' && 'Your dashboard will focus on pain points, feature requests, and user segments.'}
                 {mode === 'FEEDBACK_SATISFACTION' && 'Your dashboard will focus on satisfaction metrics, sentiment trends, and feedback analysis.'}
                 {mode === 'EXPLORATORY_GENERAL' && 'Your dashboard will focus on key themes, insights, and open-ended discoveries.'}

@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Send, Pause } from 'lucide-react';
+import { Send, Pause, Mic } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -29,11 +29,14 @@ export default function ConversationPage() {
   const [pauseUrl, setPauseUrl] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionSummary, setCompletionSummary] = useState<string | null>(null);
+  const [personaData, setPersonaData] = useState<any>(null);
   const [isCompletingConversation, setIsCompletingConversation] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -114,7 +117,8 @@ export default function ConversationPage() {
         }
       } catch (err) {
         console.error('Initialization error:', err);
-        setError('Failed to start conversation. Please try again.');
+        const errorMessage = err instanceof Error ? err.message : 'Failed to start conversation. Please try again.';
+        setError(errorMessage);
       } finally {
         setIsInitializing(false);
       }
@@ -170,6 +174,10 @@ export default function ConversationPage() {
         
         // Check if conversation should end
         if (data.data.shouldEnd) {
+          // Store persona data if provided
+          if (data.data.persona) {
+            setPersonaData(data.data.persona);
+          }
           // Show completion summary (use AI's final message as summary)
           setCompletionSummary(data.data.summary || data.data.aiResponse || 'Thank you for sharing your thoughts with us!');
         }
@@ -188,6 +196,84 @@ export default function ConversationPage() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  // Voice input using Web Speech API
+  const startVoiceInput = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Voice input is not supported in your browser. Please use Chrome, Edge, or Safari.');
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    let hasReceivedResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      console.log('🎤 Voice input started');
+    };
+
+    recognition.onresult = (event: any) => {
+      hasReceivedResults = true;
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join('');
+      setInputValue(transcript);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+      
+      // Handle different error types gracefully
+      switch (event.error) {
+        case 'not-allowed':
+          alert('Microphone access denied. Please enable microphone permissions in your browser settings.');
+          break;
+        case 'network':
+          // Show user-friendly message for network errors
+          if (!hasReceivedResults) {
+            setError('Voice input failed to connect. Check your internet connection and try again, or type your response.');
+          }
+          break;
+        case 'no-speech':
+          console.log('No speech detected');
+          break;
+        case 'aborted':
+          // User manually stopped - no action needed
+          break;
+        default:
+          console.warn('Speech recognition error:', event.error);
+      }
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      console.log('🎤 Voice input ended');
+    };
+
+    recognitionRef.current = recognition;
+    
+    try {
+      recognition.start();
+    } catch (err) {
+      console.error('Failed to start recognition:', err);
+      setIsListening(false);
+      setError('Failed to start voice input. Please try again or type your response.');
+    }
+  };
+
+  const stopVoiceInput = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
     }
   };
   
@@ -231,7 +317,10 @@ export default function ConversationPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ confirmed }),
+        body: JSON.stringify({ 
+          confirmed,
+          persona: personaData, // Send persona data to be saved
+        }),
       });
       
       if (!response.ok) {
@@ -442,9 +531,9 @@ export default function ConversationPage() {
                 <h2 className="text-[18px] sm:text-[20px] font-semibold text-[#0A0A0B] mb-3 sm:mb-4">
                   Summary of Our Conversation
                 </h2>
-                <p className="text-[13px] sm:text-[14px] text-[#3F3F46] mb-4 sm:mb-6">
+                <div className="text-[13px] sm:text-[14px] text-[#3F3F46] mb-4 sm:mb-6 whitespace-pre-wrap">
                   {completionSummary}
-                </p>
+                </div>
                 <p className="text-[12px] sm:text-[13px] text-[#71717A] mb-4 sm:mb-6">
                   Does this accurately capture what you shared?
                 </p>
@@ -521,17 +610,31 @@ export default function ConversationPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="Type your response..."
                 disabled={isLoading}
-                className="flex-1 resize-none px-3 sm:px-4 py-2.5 sm:py-3 border border-[#D4D4D8] rounded-[8px] text-[13px] sm:text-[14px] text-[#0A0A0B] placeholder:text-[#71717A] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 disabled:bg-[#F4F4F5] disabled:cursor-not-allowed"
+                className="flex-1 resize-none px-3 sm:px-4 py-2.5 sm:py-3 border border-[#D4D4D8] rounded-[8px] text-[13px] sm:text-[14px] text-[#0A0A0B] placeholder:text-[#71717A] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 disabled:bg-[#F4F4F5] disabled:cursor-not-allowed scrollbar-custom"
                 rows={1}
                 style={{ maxHeight: '120px' }}
               />
               
               <button
+                onClick={isListening ? stopVoiceInput : startVoiceInput}
+                disabled={isLoading}
+                className={`flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-[8px] transition-all duration-150 ${
+                  isListening
+                    ? 'bg-[#DC2626] hover:bg-[#B91C1C] text-white'
+                    : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                } disabled:bg-[#F4F4F5] disabled:cursor-not-allowed`}
+                aria-label={isListening ? 'Stop recording' : 'Start voice input'}
+                title={isListening ? 'Stop recording' : 'Record voice response'}
+              >
+                <Mic className={`w-5 h-5 sm:w-5 sm:h-5 ${isListening ? 'animate-pulse' : ''}`} />
+              </button>
+              
+              <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || isLoading}
-                className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-[#2563EB] text-white rounded-[8px] hover:bg-[#1D4ED8] disabled:bg-[#D4D4D8] disabled:cursor-not-allowed transition-colors duration-150"
+                className="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-[#2563EB] text-white rounded-[8px] hover:bg-[#1D4ED8] disabled:bg-[#D4D4D8] disabled:cursor-not-allowed transition-colors duration-150"
               >
-                <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Send className="w-5 h-5 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>

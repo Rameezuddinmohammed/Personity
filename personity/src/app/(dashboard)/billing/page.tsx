@@ -243,7 +243,7 @@ export default function BillingPage() {
                             : priceDisplay}
                         </div>
                         <span className="bg-green-600 dark:bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full">
-                          50% OFF
+                          23% OFF
                         </span>
                       </div>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">

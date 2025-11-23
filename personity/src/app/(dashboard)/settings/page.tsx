@@ -317,36 +317,36 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-neutral-200">
+            <div className="flex items-center justify-between py-3 border-b border-neutral-200 dark:border-zinc-700">
               <div>
-                <p className="text-sm font-medium text-neutral-950">New Responses</p>
-                <p className="text-xs text-neutral-600">Get notified when someone completes a survey</p>
+                <p className="text-sm font-medium text-neutral-950 dark:text-neutral-50">New Responses</p>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">Get notified when someone completes a survey</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" className="sr-only peer" defaultChecked />
-                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-neutral-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600/20 rounded-full peer peer-checked:after:translate-x-[1.25rem] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-blue-600"></div>
               </label>
             </div>
 
-            <div className="flex items-center justify-between py-3 border-b border-neutral-200">
+            <div className="flex items-center justify-between py-3 border-b border-neutral-200 dark:border-zinc-700">
               <div>
-                <p className="text-sm font-medium text-neutral-950">Usage Alerts</p>
-                <p className="text-xs text-neutral-600">Alert when reaching 80% of response limit</p>
+                <p className="text-sm font-medium text-neutral-950 dark:text-neutral-50">Usage Alerts</p>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">Alert when reaching 80% of response limit</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" className="sr-only peer" defaultChecked />
-                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-neutral-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600/20 rounded-full peer peer-checked:after:translate-x-[1.25rem] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-blue-600"></div>
               </label>
             </div>
 
             <div className="flex items-center justify-between py-3">
               <div>
-                <p className="text-sm font-medium text-neutral-950">Product Updates</p>
-                <p className="text-xs text-neutral-600">News about new features and improvements</p>
+                <p className="text-sm font-medium text-neutral-950 dark:text-neutral-50">Product Updates</p>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">News about new features and improvements</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" className="sr-only peer" defaultChecked />
-                <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="w-11 h-6 bg-neutral-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600/20 rounded-full peer peer-checked:after:translate-x-[1.25rem] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-blue-600"></div>
               </label>
             </div>
           </div>

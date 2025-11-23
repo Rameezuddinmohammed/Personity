@@ -73,10 +73,13 @@ export async function GET(
     const conversationIds = conversations?.map(c => c.id) || [];
 
     // Finally get persona insights from response analysis
+    // ONLY include quality responses (score >= 6 and not flagged)
     const { data: responses } = await supabase
       .from('ResponseAnalysis')
       .select('personaInsights')
       .in('conversationId', conversationIds)
+      .gte('qualityScore', 6)
+      .eq('isFlagged', false)
       .not('personaInsights', 'is', null);
 
     // Aggregate persona data

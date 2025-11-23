@@ -23,13 +23,27 @@ export async function POST(
       .from('Survey')
       .select('*')
       .eq('shortUrl', shortUrl)
-      .eq('status', 'ACTIVE')
       .single();
     
     if (surveyError || !survey) {
       return NextResponse.json(
-        { error: 'Survey not found or inactive' },
+        { error: 'Survey not found' },
         { status: 404 }
+      );
+    }
+    
+    // Check survey status
+    if (survey.status === 'PAUSED') {
+      return NextResponse.json(
+        { error: 'This survey has been temporarily paused by the creator. Please check back later.' },
+        { status: 403 }
+      );
+    }
+    
+    if (survey.status !== 'ACTIVE') {
+      return NextResponse.json(
+        { error: 'This survey is no longer accepting responses.' },
+        { status: 403 }
       );
     }
     

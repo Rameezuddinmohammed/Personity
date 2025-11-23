@@ -38,12 +38,12 @@ export default function DashboardLayout({
   }, []);
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--color-muted))]">
+    <div className="min-h-screen bg-neutral-50 dark:bg-black">
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 h-16 bg-[hsl(var(--color-card))] border-b px-6 flex items-center justify-between">
+      <header className="md:hidden sticky top-0 z-50 h-16 bg-white dark:bg-zinc-900 border-b border-neutral-200 dark:border-zinc-800 px-6 flex items-center justify-between">
         <Link
           href="/dashboard"
-          className="text-xl font-bold text-[hsl(var(--color-primary))]"
+          className="text-xl font-bold text-neutral-950 dark:text-neutral-50"
         >
           Personity
         </Link>

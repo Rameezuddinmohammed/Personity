@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { generateAIResponse, calculateCost, AIMessage } from '@/lib/ai/azure-openai';
+import { generateAIResponse, AIMessage } from '@/lib/ai/azure-openai';
 import { loadConversationHistory, needsSummarization } from '@/lib/ai/conversation-history';
-import { identifyDiscussedTopics, areAllTopicsCovered } from '@/lib/ai/topic-tracker';
 import { checkResponseQuality, generateReEngagementMessage, trackLowQualityResponse } from '@/lib/ai/quality-detection';
 import { checkForSpam, flagSession } from '@/lib/fraud/spam-detection';
 import { autoBanIfNeeded } from '@/lib/fraud/ip-banning';
 import { conversationRateLimit, getClientIp } from '@/lib/rate-limit';
+import { generateDynamicPrompt, extractConversationState } from '@/lib/ai/master-prompt';
+import { validateResponseQuality } from '@/lib/ai/response-quality-validator';
+import { detectContradiction, shouldAskClarification } from '@/lib/ai/contradiction-detector';
+import { compressConversationHistory, needsCompression } from '@/lib/ai/conversation-compression';
+import { suggestFollowUp, generateFollowUpInstruction } from '@/lib/ai/follow-up-logic';
 import { z } from 'zod';
 
 interface RouteContext {
@@ -129,13 +133,13 @@ export async function POST(
       );
     }
     
-    // Check response quality
-    const qualityCheck = await checkResponseQuality(message, exchanges);
+    // Check response quality (user input)
+    const userQualityCheck = await checkResponseQuality(message, exchanges);
     
     let shouldReEngage = false;
     let reEngagementMessage: string | undefined;
     
-    if (qualityCheck.isLowQuality && qualityCheck.shouldReEngage) {
+    if (userQualityCheck.isLowQuality && userQualityCheck.shouldReEngage) {
       const currentState = session.currentState as {
         exchangeCount: number;
         topicsCovered: string[];
@@ -233,29 +237,68 @@ export async function POST(
       });
     }
     
-    // Check if history needs summarization
-    let processedExchanges = exchanges;
-    if (needsSummarization(exchanges, masterPrompt)) {
-      // Summarize history to prevent token overflow
-      const generateSummary = async (messages: AIMessage[]) => {
-        const summaryResponse = await generateAIResponse(messages, {
-          temperature: 0.5,
-          maxTokens: 150,
-        });
-        return summaryResponse.content;
-      };
-      
-      processedExchanges = await loadConversationHistory(
-        exchanges,
-        masterPrompt,
-        generateSummary
-      );
+    // Extract conversation state for dynamic prompt
+    const survey = session.Survey as any;
+    const surveyTopics = (survey.topics as string[]) || [];
+    const surveySettings = survey.settings as {
+      length: 'quick' | 'standard' | 'deep';
+      tone: 'professional' | 'friendly' | 'casual';
+      stopCondition: 'questions' | 'topics_covered';
+      maxQuestions?: number;
+    };
+    
+    // Build conversation state from exchanges
+    const conversationState = extractConversationState(exchanges, surveyTopics);
+    
+    // Suggest intelligent follow-up based on user response
+    const currentTopic = conversationState.coveredTopics[conversationState.coveredTopics.length - 1];
+    const topicDepth = conversationState.topicDepth[currentTopic || ''] || 0;
+    const followUpSuggestion = suggestFollowUp(message, {
+      currentTopic,
+      topicDepth,
+      previousFollowUps: 0, // TODO: Track this in state
+    });
+    
+    console.log('[Follow-Up]', followUpSuggestion.reason, '- Priority:', followUpSuggestion.priority);
+    
+    // Parse survey config for dynamic prompt
+    const surveyConfig = {
+      objective: survey.objective,
+      context: survey.context || {},
+      documentContext: survey.documentContext,
+      topics: surveyTopics,
+      settings: surveySettings,
+      mode: survey.mode || 'EXPLORATORY_GENERAL',
+    };
+    
+    // Generate dynamic system prompt with current state
+    let dynamicPrompt = generateDynamicPrompt(surveyConfig, conversationState);
+    
+    // Add follow-up instruction if suggested
+    if (followUpSuggestion.shouldFollowUp) {
+      dynamicPrompt += `\n\n${generateFollowUpInstruction(followUpSuggestion, currentTopic)}`;
     }
     
+    // Check if conversation needs compression (after 10+ exchanges)
+    let processedExchanges = exchanges;
+    let compressionSummary = null;
+    
+    if (needsCompression(exchanges)) {
+      console.log('[Compression] Compressing conversation history...');
+      const { compressedExchanges, summary } = await compressConversationHistory(
+        exchanges,
+        surveyTopics
+      );
+      processedExchanges = compressedExchanges;
+      compressionSummary = summary;
+      console.log('[Compression] Compressed from', exchanges.length, 'to', compressedExchanges.length, 'exchanges');
+    }
+    
+    // Build messages with DYNAMIC system prompt (regenerated each turn)
     const messages: AIMessage[] = [
       {
         role: 'system',
-        content: masterPrompt,
+        content: dynamicPrompt, // ← Dynamic prompt with state
       },
       ...processedExchanges.map((ex) => ({
         role: ex.role as 'user' | 'assistant' | 'system',
@@ -267,6 +310,52 @@ export async function POST(
       },
     ];
     
+    // Check for contradictions in user responses
+    const userResponses = exchanges.filter(ex => ex.role === 'user').map(ex => ex.content);
+    const contradiction = detectContradiction(message, userResponses);
+    
+    // If contradiction detected, ask clarifying question instead of continuing
+    if (shouldAskClarification(contradiction, message)) {
+      // Return clarifying question immediately
+      const clarifyingExchange = [
+        ...exchanges,
+        {
+          role: 'user',
+          content: message,
+          timestamp: new Date().toISOString(),
+        },
+        {
+          role: 'assistant',
+          content: contradiction.clarifyingQuestion,
+          timestamp: new Date().toISOString(),
+        },
+      ];
+      
+      await supabase
+        .from('Conversation')
+        .update({
+          exchanges: clarifyingExchange,
+        })
+        .eq('id', conversation.id);
+      
+      await supabase
+        .from('ConversationSession')
+        .update({
+          lastMessageAt: new Date().toISOString(),
+        })
+        .eq('id', session.id);
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          aiResponse: contradiction.clarifyingQuestion,
+          progress: 0, // Don't update progress for clarification
+          shouldEnd: false,
+          isClarification: true,
+        },
+      });
+    }
+    
     // Generate AI response with structured output
     const { generateStructuredConversationResponse } = await import('@/lib/ai/structured-response');
     
@@ -274,6 +363,84 @@ export async function POST(
       temperature: 0.7,
       maxTokens: 300,
     });
+    
+    // Validate AI response quality (ListenLabs-level check)
+    const previousAIQuestions = exchanges
+      .filter(ex => ex.role === 'assistant')
+      .map(ex => ex.content);
+    
+    let aiQualityCheck = validateResponseQuality(
+      structuredResponse.message,
+      message,
+      previousAIQuestions,
+      surveyConfig.mode || 'EXPLORATORY_GENERAL'
+    );
+    
+    // Log quality score for monitoring
+    console.log(`[AI Quality Check] Score: ${aiQualityCheck.score}/10`, {
+      passed: aiQualityCheck.passed,
+      issues: aiQualityCheck.issues,
+      suggestions: aiQualityCheck.suggestions,
+    });
+    
+    // Auto-regenerate if quality is too low (score < 7) - ONE retry only
+    if (!aiQualityCheck.passed && aiQualityCheck.score < 7) {
+      console.log('[AI Quality] Low score detected, regenerating response...');
+      
+      // Add quality feedback to the prompt
+      const regenerationMessages: AIMessage[] = [
+        ...messages,
+        {
+          role: 'assistant',
+          content: structuredResponse.message,
+        },
+        {
+          role: 'system',
+          content: `QUALITY CHECK FAILED (Score: ${aiQualityCheck.score}/10)
+
+Issues detected:
+${aiQualityCheck.issues.map(i => `- ${i}`).join('\n')}
+
+Suggestions:
+${aiQualityCheck.suggestions.map(s => `- ${s}`).join('\n')}
+
+Generate an improved response that addresses these issues. Remember:
+1. Reference specific words from their last response
+2. Keep it to 1-2 sentences maximum
+3. Avoid banned phrases
+4. Ask a clear, direct question`,
+        },
+      ];
+      
+      // Regenerate response
+      const regeneratedResponse = await generateStructuredConversationResponse(regenerationMessages, {
+        temperature: 0.7,
+        maxTokens: 300,
+      });
+      
+      // Validate regenerated response
+      const regeneratedQualityCheck = validateResponseQuality(
+        regeneratedResponse.message,
+        message,
+        previousAIQuestions,
+        surveyConfig.mode || 'EXPLORATORY_GENERAL'
+      );
+      
+      console.log(`[AI Quality] Regenerated score: ${regeneratedQualityCheck.score}/10`);
+      
+      // Use regenerated response if it's better
+      if (regeneratedQualityCheck.score > aiQualityCheck.score) {
+        structuredResponse.message = regeneratedResponse.message;
+        structuredResponse.shouldEnd = regeneratedResponse.shouldEnd;
+        structuredResponse.reason = regeneratedResponse.reason;
+        structuredResponse.summary = regeneratedResponse.summary;
+        structuredResponse.persona = regeneratedResponse.persona;
+        aiQualityCheck = regeneratedQualityCheck;
+        console.log('[AI Quality] Using regenerated response (improved)');
+      } else {
+        console.log('[AI Quality] Keeping original response (regeneration did not improve)');
+      }
+    }
     
     // For cost calculation, we need to make a regular call to get usage stats
     // This is a limitation - we'll estimate based on message length
@@ -318,27 +485,32 @@ export async function POST(
       })
       .eq('id', conversation.id);
     
-    // Update session state with topic tracking
+    // Update session state with enhanced tracking
     const currentState = session.currentState as {
       exchangeCount: number;
       topicsCovered: string[];
+      lowQualityCount?: number;
+      hasReEngaged?: boolean;
+      isFlagged?: boolean;
     };
     
-    // Identify newly discussed topics
-    const surveyTopics = ((session.Survey as any).topics as string[]) || [];
-    const discussedTopics = await identifyDiscussedTopics(
-      updatedExchanges,
-      surveyTopics
-    );
+    // Extract updated conversation state after this exchange
+    const updatedConversationState = extractConversationState(updatedExchanges, surveyTopics);
     
-    // Merge with previously covered topics (unique)
-    const allCoveredTopics = Array.from(
-      new Set([...currentState.topicsCovered, ...discussedTopics])
-    );
+    // Merge persona insights from AI response if provided
+    if (structuredResponse.persona) {
+      Object.assign(updatedConversationState.persona, structuredResponse.persona);
+    }
     
+    // Build enhanced state for storage
     const updatedState = {
       exchangeCount: currentState.exchangeCount + 1,
-      topicsCovered: allCoveredTopics,
+      topicsCovered: updatedConversationState.coveredTopics,
+      lowQualityCount: currentState.lowQualityCount || 0,
+      hasReEngaged: currentState.hasReEngaged || false,
+      isFlagged: updatedConversationState.isFlagged || currentState.isFlagged || false,
+      persona: updatedConversationState.persona,
+      keyInsights: updatedConversationState.keyInsights,
     };
     
     await supabase
@@ -359,12 +531,7 @@ export async function POST(
       cost,
     });
     
-    // Calculate progress (simple: based on exchange count)
-    const surveySettings = (session.Survey as any).settings as {
-      stopCondition: string;
-      maxQuestions?: number;
-    };
-    
+    // Calculate progress based on state
     let progress = 0;
     if (surveySettings.stopCondition === 'questions' && surveySettings.maxQuestions) {
       progress = Math.min(
@@ -372,24 +539,69 @@ export async function POST(
         100
       );
     } else {
-      // For topics_covered, use a simple heuristic
-      const topics = ((session.Survey as any).topics as string[]) || [];
+      // For topics_covered, use actual covered topics from state
       progress = Math.min(
-        (updatedState.topicsCovered.length / topics.length) * 100,
+        (updatedState.topicsCovered.length / surveyTopics.length) * 100,
         100
       );
     }
+    
+    // Track ending phase for 3-step protocol
+    const currentEndingPhase = (updatedState as any).endingPhase || 'none';
+    let newEndingPhase = currentEndingPhase;
+    
+    // Detect if AI asked reflection question
+    const askedReflection = structuredResponse.message.toLowerCase().includes('anything important i didn\'t ask') ||
+                           structuredResponse.message.toLowerCase().includes('anything i missed') ||
+                           structuredResponse.message.toLowerCase().includes('anything else i should');
+    
+    // Detect if AI showed summary
+    const showedSummary = structuredResponse.message.includes('•') || 
+                         structuredResponse.message.toLowerCase().includes('let me make sure') ||
+                         structuredResponse.message.toLowerCase().includes('did i capture');
+    
+    if (askedReflection && currentEndingPhase === 'none') {
+      newEndingPhase = 'reflection_asked';
+      console.log('[Ending Phase] STEP 1: Reflection question asked');
+    } else if (showedSummary && currentEndingPhase === 'reflection_asked') {
+      newEndingPhase = 'summary_shown';
+      console.log('[Ending Phase] STEP 2: Summary shown');
+    } else if (structuredResponse.shouldEnd && currentEndingPhase === 'summary_shown') {
+      newEndingPhase = 'confirmed';
+      console.log('[Ending Phase] STEP 3: User confirmed, ending conversation');
+    }
+    
+    // Update ending phase in state
+    (updatedState as any).endingPhase = newEndingPhase;
     
     // Determine if conversation should end
     // Use the AI's explicit signal from structured response
     let shouldEnd = structuredResponse.shouldEnd;
     let summary = structuredResponse.summary || structuredResponse.message;
     
+    // Only allow ending if proper protocol followed (unless disqualified/max questions)
+    if (shouldEnd && structuredResponse.reason === 'completed') {
+      if (newEndingPhase !== 'confirmed' && newEndingPhase !== 'summary_shown') {
+        console.warn('[Ending Phase] AI tried to end without following 3-step protocol. Preventing end.');
+        shouldEnd = false;
+        summary = '';
+      }
+    }
+    
     // Override: Always end if max questions reached
     if (surveySettings.stopCondition === 'questions' && surveySettings.maxQuestions) {
       if (updatedState.exchangeCount >= surveySettings.maxQuestions) {
         shouldEnd = true;
-        summary = summary || 'Maximum questions reached. Thank you for your time!';
+        
+        // If no summary provided, generate one from key insights
+        if (!summary || summary === structuredResponse.message) {
+          const insights = updatedConversationState.keyInsights;
+          if (insights && insights.length > 0) {
+            summary = `Thank you for your time! Here's what we discussed:\n\n${insights.map((insight, i) => `• ${insight}`).join('\n')}\n\nMaximum questions reached.`;
+          } else {
+            summary = 'Maximum questions reached. Thank you for sharing your thoughts with us!';
+          }
+        }
       }
     }
     
@@ -405,8 +617,20 @@ export async function POST(
         topicsCovered: updatedState.topicsCovered,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Message handling error:', error);
+    
+    // Handle content filter errors
+    if (error?.message === 'CONTENT_FILTERED') {
+      return NextResponse.json(
+        { 
+          error: 'Your message contains inappropriate content. Please keep responses professional and on-topic.',
+          contentFiltered: true,
+        },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

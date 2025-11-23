@@ -30,7 +30,7 @@ export function WizardProgress({ currentStep, steps }: WizardProgressProps) {
     <div className="relative mb-16">
       {/* Connector Line Background - spans from first to last button center */}
       <div 
-        className="absolute top-5 h-[2px] bg-neutral-200 z-0" 
+        className="absolute top-5 h-[2px] bg-neutral-200 dark:bg-zinc-700 z-0" 
         style={{
           left: `${lineLeftOffset}%`,
           right: `${lineLeftOffset}%`,
@@ -39,7 +39,7 @@ export function WizardProgress({ currentStep, steps }: WizardProgressProps) {
       
       {/* Progress Line - fills from first button center */}
       <div
-        className="absolute top-5 h-[2px] bg-blue-600 z-0 transition-all duration-500 ease-out"
+        className="absolute top-5 h-[2px] bg-blue-600 dark:bg-blue-500 z-0 transition-all duration-500 ease-out"
         style={{
           left: `${lineLeftOffset}%`,
           width: `${(progressPercentage / 100) * lineWidthPercentage}%`,
@@ -66,10 +66,10 @@ export function WizardProgress({ currentStep, steps }: WizardProgressProps) {
                   text-sm font-semibold transition-all duration-300
                   ${
                     isCompleted
-                      ? 'bg-green-600 text-white'
+                      ? 'bg-green-600 dark:bg-green-500 text-white'
                       : isActive
-                      ? 'bg-blue-600 text-white ring-4 ring-blue-100 scale-110'
-                      : 'bg-white border-2 border-neutral-300 text-neutral-400'
+                      ? 'bg-blue-600 dark:bg-blue-500 text-white ring-4 ring-blue-100 dark:ring-blue-900/50 scale-110'
+                      : 'bg-white dark:bg-zinc-800 border-2 border-neutral-300 dark:border-zinc-700 text-neutral-400 dark:text-neutral-500'
                   }
                 `}
               >
@@ -86,10 +86,10 @@ export function WizardProgress({ currentStep, steps }: WizardProgressProps) {
                   text-sm font-medium transition-colors duration-200
                   ${
                     isActive
-                      ? 'text-neutral-950'
+                      ? 'text-neutral-950 dark:text-neutral-50'
                       : isCompleted
-                      ? 'text-neutral-700'
-                      : 'text-neutral-400'
+                      ? 'text-neutral-700 dark:text-neutral-300'
+                      : 'text-neutral-400 dark:text-neutral-500'
                   }
                 `}
               >

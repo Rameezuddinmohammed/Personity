@@ -56,12 +56,24 @@ export async function POST(
       );
     }
     
-    // Check if session is active
-    if (session.status !== 'ACTIVE') {
+    // Check if session is active or already completed
+    if (session.status !== 'ACTIVE' && session.status !== 'COMPLETED') {
+      console.error(`[Complete] Session status is ${session.status}, expected ACTIVE or COMPLETED`);
       return NextResponse.json(
-        { error: 'Session is not active' },
+        { error: `Session is ${session.status.toLowerCase()}. Cannot complete.` },
         { status: 400 }
       );
+    }
+    
+    // If already completed, just return success
+    if (session.status === 'COMPLETED') {
+      return NextResponse.json({
+        success: true,
+        data: {
+          completed: true,
+          alreadyCompleted: true,
+        },
+      });
     }
     
     if (!confirmed) {

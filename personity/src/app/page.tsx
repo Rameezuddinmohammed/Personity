@@ -6,6 +6,7 @@ import { WobbleCard } from '@/components/ui/wobble-card';
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
 import { ComparisonSection } from '@/components/landing/comparison-section';
 import { HowItWorksSection } from '@/components/landing/how-it-works-section';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
@@ -126,10 +127,10 @@ export default function Home() {
             </WobbleCard>
 
             <WobbleCard containerClassName="col-span-1 min-h-[300px]">
-              <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
+              <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white dark:text-white">
                 Automated Analysis
               </h2>
-              <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
+              <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200 dark:text-neutral-200">
                 AI extracts themes, sentiment, and key quotes from every conversation—no manual coding required.
               </p>
             </WobbleCard>
@@ -185,20 +186,23 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-neutral-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
         <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-sm text-neutral-600 dark:text-neutral-400">
               © 2025 Personity. All rights reserved.
             </div>
-            <div className="flex gap-6 text-sm text-neutral-600 dark:text-neutral-400">
-              <Link href="/privacy" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
-                Privacy
-              </Link>
-              <Link href="/terms" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
-                Terms
-              </Link>
-              <a href="mailto:support@personity.app" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
-                Contact
-              </a>
+            <div className="flex items-center gap-6">
+              <div className="flex gap-6 text-sm text-neutral-600 dark:text-neutral-400">
+                <Link href="/privacy" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
+                  Privacy
+                </Link>
+                <Link href="/terms" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
+                  Terms
+                </Link>
+                <a href="mailto:support@personity.app" className="hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors">
+                  Contact
+                </a>
+              </div>
+              <ThemeToggle />
             </div>
           </div>
         </div>

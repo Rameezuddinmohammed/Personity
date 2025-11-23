@@ -67,13 +67,18 @@ export function TestConversation({
 
       const data = await response.json();
       if (data.success) {
-        setMessages([
-          {
-            role: 'assistant',
-            content: data.data.message,
+        // Handle multiple messages (intro + first question)
+        const aiMessages = Array.isArray(data.data.messages) 
+          ? data.data.messages 
+          : [data.data.message || data.data.messages];
+        
+        setMessages(
+          aiMessages.map((content: string) => ({
+            role: 'assistant' as const,
+            content,
             timestamp: new Date(),
-          },
-        ]);
+          }))
+        );
         setIsInitialized(true);
       }
     } catch (error) {
@@ -113,13 +118,18 @@ export function TestConversation({
 
       const data = await response.json();
       if (data.success) {
+        // Handle multiple messages (can be array or single)
+        const aiMessages = Array.isArray(data.data.messages) 
+          ? data.data.messages 
+          : [data.data.message || data.data.messages];
+        
         setMessages((prev) => [
           ...prev,
-          {
-            role: 'assistant',
-            content: data.data.message,
+          ...aiMessages.map((content: string) => ({
+            role: 'assistant' as const,
+            content,
             timestamp: new Date(),
-          },
+          })),
         ]);
       }
     } catch (error) {
@@ -143,12 +153,12 @@ export function TestConversation({
   };
 
   return (
-    <div className="flex flex-col h-[500px] bg-white rounded-lg border border-n-200">
+    <div className="flex flex-col h-[500px] bg-white dark:bg-zinc-900 rounded-lg border border-neutral-200 dark:border-zinc-700">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-n-200">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-zinc-700">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-          <span className="text-xs font-medium text-n-700">Test Mode</span>
+          <div className="w-2 h-2 rounded-full bg-green-600 dark:bg-green-500 animate-pulse" />
+          <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">Test Mode</span>
         </div>
         <Button
           variant="ghost"
@@ -173,8 +183,8 @@ export function TestConversation({
             <div
               className={`max-w-[80%] px-4 py-3 rounded-xl text-sm leading-relaxed ${
                 message.role === 'user'
-                  ? 'bg-primary/10 text-n-950 rounded-br-sm'
-                  : 'bg-n-100 text-n-950 rounded-bl-sm'
+                  ? 'bg-primary/10 text-neutral-950 dark:text-neutral-50 rounded-br-sm'
+                  : 'bg-neutral-100 dark:bg-zinc-800 text-neutral-950 dark:text-neutral-50 rounded-bl-sm'
               }`}
             >
               {message.content}
@@ -184,12 +194,12 @@ export function TestConversation({
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="max-w-[80%] px-4 py-3 rounded-xl rounded-bl-sm bg-n-100">
+            <div className="max-w-[80%] px-4 py-3 rounded-xl rounded-bl-sm bg-neutral-100 dark:bg-zinc-800">
               <div className="flex items-center gap-2">
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 rounded-full bg-n-400 animate-bounce [animation-delay:-0.3s]" />
-                  <div className="w-2 h-2 rounded-full bg-n-400 animate-bounce [animation-delay:-0.15s]" />
-                  <div className="w-2 h-2 rounded-full bg-n-400 animate-bounce" />
+                  <div className="w-2 h-2 rounded-full bg-neutral-400 dark:bg-neutral-500 animate-bounce [animation-delay:-0.3s]" />
+                  <div className="w-2 h-2 rounded-full bg-neutral-400 dark:bg-neutral-500 animate-bounce [animation-delay:-0.15s]" />
+                  <div className="w-2 h-2 rounded-full bg-neutral-400 dark:bg-neutral-500 animate-bounce" />
                 </div>
               </div>
             </div>
@@ -200,7 +210,7 @@ export function TestConversation({
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-n-200">
+      <div className="p-4 border-t border-neutral-200 dark:border-zinc-700">
         <div className="flex gap-3">
           <textarea
             value={input}
@@ -209,14 +219,16 @@ export function TestConversation({
             placeholder="Type your response..."
             disabled={isLoading || !isInitialized}
             className="
-              flex-1 min-h-[48px] max-h-[120px] px-4 py-3 text-sm text-n-950
-              bg-white border border-n-300 rounded-xl resize-none
+              flex-1 min-h-[48px] max-h-[120px] px-4 py-3 text-sm text-neutral-950 dark:text-neutral-50
+              bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-xl resize-none
               transition-all duration-150 ease-out
-              placeholder:text-n-400
-              hover:border-n-400
+              placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+              hover:border-neutral-400 dark:hover:border-zinc-600
               focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
-              disabled:bg-n-50 disabled:border-n-200 disabled:text-n-500
+              disabled:bg-neutral-50 dark:disabled:bg-zinc-900 disabled:border-neutral-200 dark:disabled:border-zinc-800 disabled:text-neutral-500 dark:disabled:text-neutral-600
+              scrollbar-hide
             "
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             rows={1}
           />
           <button
@@ -228,7 +240,7 @@ export function TestConversation({
               transition-all duration-150 ease-out
               hover:bg-primary-hover
               active:scale-95
-              disabled:bg-n-300 disabled:cursor-not-allowed
+              disabled:bg-neutral-300 dark:disabled:bg-zinc-700 disabled:cursor-not-allowed
             "
           >
             {isLoading ? (

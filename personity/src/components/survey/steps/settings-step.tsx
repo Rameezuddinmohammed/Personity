@@ -9,10 +9,10 @@ export function SettingsStep() {
     <div>
       {/* Step Header */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold text-n-950 mb-2">
+        <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
           Configure conversation settings
         </h2>
-        <p className="text-sm text-n-600 leading-relaxed">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
           Customize how the AI conducts conversations with your respondents.
         </p>
       </div>
@@ -23,7 +23,7 @@ export function SettingsStep() {
         <div>
           <label
             htmlFor="length"
-            className="block text-[13px] font-medium text-n-700 mb-2"
+            className="block text-[13px] font-medium text-neutral-700 dark:text-neutral-300 mb-2"
           >
             Conversation Length
           </label>
@@ -37,11 +37,11 @@ export function SettingsStep() {
                 })
               }
               className="
-                w-full px-4 py-3 pr-10 text-sm text-n-950 bg-white
-                border border-n-300 rounded-lg cursor-pointer
+                w-full px-4 py-3 pr-10 text-sm text-neutral-950 dark:text-neutral-50 bg-white dark:bg-zinc-800
+                border border-neutral-300 dark:border-zinc-700 rounded-lg cursor-pointer
                 appearance-none
                 transition-all duration-150 ease-out
-                hover:border-n-400
+                hover:border-neutral-400 dark:hover:border-zinc-600
                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
               "
             >
@@ -50,7 +50,7 @@ export function SettingsStep() {
               <option value="deep">Deep (13-20 questions)</option>
             </select>
             <svg
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-n-400 pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500 pointer-events-none"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -63,7 +63,7 @@ export function SettingsStep() {
               />
             </svg>
           </div>
-          <p className="text-xs text-n-500 mt-2">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
             Estimated completion time varies by length
           </p>
         </div>
@@ -72,7 +72,7 @@ export function SettingsStep() {
         <div>
           <label
             htmlFor="tone"
-            className="block text-[13px] font-medium text-n-700 mb-2"
+            className="block text-[13px] font-medium text-neutral-700 dark:text-neutral-300 mb-2"
           >
             Conversation Tone
           </label>
@@ -89,11 +89,11 @@ export function SettingsStep() {
                 })
               }
               className="
-                w-full px-4 py-3 pr-10 text-sm text-n-950 bg-white
-                border border-n-300 rounded-lg cursor-pointer
+                w-full px-4 py-3 pr-10 text-sm text-neutral-950 dark:text-neutral-50 bg-white dark:bg-zinc-800
+                border border-neutral-300 dark:border-zinc-700 rounded-lg cursor-pointer
                 appearance-none
                 transition-all duration-150 ease-out
-                hover:border-n-400
+                hover:border-neutral-400 dark:hover:border-zinc-600
                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
               "
             >
@@ -102,7 +102,7 @@ export function SettingsStep() {
               <option value="casual">Casual</option>
             </select>
             <svg
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-n-400 pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500 pointer-events-none"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -115,7 +115,7 @@ export function SettingsStep() {
               />
             </svg>
           </div>
-          <p className="text-xs text-n-500 mt-2">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
             How the AI should communicate
           </p>
         </div>
@@ -123,11 +123,11 @@ export function SettingsStep() {
 
       {/* Stop Condition */}
       <div className="mt-6">
-        <label className="block text-[13px] font-medium text-n-700 mb-3">
+        <label className="block text-[13px] font-medium text-neutral-700 dark:text-neutral-300 mb-3">
           When should the conversation end?
         </label>
         <div className="flex flex-col gap-3">
-          <label className="flex items-start gap-3 p-4 border border-n-300 rounded-lg cursor-pointer transition-all duration-150 hover:border-n-400 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+          <label className="flex items-start gap-3 p-4 border border-neutral-300 dark:border-zinc-700 rounded-lg cursor-pointer transition-all duration-150 hover:border-neutral-400 dark:hover:border-zinc-600 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
             <input
               type="radio"
               name="stopCondition"
@@ -136,32 +136,32 @@ export function SettingsStep() {
               onChange={(e) =>
                 setSettings({ stopCondition: 'topics_covered' })
               }
-              className="mt-0.5 w-4 h-4 text-primary border-n-300 focus:ring-2 focus:ring-primary/20"
+              className="mt-0.5 w-4 h-4 text-primary border-neutral-300 dark:border-zinc-700 focus:ring-2 focus:ring-primary/20"
             />
             <div className="flex-1">
-              <div className="text-sm font-medium text-n-950">
+              <div className="text-sm font-medium text-neutral-950 dark:text-neutral-50">
                 When all topics are covered
               </div>
-              <div className="text-xs text-n-600 mt-1">
+              <div className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
                 AI decides when sufficient depth is reached on all topics
               </div>
             </div>
           </label>
 
-          <label className="flex items-start gap-3 p-4 border border-n-300 rounded-lg cursor-pointer transition-all duration-150 hover:border-n-400 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+          <label className="flex items-start gap-3 p-4 border border-neutral-300 dark:border-zinc-700 rounded-lg cursor-pointer transition-all duration-150 hover:border-neutral-400 dark:hover:border-zinc-600 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
             <input
               type="radio"
               name="stopCondition"
               value="questions"
               checked={settings.stopCondition === 'questions'}
               onChange={(e) => setSettings({ stopCondition: 'questions' })}
-              className="mt-0.5 w-4 h-4 text-primary border-n-300 focus:ring-2 focus:ring-primary/20"
+              className="mt-0.5 w-4 h-4 text-primary border-neutral-300 dark:border-zinc-700 focus:ring-2 focus:ring-primary/20"
             />
             <div className="flex-1">
-              <div className="text-sm font-medium text-n-950">
+              <div className="text-sm font-medium text-neutral-950 dark:text-neutral-50">
                 After a specific number of questions
               </div>
-              <div className="text-xs text-n-600 mt-1">
+              <div className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
                 Set a maximum number of questions to ask
               </div>
             </div>
@@ -173,7 +173,7 @@ export function SettingsStep() {
           <div className="mt-4 ml-7">
             <label
               htmlFor="maxQuestions"
-              className="block text-[13px] font-medium text-n-700 mb-2"
+              className="block text-[13px] font-medium text-neutral-700 dark:text-neutral-300 mb-2"
             >
               Maximum Questions
             </label>
@@ -190,11 +190,11 @@ export function SettingsStep() {
               }
               placeholder="e.g., 15"
               className="
-                w-full max-w-[200px] px-4 py-3 text-sm text-n-950 bg-white
-                border border-n-300 rounded-lg
+                w-full max-w-[200px] px-4 py-3 text-sm text-neutral-950 dark:text-neutral-50 bg-white dark:bg-zinc-800
+                border border-neutral-300 dark:border-zinc-700 rounded-lg
                 transition-all duration-150 ease-out
-                placeholder:text-n-400
-                hover:border-n-400
+                placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+                hover:border-neutral-400 dark:hover:border-zinc-600
                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
               "
             />

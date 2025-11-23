@@ -10,9 +10,9 @@ export const PLANS = {
     priceDisplayMonthly: '₹0',
     priceDisplayYearly: '₹0',
     currency: 'INR',
-    responses: 50,
+    responses: 20,
     features: [
-      'Up to 50 responses/month',
+      'Up to 20 responses/month',
       'All core features',
       'PDF & CSV export',
       'Community support',
@@ -23,18 +23,18 @@ export const PLANS = {
     id: 'starter',
     name: 'Starter',
     description: 'Perfect for small teams and startups',
-    price: 249900, // BETA: 50% off - monthly in paise (₹2,499)
-    priceMonthly: 249900,
-    priceYearly: 2699000, // BETA: 50% off - ₹26,990 (was ₹53,990)
-    priceDisplayMonthly: '₹2,499',
-    priceDisplayYearly: '₹26,990',
-    priceDisplayYearlyPerMonth: '₹2,249', // ₹26,990 / 12
-    originalPriceMonthly: '₹4,999',
-    originalPriceYearly: '₹59,988',
+    price: 499900, // BETA: 23% off - monthly in paise (₹4,999)
+    priceMonthly: 499900,
+    priceYearly: 5399000, // BETA: 23% off - ₹53,990 (10% yearly discount)
+    priceDisplayMonthly: '₹4,999',
+    priceDisplayYearly: '₹53,990',
+    priceDisplayYearlyPerMonth: '₹4,499', // ₹53,990 / 12
+    originalPriceMonthly: '₹6,499',
+    originalPriceYearly: '₹69,990',
     currency: 'INR',
-    responses: 500,
+    responses: 200,
     features: [
-      'Up to 500 responses/month',
+      'Up to 200 responses/month',
       'All core features',
       'Remove branding',
       'PDF & CSV export',
@@ -45,18 +45,18 @@ export const PLANS = {
     id: 'pro',
     name: 'Pro',
     description: 'Essential for growing teams and companies',
-    price: 749900, // BETA: 50% off - monthly in paise (₹7,499)
-    priceMonthly: 749900,
-    priceYearly: 8099000, // BETA: 50% off - ₹80,990 (was ₹1,61,990)
-    priceDisplayMonthly: '₹7,499',
-    priceDisplayYearly: '₹80,990',
-    priceDisplayYearlyPerMonth: '₹6,749', // ₹80,990 / 12
-    originalPriceMonthly: '₹14,999',
-    originalPriceYearly: '₹1,79,988',
+    price: 1229900, // BETA: 23% off - monthly in paise (₹12,299)
+    priceMonthly: 1229900,
+    priceYearly: 13279000, // BETA: 23% off - ₹1,32,790 (10% yearly discount)
+    priceDisplayMonthly: '₹12,299',
+    priceDisplayYearly: '₹1,32,790',
+    priceDisplayYearlyPerMonth: '₹11,066', // ₹1,32,790 / 12
+    originalPriceMonthly: '₹15,999',
+    originalPriceYearly: '₹1,72,790',
     currency: 'INR',
-    responses: 2000,
+    responses: 500,
     features: [
-      'Up to 2,000 responses/month',
+      'Up to 500 responses/month',
       'All core features',
       'Remove branding',
       'PDF & CSV export',

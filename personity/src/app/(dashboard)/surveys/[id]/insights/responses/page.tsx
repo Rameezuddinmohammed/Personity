@@ -12,6 +12,7 @@ import {
   Smile,
   Meh,
   Frown,
+  Filter,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -52,7 +53,7 @@ export default function ResponsesPage() {
   }, [surveyId]);
 
   useEffect(() => {
-    // Client-side search filtering
+    // Client-side search filtering only
     if (searchQuery.trim() === '') {
       setFilteredResponses(responses);
     } else {
@@ -122,10 +123,10 @@ export default function ResponsesPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 bg-neutral-200 rounded w-1/4 animate-pulse"></div>
-        <div className="bg-white border border-neutral-200 rounded-xl p-6 animate-pulse">
-          <div className="h-6 bg-neutral-200 rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-neutral-200 rounded w-2/3"></div>
+        <div className="h-8 bg-neutral-200 dark:bg-zinc-800 rounded w-1/4 animate-pulse"></div>
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 animate-pulse">
+          <div className="h-6 bg-neutral-200 dark:bg-zinc-800 rounded w-1/3 mb-4"></div>
+          <div className="h-4 bg-neutral-200 dark:bg-zinc-800 rounded w-2/3"></div>
         </div>
       </div>
     );
@@ -134,7 +135,7 @@ export default function ResponsesPage() {
   if (!survey) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-600">Survey not found</p>
+        <p className="text-neutral-600 dark:text-neutral-400">Survey not found</p>
       </div>
     );
   }
@@ -144,7 +145,7 @@ export default function ResponsesPage() {
       {/* Back Button */}
       <button
         onClick={() => router.push(`/surveys/${surveyId}/insights`)}
-        className="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-950 mb-6 transition-colors"
+        className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Insights
@@ -152,38 +153,47 @@ export default function ResponsesPage() {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-neutral-950 tracking-tight mb-2">
+        <h1 className="text-2xl font-semibold text-neutral-950 dark:text-neutral-50 tracking-tight mb-2">
           Individual Responses
         </h1>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {survey.title} • {filteredResponses.length} {filteredResponses.length === 1 ? 'response' : 'responses'}
         </p>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-4 mb-6">
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-4 mb-6">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 dark:text-neutral-500" />
           <input
             type="text"
-            placeholder="Search responses by summary or themes..."
+            placeholder="Search all responses by summary or themes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg text-sm text-neutral-950 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600"
+            className="w-full pl-12 pr-4 py-3 bg-neutral-50 dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 rounded-lg text-sm text-neutral-950 dark:text-neutral-50 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 dark:focus:border-blue-500"
           />
         </div>
+        
+        {/* Info Note */}
+        {responses.some(r => r.qualityScore < 6 || r.isFlagged) && (
+          <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-zinc-700">
+            <p className="text-xs text-neutral-600 dark:text-neutral-400">
+              💡 Low-quality responses are tagged but shown here for transparency. They're automatically excluded from insights analysis.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Responses List */}
       {currentResponses.length === 0 ? (
-        <div className="bg-white border border-neutral-200 rounded-xl p-12 text-center">
-          <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <MessageSquare className="w-8 h-8 text-neutral-400" />
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-12 text-center">
+          <div className="w-16 h-16 bg-neutral-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <MessageSquare className="w-8 h-8 text-neutral-400 dark:text-neutral-500" />
           </div>
-          <h2 className="text-xl font-semibold text-neutral-950 mb-2">
+          <h2 className="text-xl font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
             {searchQuery ? 'No Matching Responses' : 'No Responses Yet'}
           </h2>
-          <p className="text-neutral-600 max-w-md mx-auto">
+          <p className="text-neutral-600 dark:text-neutral-400 max-w-md mx-auto">
             {searchQuery
               ? 'Try adjusting your search query'
               : 'Responses will appear here once conversations are completed'}
@@ -200,7 +210,7 @@ export default function ResponsesPage() {
                     `/surveys/${surveyId}/insights/responses/${response.conversationId}`
                   )
                 }
-                className="bg-white border border-neutral-200 rounded-xl p-6 hover:border-neutral-300 hover:shadow-sm transition-all cursor-pointer"
+                className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 hover:border-neutral-300 dark:hover:border-zinc-700 hover:shadow-sm transition-all cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -216,15 +226,26 @@ export default function ResponsesPage() {
                       </span>
                     </div>
 
+                    {/* Quality Score Badge */}
+                    <div className={`px-2.5 py-1 rounded-lg ${
+                      response.qualityScore >= 8 
+                        ? 'bg-green-600/10 text-green-600'
+                        : response.qualityScore >= 6
+                        ? 'bg-blue-600/10 text-blue-600'
+                        : 'bg-orange-600/10 text-orange-600'
+                    }`}>
+                      <span className="text-xs font-medium">Score: {response.qualityScore}/10</span>
+                    </div>
+
                     {/* Flagged Badge */}
                     {response.isFlagged && (
                       <div className="px-2.5 py-1 bg-red-600/10 text-red-600 rounded-lg">
-                        <span className="text-xs font-medium">Flagged</span>
+                        <span className="text-xs font-medium">Low Quality</span>
                       </div>
                     )}
                   </div>
 
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
                     {new Date(response.createdAt).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
@@ -234,24 +255,24 @@ export default function ResponsesPage() {
                 </div>
 
                 {/* Summary */}
-                <p className="text-sm text-neutral-700 mb-3 line-clamp-2">
+                <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-3 line-clamp-2">
                   {response.summary}
                 </p>
 
                 {/* Key Themes */}
                 {response.keyThemes.length > 0 && (
                   <div className="flex items-center gap-2 flex-wrap">
-                    <TrendingUp className="w-4 h-4 text-neutral-400" />
+                    <TrendingUp className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
                     {response.keyThemes.slice(0, 3).map((theme, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 bg-neutral-100 text-neutral-700 text-xs rounded"
+                        className="px-2 py-1 bg-neutral-100 dark:bg-zinc-800 text-neutral-700 dark:text-neutral-300 text-xs rounded"
                       >
                         {theme}
                       </span>
                     ))}
                     {response.keyThemes.length > 3 && (
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
                         +{response.keyThemes.length - 3} more
                       </span>
                     )}
@@ -263,8 +284,8 @@ export default function ResponsesPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between bg-white border border-neutral-200 rounded-xl p-4">
-              <p className="text-sm text-neutral-600">
+            <div className="flex items-center justify-between bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-4">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
                 Showing {startIndex + 1}-{Math.min(endIndex, filteredResponses.length)} of{' '}
                 {filteredResponses.length}
               </p>
@@ -299,7 +320,7 @@ export default function ResponsesPage() {
                         className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                           currentPage === pageNum
                             ? 'bg-blue-600 text-white'
-                            : 'text-neutral-600 hover:bg-neutral-100'
+                            : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-zinc-800'
                         }`}
                       >
                         {pageNum}

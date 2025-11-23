@@ -161,7 +161,7 @@ export default function InsightsPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 bg-neutral-200 rounded w-1/4 animate-pulse"></div>
+        <div className="h-8 bg-neutral-200 dark:bg-zinc-800 rounded w-1/4 animate-pulse"></div>
         <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 animate-pulse">
           <div className="h-6 bg-neutral-200 dark:bg-zinc-800 rounded w-1/3 mb-4"></div>
           <div className="h-4 bg-neutral-200 dark:bg-zinc-800 rounded w-2/3"></div>
@@ -297,9 +297,9 @@ export default function InsightsPage() {
         </div>
 
         {/* Info Banner */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-center gap-3">
-          <Info className="w-5 h-5 text-blue-600 flex-shrink-0" />
-          <p className="text-sm text-blue-700">
+        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 rounded-xl p-4 mb-6 flex items-center gap-3">
+          <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+          <p className="text-sm text-blue-700 dark:text-blue-300">
             Executive summary and top themes will be generated automatically once you have at least 5 completed conversations.
           </p>
         </div>
@@ -313,10 +313,10 @@ export default function InsightsPage() {
           {isLoadingResponses ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="border border-neutral-200 rounded-lg p-4 animate-pulse">
-                  <div className="h-4 bg-neutral-200 rounded w-1/3 mb-3"></div>
-                  <div className="h-3 bg-neutral-200 rounded w-full mb-2"></div>
-                  <div className="h-3 bg-neutral-200 rounded w-2/3"></div>
+                <div key={i} className="border border-neutral-200 dark:border-zinc-800 rounded-lg p-4 animate-pulse">
+                  <div className="h-4 bg-neutral-200 dark:bg-zinc-800 rounded w-1/3 mb-3"></div>
+                  <div className="h-3 bg-neutral-200 dark:bg-zinc-800 rounded w-full mb-2"></div>
+                  <div className="h-3 bg-neutral-200 dark:bg-zinc-800 rounded w-2/3"></div>
                 </div>
               ))}
             </div>
@@ -667,13 +667,13 @@ export default function InsightsPage() {
       <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-8 mb-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-green-600/10 dark:bg-green-600/20 rounded-lg flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 text-green-600" />
+            <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-neutral-950">
+            <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">
               Discussion Topics
             </h2>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Main themes that emerged across conversations
             </p>
           </div>
@@ -682,12 +682,12 @@ export default function InsightsPage() {
           {analysis.topThemes.slice(0, 8).map((theme, index) => (
             <div
               key={index}
-              className="px-4 py-2 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
+              className="px-4 py-2 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/50 rounded-lg flex items-center gap-2"
             >
-              <span className="text-sm font-medium text-green-800">
+              <span className="text-sm font-medium text-green-800 dark:text-green-300">
                 {theme.theme}
               </span>
-              <span className="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/50 px-2 py-0.5 rounded-full">
                 {theme.percentage}%
               </span>
             </div>

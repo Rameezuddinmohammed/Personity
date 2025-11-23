@@ -16,6 +16,26 @@ interface SurveyConfig {
   mode?: 'PRODUCT_DISCOVERY' | 'FEEDBACK_SATISFACTION' | 'EXPLORATORY_GENERAL';
 }
 
+/**
+ * Conversation State - tracks progress and context across turns
+ */
+export interface ConversationState {
+  exchangeCount: number;
+  coveredTopics: string[];
+  topicDepth: Record<string, number>; // Track L1, L2, L3 depth per topic
+  persona: {
+    painLevel?: 'low' | 'medium' | 'high';
+    experience?: 'novice' | 'intermediate' | 'expert';
+    sentiment?: 'positive' | 'neutral' | 'negative';
+    readiness?: 'cold' | 'warm' | 'hot';
+    clarity?: 'low' | 'medium' | 'high';
+  };
+  keyInsights: string[]; // Store important quotes/insights for reference
+  lastUserResponse?: string; // For "you mentioned..." references
+  isFlagged?: boolean; // Quality flag
+  endingPhase?: 'none' | 'reflection_asked' | 'summary_shown' | 'confirmed'; // Track 3-step ending
+}
+
 interface ModeConfig {
   roleDescription: string;
   conversationGuidance: string;
@@ -110,12 +130,18 @@ Stay open-ended. Follow interesting threads. Let insights emerge naturally.`,
 }
 
 /**
- * Master Prompt V10 - System/User/Assistant Structure + Self-Check
- * Key improvements:
- * - Proper SYSTEM/USER/ASSISTANT separation (OpenAI best practice)
- * - Mini self-check for quality control
- * - Better prompt structure for reliability
- * - All previous V9 improvements retained
+ * Master Prompt V11 - Dynamic State Injection (ListenLabs-style)
+ * 
+ * Key improvements over V10:
+ * - Dynamic system prompt regeneration per turn
+ * - Conversation state tracking (covered topics, persona, insights)
+ * - Automatic "you mentioned..." references
+ * - Hidden memory layer for context continuity
+ * - Per-turn self-check enforcement
+ * 
+ * Architecture:
+ * - generateMasterPrompt() = Initial prompt (first turn only)
+ * - generateDynamicPrompt() = Regenerated prompt (every subsequent turn)
  */
 export function generateMasterPrompt(config: SurveyConfig): string {
   const { objective, context, documentContext, topics, settings, mode = 'EXPLORATORY_GENERAL' } = config;
@@ -206,32 +232,49 @@ User: "I use a spreadsheet."
 AI: "That's interesting! Thanks for sharing. Any extra details would be helpful!"
 
 ═══════════════════════════════════════════════════════════════════
-HOW TO END THE CONVERSATION
+HOW TO END THE CONVERSATION (3-STEP PROTOCOL)
 ═══════════════════════════════════════════════════════════════════
 
 End when:
-1. All topics covered AND you have sufficient depth
+1. All topics covered AND you have sufficient depth (L2+ on all topics)
 2. User gives 2+ low-quality responses in a row
 3. User is clearly not qualified
 4. You've reached the target question count
 
-Ending Protocol:
-STEP 1 - Ask reflection question (CRITICAL - DO NOT SKIP):
-"Is there anything important I didn't ask about—but should have?"
+CRITICAL: You MUST follow this 3-step ending protocol. DO NOT skip steps.
+
+STEP 1 - REFLECTION QUESTION (When ready to end):
+Ask: "Is there anything important I didn't ask about—but should have?"
+Return: {"message": "Is there anything important I didn't ask about—but should have?", "shouldEnd": false}
 
 This often reveals the BEST insights. Wait for their response.
 
-STEP 2 - After they respond to reflection:
-Summarize what you learned:
+STEP 2 - SUMMARY & CONFIRMATION (After they respond to reflection):
+Summarize what you learned in bullet points:
 "Let me make sure I got this right:
 ${modeConfig.summaryFormat}
 
 Did I capture that accurately?"
 
-STEP 3 - After they confirm/correct:
-{"message": "Perfect! Thanks for your time and insights.", "shouldEnd": true, "reason": "completed", "summary": "[brief summary]", "persona": {"painLevel": "...", "experience": "...", "sentiment": "...", "readiness": "...", "clarity": "..."}}
+Return: {"message": "[summary with bullets]", "shouldEnd": false}
+
+Wait for their confirmation/correction.
+
+STEP 3 - FINAL GOODBYE (After they confirm):
+Thank them and end:
+{"message": "Perfect! Thanks for your time and insights.", "shouldEnd": true, "reason": "completed", "summary": "[comprehensive summary of all key insights]", "persona": {"painLevel": "...", "experience": "...", "sentiment": "...", "readiness": "...", "clarity": "..."}}
+
+The summary field must include:
+- All major pain points mentioned
+- Key workflows/processes described
+- Feature requests or desired solutions
+- Important quotes (2-3 most impactful)
 
 STEP 4 - STOP. Do not respond to "you're welcome", "thanks", or "bye".
+
+DISQUALIFICATION (Skip 3-step protocol):
+If user is not qualified or gives 2+ low-quality responses:
+{"message": "I appreciate your time, but this might not be the best fit. Thanks!", "shouldEnd": true, "reason": "disqualified", "summary": "[why disqualified]"}
 
 ═══════════════════════════════════════════════════════════════════
 RESPONSE FORMAT (CRITICAL)
@@ -307,14 +350,20 @@ CONVERSATION RULES (FOLLOW STRICTLY)
    Disqualification response:
    {"message": "I appreciate your time, but this might not be the best fit. Thanks!", "shouldEnd": true, "reason": "disqualified", "summary": "[why disqualified]"}
 
-4. QUALITY DETECTION
+4. QUALITY DETECTION & HANDLING
    Low-quality responses:
    - One word answers: "idk", "nah", "maybe", "fine"
+   - Profanity or inappropriate language
+   - Nonsensical content (aliens, magic, fantasy)
    - Completely off-topic
    - Contradicts previous answers without explanation
    
-   After 1st low-quality response: Try a different angle
-   After 2nd low-quality response: End immediately
+   Response protocol:
+   After 1st low-quality response: System re-engages automatically (you'll see their next response)
+   After 2nd consecutive low-quality response: End politely
+   
+   Ending message for repeated low quality:
+   {"message": "I appreciate your time, but I don't think we're getting the information we need. Thank you for participating.", "shouldEnd": true, "reason": "low_quality", "summary": "Conversation ended due to repeated low-quality or inappropriate responses."}
 
 5. MODE-SPECIFIC FOCUS
 ${modeConfig.conversationGuidance}
@@ -463,4 +512,401 @@ START NOW
 ═══════════════════════════════════════════════════════════════════
 
 ${assistantPrompt}`;
+}
+
+
+/**
+ * Generate Dynamic System Prompt (V11 - ListenLabs Style)
+ * 
+ * Regenerates the system prompt for EVERY turn with:
+ * - Current conversation state
+ * - Covered topics summary
+ * - Persona insights so far
+ * - Last user response for reference
+ * - Next topic to explore
+ * 
+ * This creates the "memory" effect without actual memory.
+ */
+export function generateDynamicPrompt(
+  config: SurveyConfig,
+  state: ConversationState
+): string {
+  const { objective, context, documentContext, topics, settings, mode = 'EXPLORATORY_GENERAL' } = config;
+
+  const toneStyle = {
+    professional: 'professional but warm',
+    friendly: 'conversational and approachable',
+    casual: 'relaxed and natural',
+  }[settings.tone];
+
+  const targetQuestions = {
+    quick: '5-7',
+    standard: '8-12',
+    deep: '13-20',
+  }[settings.length];
+
+  // Build context section
+  let contextSection = '';
+  if (documentContext) {
+    contextSection += `\n\nDOCUMENT CONTEXT:\n${documentContext}`;
+  }
+  if (context?.productDescription) {
+    contextSection += `\nProduct: ${context.productDescription}`;
+  }
+  if (context?.userInfo) {
+    contextSection += `\nUsers: ${context.userInfo}`;
+  }
+  if (context?.knownIssues) {
+    contextSection += `\nIssues: ${context.knownIssues}`;
+  }
+
+  // Mode-specific config
+  const modeConfig = getModeConfig(mode);
+
+  // Build topic depth summary
+  const topicDepthSummary = topics.map(topic => {
+    const depth = state.topicDepth[topic] || 0;
+    const depthLabel = depth === 0 ? '○ Not started' : 
+                       depth === 1 ? '◐ L1 (Awareness)' :
+                       depth === 2 ? '◑ L2 (Experience)' :
+                       '● L3 (Impact) - COMPLETE';
+    return `${depthLabel} - ${topic}`;
+  }).join('\n');
+
+  // Build conversation state summary
+  const stateSummary = `
+═══════════════════════════════════════════════════════════════════
+CONVERSATION STATE (Exchange ${state.exchangeCount})
+═══════════════════════════════════════════════════════════════════
+
+TOPIC DEPTH TRACKING:
+${topicDepthSummary}
+
+COVERED TOPICS (L2+): ${state.coveredTopics.length}/${topics.length}
+${state.coveredTopics.length > 0 ? state.coveredTopics.map(t => `✓ ${t}`).join('\n') : 'None yet'}
+
+PERSONA INSIGHTS SO FAR:
+${Object.entries(state.persona).length > 0 
+  ? Object.entries(state.persona).map(([key, val]) => `- ${key}: ${val}`).join('\n')
+  : 'Still gathering...'}
+
+KEY INSIGHTS CAPTURED:
+${state.keyInsights.length > 0 
+  ? state.keyInsights.map((insight, i) => `${i + 1}. "${insight}"`).join('\n')
+  : 'None yet'}
+
+${state.lastUserResponse ? `LAST USER RESPONSE:\n"${state.lastUserResponse.substring(0, 200)}${state.lastUserResponse.length > 200 ? '...' : ''}"` : ''}
+
+QUALITY STATUS: ${state.isFlagged ? '⚠️ FLAGGED - Consider ending if next response is also low quality' : '✓ Good'}
+
+ENDING PHASE: ${getEndingPhaseStatus(state)}
+
+NEXT FOCUS: ${getNextFocus(state, topics)}
+`;
+
+  // Build memory reference instruction
+  const memoryInstruction = state.exchangeCount > 1 ? `
+═══════════════════════════════════════════════════════════════════
+MEMORY & REFERENCE (CRITICAL)
+═══════════════════════════════════════════════════════════════════
+
+You MUST reference their previous responses to create continuity:
+
+✓ GOOD Examples:
+- "You mentioned [specific thing they said]. How does that affect [related topic]?"
+- "Earlier you said [X]. Tell me more about [specific aspect of X]."
+- "That's interesting - you described [their words]. What led to that?"
+
+✗ BAD Examples (don't do this):
+- Generic questions without reference
+- Asking about something they already explained
+- Ignoring contradictions in their responses
+
+BEFORE generating your next question, silently verify:
+1. Am I referencing something specific they said?
+2. Am I building on their previous answer?
+3. Have I asked this before?
+4. Am I advancing topic depth (L1→L2→L3)?
+` : '';
+
+  // System prompt with dynamic state
+  const systemPrompt = `You are a ${toneStyle} researcher conducting a ${targetQuestions} question interview.
+
+${modeConfig.roleDescription}
+
+${stateSummary}
+
+${memoryInstruction}
+
+═══════════════════════════════════════════════════════════════════
+CORE CONVERSATION RULES
+═══════════════════════════════════════════════════════════════════
+
+1. BREVITY IS CRITICAL
+   - ONE sentence per response (two maximum)
+   - NO filler phrases
+   - Ask the next question immediately
+
+2. REFERENCE THEIR WORDS
+   - Use "you mentioned...", "you said...", "earlier you described..."
+   - Quote specific phrases they used
+   - Build on their previous answer
+
+3. FOLLOW-UP LOGIC
+${modeConfig.conversationGuidance}
+
+4. LAYERED DEPTH SYSTEM
+   For each topic, probe through 3 levels:
+   L1 - AWARENESS: Do they recognize this exists?
+   L2 - EXPERIENCE: Do they actually face this?
+   L3 - IMPACT: Does it matter to them?
+
+5. QUALITY DETECTION
+   Low-quality responses:
+   - One word answers: "idk", "nah", "maybe"
+   - Profanity or inappropriate language
+   - Nonsensical content
+   - Completely off-topic
+   - Contradicts previous answers
+   
+   After 2nd consecutive low-quality response: End with reason "low_quality"
+
+6. RESPONSE FORMAT (JSON)
+   {
+     "message": "Your question referencing their previous response",
+     "shouldEnd": false,
+     "reason": null,
+     "summary": null,
+     "persona": {...}
+   }
+
+7. ENDING PROTOCOL
+   When ready to end:
+   STEP 1: "Is there anything important I didn't ask about—but should have?"
+   STEP 2: After their response, summarize what you learned
+   STEP 3: Set shouldEnd: true with summary and persona
+
+8. BANNED PHRASES
+   ✗ "Could you tell me a bit more..."
+   ✗ "I'd love to hear more about..."
+   ✗ "Thanks for sharing that!"
+   ✗ "That's really interesting!"
+
+9. APPROVED QUESTIONS
+${modeConfig.questionExamples}
+
+═══════════════════════════════════════════════════════════════════
+RESEARCH GOAL & CONTEXT
+═══════════════════════════════════════════════════════════════════
+
+OBJECTIVE: ${objective}${contextSection}
+
+TOPICS TO COVER:
+${topics.map((t, i) => `${i + 1}. ${t}`).join('\n')}
+
+═══════════════════════════════════════════════════════════════════
+NEXT QUESTION GENERATION
+═══════════════════════════════════════════════════════════════════
+
+Based on the conversation state above:
+1. Reference their last response specifically
+2. Advance the current topic OR move to next uncovered topic
+3. Keep it brief (1 sentence)
+4. Return valid JSON with your question
+
+Generate your next question now.
+
+═══════════════════════════════════════════════════════════════════
+SELF-OPTIMIZATION (AUTONOMOUS QUALITY CONTROL)
+═══════════════════════════════════════════════════════════════════
+
+After generating your question, silently calculate:
+
+CONFIDENCE SCORE (0.0 - 1.0):
+- Does it reference their specific words? (+0.3)
+- Does it advance topic depth? (+0.3)
+- Is it brief (1-2 sentences)? (+0.2)
+- Does it probe for valuable insight? (+0.2)
+
+If confidence < 0.5:
+→ Regenerate with deeper probe automatically
+→ Focus on "why", "how often", "what impact"
+
+If confidence >= 0.5:
+→ Proceed with question
+
+This self-check is invisible to the user. Just ensure quality.`;
+
+  return systemPrompt;
+}
+
+/**
+ * Extract conversation state from exchanges
+ * Used to build state for dynamic prompt generation
+ */
+export function extractConversationState(
+  exchanges: Array<{ role: string; content: string }>,
+  topics: string[]
+): ConversationState {
+  const state: ConversationState = {
+    exchangeCount: Math.floor(exchanges.length / 2),
+    coveredTopics: [],
+    topicDepth: {},
+    persona: {},
+    keyInsights: [],
+    lastUserResponse: undefined,
+    isFlagged: false,
+  };
+
+  // Get last user response
+  const userExchanges = exchanges.filter(ex => ex.role === 'user');
+  if (userExchanges.length > 0) {
+    state.lastUserResponse = userExchanges[userExchanges.length - 1].content;
+  }
+
+  // Advanced topic coverage detection with depth tracking
+  const conversationText = exchanges.map(ex => ex.content.toLowerCase()).join(' ');
+  
+  topics.forEach(topic => {
+    const topicKeywords = topic.toLowerCase().split(' ');
+    const topicMentions = topicKeywords.filter(keyword => 
+      keyword.length > 3 && conversationText.includes(keyword)
+    );
+    
+    if (topicMentions.length > 0) {
+      // Count how many times this topic appears in AI questions
+      const aiQuestions = exchanges.filter(ex => ex.role === 'assistant');
+      const topicQuestionCount = aiQuestions.filter(q => 
+        topicKeywords.some(kw => q.content.toLowerCase().includes(kw))
+      ).length;
+      
+      // Determine depth level based on question count
+      // L1 (Awareness): 1 question
+      // L2 (Experience): 2-3 questions
+      // L3 (Impact): 4+ questions
+      let depth = 1;
+      if (topicQuestionCount >= 4) depth = 3;
+      else if (topicQuestionCount >= 2) depth = 2;
+      
+      state.topicDepth[topic] = depth;
+      
+      // Only mark as "covered" if reached L2 or higher
+      if (depth >= 2) {
+        state.coveredTopics.push(topic);
+      }
+    }
+  });
+
+  // Define low-quality patterns (used for both insights and flagging)
+  const lowQualityPatterns = [
+    /^(idk|dunno|nah|maybe|ok|fine|yes|no|yep|nope)$/i,
+    /fuck|shit|damn|ass|bitch/i, // Profanity
+    /alien|pluto|teleport|magic|wizard/i, // Nonsensical content
+  ];
+  
+  // Extract key insights (quotes from user responses > 50 chars)
+  // Filter out low-quality responses
+  userExchanges.forEach(ex => {
+    // Check length requirements
+    if (ex.content.length < 50 || ex.content.length > 200) {
+      return;
+    }
+    
+    // Check for low-quality patterns
+    const isLowQuality = lowQualityPatterns.some(pattern => pattern.test(ex.content));
+    if (isLowQuality) {
+      return;
+    }
+    
+    // Check for very short words (likely low quality)
+    const words = ex.content.split(/\s+/);
+    if (words.length < 8) {
+      return;
+    }
+    
+    state.keyInsights.push(ex.content);
+  });
+
+  // Limit insights to last 3
+  state.keyInsights = state.keyInsights.slice(-3);
+
+  // Check for low quality (very short responses, profanity, nonsense)
+  const recentResponses = userExchanges.slice(-2);
+  const lowQualityCount = recentResponses.filter(ex => {
+    // Very short
+    if (ex.content.length < 20) return true;
+    
+    // Matches low-quality patterns
+    if (lowQualityPatterns.some(pattern => pattern.test(ex.content))) return true;
+    
+    // Very few words
+    const words = ex.content.split(/\s+/).filter(w => w.length > 2);
+    if (words.length < 3) return true;
+    
+    return false;
+  }).length;
+  
+  state.isFlagged = lowQualityCount >= 2;
+
+  return state;
+}
+
+/**
+ * Get ending phase status message
+ */
+function getEndingPhaseStatus(state: ConversationState): string {
+  const phase = state.endingPhase || 'none';
+  
+  switch (phase) {
+    case 'reflection_asked':
+      return '🔄 STEP 1 COMPLETE - Reflection question asked. Now show summary after they respond.';
+    case 'summary_shown':
+      return '🔄 STEP 2 COMPLETE - Summary shown. Now end conversation after they confirm.';
+    case 'confirmed':
+      return '✅ STEP 3 COMPLETE - User confirmed. End conversation now.';
+    default:
+      return '○ Not started - Continue conversation or start ending protocol when ready';
+  }
+}
+
+/**
+ * Determine next focus based on conversation state
+ */
+function getNextFocus(state: ConversationState, topics: string[]): string {
+  // Check if in ending phase
+  const phase = state.endingPhase || 'none';
+  
+  if (phase === 'reflection_asked') {
+    return 'User responded to reflection - Show summary now (STEP 2)';
+  }
+  
+  if (phase === 'summary_shown') {
+    return 'User confirmed summary - End conversation now (STEP 3)';
+  }
+  
+  if (phase === 'confirmed') {
+    return 'Conversation should have ended - Set shouldEnd: true';
+  }
+  
+  // Find topics that need more depth
+  const needsDepth = topics.filter(topic => {
+    const depth = state.topicDepth[topic] || 0;
+    return depth > 0 && depth < 3; // Started but not complete
+  });
+
+  if (needsDepth.length > 0) {
+    const topic = needsDepth[0];
+    const currentDepth = state.topicDepth[topic] || 0;
+    const nextLevel = currentDepth === 1 ? 'L2 (Experience)' : 'L3 (Impact)';
+    return `Advance "${topic}" to ${nextLevel}`;
+  }
+
+  // Find topics not yet started
+  const notStarted = topics.filter(topic => !state.topicDepth[topic]);
+  if (notStarted.length > 0) {
+    return `Start exploring "${notStarted[0]}" (L1 - Awareness)`;
+  }
+
+  // All topics covered - ready to start ending
+  return 'All topics at L3 - Start ending protocol (STEP 1: Ask reflection question)';
 }
