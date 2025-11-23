@@ -84,27 +84,27 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-zinc-950 px-4">
       <div className="w-full max-w-[440px]">
-        <div className="bg-white rounded-2xl p-12 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-12 shadow-sm border border-transparent dark:border-zinc-800">
           {/* Logo */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-[#2563EB]">Personity</h1>
+            <h1 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">Personity</h1>
           </div>
 
           {/* Heading */}
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-semibold text-[#0A0A0B] tracking-tight mb-2">
+            <h2 className="text-2xl font-semibold text-neutral-950 dark:text-neutral-50 tracking-tight mb-2">
               Create your account
             </h2>
-            <p className="text-sm text-[#71717A]">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
               Start gathering insights in minutes
             </p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-3 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg text-sm text-[#DC2626]">
+            <div className="mb-6 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
               {error}
             </div>
           )}
@@ -121,7 +121,7 @@ export default function SignupPage() {
                 disabled={isLoading}
               />
               {errors.name && (
-                <p className="mt-1 text-xs text-[#DC2626]">{errors.name.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.name.message}</p>
               )}
             </div>
 
@@ -135,7 +135,7 @@ export default function SignupPage() {
                 disabled={isLoading}
               />
               {errors.email && (
-                <p className="mt-1 text-xs text-[#DC2626]">{errors.email.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.email.message}</p>
               )}
             </div>
 
@@ -149,9 +149,9 @@ export default function SignupPage() {
                 disabled={isLoading}
               />
               {errors.password && (
-                <p className="mt-1 text-xs text-[#DC2626]">{errors.password.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password.message}</p>
               )}
-              <p className="mt-1 text-xs text-[#71717A]">
+              <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
                 Must be at least 8 characters with uppercase, lowercase, and number
               </p>
             </div>
@@ -169,10 +169,10 @@ export default function SignupPage() {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#E4E4E7]"></div>
+              <div className="w-full border-t border-neutral-200 dark:border-zinc-800"></div>
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-white px-4 text-[#71717A]">Or continue with</span>
+              <span className="bg-white dark:bg-zinc-900 px-4 text-neutral-600 dark:text-neutral-400">Or continue with</span>
             </div>
           </div>
 
@@ -206,11 +206,11 @@ export default function SignupPage() {
           </Button>
 
           {/* Footer Link */}
-          <p className="mt-6 text-center text-sm text-[#71717A]">
+          <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
             Already have an account?{' '}
             <Link
               href="/login"
-              className="font-medium text-[#2563EB] hover:underline"
+              className="font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               Sign in
             </Link>

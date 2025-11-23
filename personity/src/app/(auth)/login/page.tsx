@@ -65,37 +65,37 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-zinc-950 px-4">
       <div className="w-full max-w-[440px]">
-        <div className="bg-white rounded-2xl p-12 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-12 shadow-sm border border-transparent dark:border-zinc-800">
           {/* Logo */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-[#2563EB]">Personity</h1>
+            <h1 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">Personity</h1>
           </div>
 
           {/* Heading */}
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-semibold text-[#0A0A0B] tracking-tight mb-2">
+            <h2 className="text-2xl font-semibold text-neutral-950 dark:text-neutral-50 tracking-tight mb-2">
               Welcome back
             </h2>
-            <p className="text-sm text-[#71717A]">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
               Sign in to your account to continue
             </p>
           </div>
 
           {/* Error Messages */}
           {errorParam === 'session_expired' && (
-            <div className="mb-6 p-3 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg text-sm text-[#DC2626]">
+            <div className="mb-6 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
               Your session has expired. Please sign in again.
             </div>
           )}
           {errorParam === 'oauth_failed' && (
-            <div className="mb-6 p-3 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg text-sm text-[#DC2626]">
+            <div className="mb-6 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
               Google authentication failed. Please try again.
             </div>
           )}
           {error && (
-            <div className="mb-6 p-3 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg text-sm text-[#DC2626]">
+            <div className="mb-6 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
               {error}
             </div>
           )}
@@ -112,7 +112,7 @@ function LoginForm() {
                 disabled={isLoading}
               />
               {errors.email && (
-                <p className="mt-1 text-xs text-[#DC2626]">{errors.email.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.email.message}</p>
               )}
             </div>
 
@@ -126,7 +126,7 @@ function LoginForm() {
                 disabled={isLoading}
               />
               {errors.password && (
-                <p className="mt-1 text-xs text-[#DC2626]">{errors.password.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password.message}</p>
               )}
             </div>
 
@@ -143,10 +143,10 @@ function LoginForm() {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#E4E4E7]"></div>
+              <div className="w-full border-t border-neutral-200 dark:border-zinc-800"></div>
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-white px-4 text-[#71717A]">Or continue with</span>
+              <span className="bg-white dark:bg-zinc-900 px-4 text-neutral-600 dark:text-neutral-400">Or continue with</span>
             </div>
           </div>
 
@@ -180,11 +180,11 @@ function LoginForm() {
           </Button>
 
           {/* Footer Link */}
-          <p className="mt-6 text-center text-sm text-[#71717A]">
+          <p className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
             Don't have an account?{' '}
             <Link
               href="/signup"
-              className="font-medium text-[#2563EB] hover:underline"
+              className="font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               Sign up
             </Link>
@@ -199,8 +199,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
-          <div className="animate-pulse text-[#71717A]">Loading...</div>
+        <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-zinc-950">
+          <div className="animate-pulse text-neutral-600 dark:text-neutral-400">Loading...</div>
         </div>
       }
     >
