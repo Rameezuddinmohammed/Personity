@@ -162,9 +162,9 @@ export default function InsightsPage() {
     return (
       <div className="space-y-6">
         <div className="h-8 bg-neutral-200 rounded w-1/4 animate-pulse"></div>
-        <div className="bg-white border border-neutral-200 rounded-xl p-6 animate-pulse">
-          <div className="h-6 bg-neutral-200 rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-neutral-200 rounded w-2/3"></div>
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 animate-pulse">
+          <div className="h-6 bg-neutral-200 dark:bg-zinc-800 rounded w-1/3 mb-4"></div>
+          <div className="h-4 bg-neutral-200 dark:bg-zinc-800 rounded w-2/3"></div>
         </div>
       </div>
     );
@@ -305,8 +305,8 @@ export default function InsightsPage() {
         </div>
 
         {/* Individual Responses */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-neutral-950 mb-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-6">
             Individual Responses
           </h2>
 
@@ -448,9 +448,9 @@ export default function InsightsPage() {
       <ModeSummary mode={survey.mode || 'EXPLORATORY_GENERAL'} responses={responses} />
 
       {/* Executive Summary */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-8 mb-6">
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-8 mb-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-neutral-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
             <Sparkles className="w-5 h-5 text-neutral-600" />
           </div>
           <h2 className="text-lg font-semibold text-neutral-950">
@@ -464,17 +464,17 @@ export default function InsightsPage() {
 
       {/* Key Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <MessageSquare className="w-5 h-5 text-neutral-600" />
+            <MessageSquare className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             <span className="text-sm text-neutral-600">Total Responses</span>
           </div>
           <div className="text-3xl font-semibold text-neutral-950">{analysis.responseCount}</div>
         </div>
 
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="w-5 h-5 text-neutral-600" />
+            <TrendingUp className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             <span className="text-sm text-neutral-600">Avg Depth</span>
           </div>
           <div className="text-3xl font-semibold text-neutral-950">
@@ -489,9 +489,9 @@ export default function InsightsPage() {
           if (mode === 'FEEDBACK_SATISFACTION') {
             // Show satisfaction percentage
             return (
-              <div className="bg-white border border-neutral-200 rounded-xl p-6">
+              <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <Smile className="w-5 h-5 text-neutral-600" />
+                  <Smile className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
                   <span className="text-sm text-neutral-600">Satisfied</span>
                 </div>
                 <div className="text-3xl font-semibold text-neutral-950">
@@ -505,9 +505,9 @@ export default function InsightsPage() {
               return sum + (r.painPoints?.length || 0);
             }, 0);
             return (
-              <div className="bg-white border border-neutral-200 rounded-xl p-6">
+              <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <Frown className="w-5 h-5 text-neutral-600" />
+                  <Frown className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
                   <span className="text-sm text-neutral-600">Pain Points</span>
                 </div>
                 <div className="text-3xl font-semibold text-neutral-950">
@@ -519,9 +519,9 @@ export default function InsightsPage() {
             // Exploratory: Show unique perspectives (key themes from responses)
             const uniqueThemes = new Set(responses.flatMap(r => r.keyThemes)).size;
             return (
-              <div className="bg-white border border-neutral-200 rounded-xl p-6">
+              <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <Sparkles className="w-5 h-5 text-neutral-600" />
+                  <Sparkles className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
                   <span className="text-sm text-neutral-600">Perspectives</span>
                 </div>
                 <div className="text-3xl font-semibold text-neutral-950">
@@ -532,9 +532,9 @@ export default function InsightsPage() {
           }
         })()}
 
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <Star className="w-5 h-5 text-neutral-600" />
+            <Star className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             <span className="text-sm text-neutral-600">Top Themes</span>
           </div>
           <div className="text-3xl font-semibold text-neutral-950">{analysis.topThemes.length}</div>
@@ -550,8 +550,8 @@ export default function InsightsPage() {
           if (mode === 'FEEDBACK_SATISFACTION') {
             // Show sentiment distribution for feedback surveys
             return (
-              <div className="bg-white border border-neutral-200 rounded-xl p-6">
-                <h3 className="text-base font-semibold text-neutral-950 mb-4">
+              <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
+                <h3 className="text-base font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
                   Sentiment Distribution
                 </h3>
                 <SentimentChart
@@ -577,8 +577,8 @@ export default function InsightsPage() {
               .map(([painPoint, count]) => ({ painPoint, count }));
             
             return (
-              <div className="bg-white border border-neutral-200 rounded-xl p-6">
-                <h3 className="text-base font-semibold text-neutral-950 mb-4">
+              <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
+                <h3 className="text-base font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
                   Top Pain Points
                 </h3>
                 <div className="space-y-3">
@@ -606,8 +606,8 @@ export default function InsightsPage() {
           } else {
             // Show theme distribution for exploratory
             return (
-              <div className="bg-white border border-neutral-200 rounded-xl p-6">
-                <h3 className="text-base font-semibold text-neutral-950 mb-4">
+              <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
+                <h3 className="text-base font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
                   Key Themes Distribution
                 </h3>
                 <div className="space-y-3">
@@ -632,8 +632,8 @@ export default function InsightsPage() {
         })()}
 
         {/* Quality Gauge */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
-          <h3 className="text-base font-semibold text-neutral-950 mb-4">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
+          <h3 className="text-base font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
             Response Quality
           </h3>
           <QualityGauge
@@ -664,9 +664,9 @@ export default function InsightsPage() {
 
       {/* Top Themes - All modes */}
       {shouldShowWidget('themes') && (
-      <div className="bg-white border border-neutral-200 rounded-xl p-8 mb-6">
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-8 mb-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-green-600/10 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-green-600/10 dark:bg-green-600/20 rounded-lg flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-green-600" />
           </div>
           <div>
@@ -697,9 +697,9 @@ export default function InsightsPage() {
       )}
 
       {/* Key Quotes with Sentiment Tags */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-8 mb-6">
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-8 mb-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-yellow-600/10 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-yellow-600/10 dark:bg-yellow-600/20 rounded-lg flex items-center justify-center">
             <MessageSquare className="w-5 h-5 text-yellow-600" />
           </div>
           <h2 className="text-lg font-semibold text-neutral-950">
@@ -740,9 +740,9 @@ export default function InsightsPage() {
 
       {/* User Segments - Product Discovery & Exploratory modes */}
       {shouldShowWidget('userSegments') && analysis.userSegments && analysis.userSegments.length > 0 && (
-        <div className="bg-white border border-neutral-200 rounded-xl p-8 mb-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-8 mb-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-purple-600/10 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-purple-600/10 dark:bg-purple-600/20 rounded-lg flex items-center justify-center">
               <Users className="w-5 h-5 text-purple-600" />
             </div>
             <h2 className="text-lg font-semibold text-neutral-950">
@@ -781,9 +781,9 @@ export default function InsightsPage() {
       )}
 
       {/* View Individual Responses */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-8">
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-8">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-yellow-600/10 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-yellow-600/10 dark:bg-yellow-600/20 rounded-lg flex items-center justify-center">
             <MessageSquare className="w-5 h-5 text-yellow-600" />
           </div>
           <h2 className="text-lg font-semibold text-neutral-950">
