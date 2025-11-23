@@ -218,22 +218,22 @@ export default function HelpPage() {
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-neutral-950 mb-4 tracking-tight">
+        <h1 className="text-4xl font-bold text-neutral-950 dark:text-neutral-50 mb-4 tracking-tight">
           How can we help?
         </h1>
-        <p className="text-neutral-600 mb-8">
+        <p className="text-neutral-600 dark:text-neutral-400 mb-8">
           Search our help center or browse by category
         </p>
 
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400 dark:text-neutral-500" />
           <input
             type="text"
             placeholder="Search for help..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-4 border border-neutral-300 rounded-xl focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 text-lg"
+            className="w-full pl-12 pr-4 py-4 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-xl focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 text-lg"
           />
         </div>
       </div>
@@ -249,20 +249,20 @@ export default function HelpPage() {
             ← Back to help center
           </Button>
 
-          <div className="bg-white border border-neutral-200 rounded-xl p-8">
-            <h2 className="text-3xl font-bold text-neutral-950 mb-6">
+          <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-8">
+            <h2 className="text-3xl font-bold text-neutral-950 dark:text-neutral-50 mb-6">
               {selectedArticle.title}
             </h2>
             <div className="prose prose-neutral max-w-none">
               {selectedArticle.content.split('\n').map((paragraph, index) => (
-                <p key={index} className="text-neutral-700 mb-4 whitespace-pre-wrap">
+                <p key={index} className="text-neutral-700 dark:text-neutral-300 mb-4 whitespace-pre-wrap">
                   {paragraph}
                 </p>
               ))}
             </div>
 
-            <div className="mt-8 pt-6 border-t border-neutral-200">
-              <p className="text-sm text-neutral-600 mb-4">Was this article helpful?</p>
+            <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-zinc-800">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">Was this article helpful?</p>
               <div className="flex gap-3">
                 <Button variant="secondary" size="sm" className="flex items-center gap-2">
                   <ThumbsUp className="w-4 h-4" />
@@ -290,18 +290,18 @@ export default function HelpPage() {
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
-                    className="bg-white border border-neutral-200 rounded-xl p-6 hover:border-blue-600 hover:shadow-lg transition-all text-left group"
+                    className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 hover:border-blue-600 dark:hover:border-blue-500 hover:shadow-lg transition-all text-left group"
                   >
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                        <Icon className="w-6 h-6 text-blue-600" />
+                      <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950 rounded-lg flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-900 transition-colors">
+                        <Icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                       </div>
-                      <ChevronRight className="w-5 h-5 text-neutral-400 group-hover:text-blue-600 transition-colors" />
+                      <ChevronRight className="w-5 h-5 text-neutral-400 dark:text-neutral-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
                     </div>
-                    <h3 className="text-lg font-semibold text-neutral-950 mb-2">
+                    <h3 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
                       {category.name}
                     </h3>
-                    <p className="text-sm text-neutral-600">
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
                       {articleCount} {articleCount === 1 ? 'article' : 'articles'}
                     </p>
                   </button>
@@ -322,7 +322,7 @@ export default function HelpPage() {
                   >
                     ← Back to categories
                   </Button>
-                  <h2 className="text-2xl font-bold text-neutral-950">
+                  <h2 className="text-2xl font-bold text-neutral-950 dark:text-neutral-50">
                     {categories.find((c) => c.id === selectedCategory)?.name}
                   </h2>
                 </div>
@@ -330,7 +330,7 @@ export default function HelpPage() {
 
               {filteredArticles.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-neutral-600 mb-4">No articles found</p>
+                  <p className="text-neutral-600 dark:text-neutral-400 mb-4">No articles found</p>
                   <Button
                     variant="secondary"
                     onClick={() => {
@@ -347,18 +347,18 @@ export default function HelpPage() {
                     <button
                       key={article.id}
                       onClick={() => setSelectedArticle(article)}
-                      className="w-full bg-white border border-neutral-200 rounded-lg p-4 hover:border-blue-600 hover:shadow-md transition-all text-left group"
+                      className="w-full bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-lg p-4 hover:border-blue-600 dark:hover:border-blue-500 hover:shadow-md transition-all text-left group"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="text-lg font-medium text-neutral-950 group-hover:text-blue-600 transition-colors mb-1">
+                          <h3 className="text-lg font-medium text-neutral-950 dark:text-neutral-50 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">
                             {article.title}
                           </h3>
-                          <p className="text-sm text-neutral-600 line-clamp-2">
+                          <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
                             {article.content.substring(0, 150)}...
                           </p>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-neutral-400 group-hover:text-blue-600 transition-colors flex-shrink-0 ml-4" />
+                        <ChevronRight className="w-5 h-5 text-neutral-400 dark:text-neutral-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0 ml-4" />
                       </div>
                     </button>
                   ))}
@@ -368,11 +368,11 @@ export default function HelpPage() {
           )}
 
           {/* Contact Support */}
-          <div className="mt-12 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-8 text-center">
-            <h3 className="text-xl font-semibold text-neutral-950 mb-2">
+          <div className="mt-12 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-8 text-center">
+            <h3 className="text-xl font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
               Still need help?
             </h3>
-            <p className="text-neutral-600 mb-6">
+            <p className="text-neutral-600 dark:text-neutral-400 mb-6">
               Can't find what you're looking for? Our support team is here to help.
             </p>
             <Button 
@@ -388,20 +388,20 @@ export default function HelpPage() {
 
       {/* Contact Form Modal */}
       {showContactForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6">
-            <h3 className="text-xl font-semibold text-neutral-950 mb-4">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-transparent dark:border-zinc-800 rounded-xl max-w-lg w-full p-6">
+            <h3 className="text-xl font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
               Contact Support
             </h3>
 
             {submitSuccess ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <p className="text-neutral-700 mb-6">
+                <p className="text-neutral-700 dark:text-neutral-300 mb-6">
                   Thanks! We'll get back to you within 24 hours.
                 </p>
                 <Button onClick={() => {
@@ -437,7 +437,7 @@ export default function HelpPage() {
               }}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                       Subject
                     </label>
                     <input
@@ -445,13 +445,13 @@ export default function HelpPage() {
                       required
                       value={contactForm.subject}
                       onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+                      className="w-full px-4 py-2 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                       placeholder="What do you need help with?"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                       Message
                     </label>
                     <textarea
@@ -459,7 +459,7 @@ export default function HelpPage() {
                       value={contactForm.message}
                       onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                       rows={5}
-                      className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 resize-none"
+                      className="w-full px-4 py-2 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-neutral-50 rounded-lg focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 resize-none"
                       placeholder="Describe your issue or question..."
                     />
                   </div>
