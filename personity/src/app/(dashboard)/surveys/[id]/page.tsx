@@ -127,10 +127,10 @@ export default function SurveyDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 bg-neutral-200 rounded w-1/4 animate-pulse"></div>
-        <div className="bg-white border border-neutral-200 rounded-xl p-6 animate-pulse">
-          <div className="h-6 bg-neutral-200 rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-neutral-200 rounded w-2/3"></div>
+        <div className="h-8 bg-neutral-200 dark:bg-zinc-800 rounded w-1/4 animate-pulse"></div>
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 animate-pulse">
+          <div className="h-6 bg-neutral-200 dark:bg-zinc-800 rounded w-1/3 mb-4"></div>
+          <div className="h-4 bg-neutral-200 dark:bg-zinc-800 rounded w-2/3"></div>
         </div>
       </div>
     );
@@ -139,7 +139,7 @@ export default function SurveyDetailPage() {
   if (!survey) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-600">Survey not found</p>
+        <p className="text-neutral-600 dark:text-neutral-400">Survey not found</p>
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function SurveyDetailPage() {
       {/* Back Button */}
       <button
         onClick={() => router.push('/dashboard')}
-        className="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-950 mb-6 transition-colors"
+        className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Dashboard
@@ -160,7 +160,7 @@ export default function SurveyDetailPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div className="flex-1">
-          <h1 className="text-2xl font-semibold text-neutral-950 tracking-tight mb-2">
+          <h1 className="text-2xl font-semibold text-neutral-950 dark:text-neutral-50 tracking-tight mb-2">
             {survey.title}
           </h1>
           <div className="flex items-center gap-3 mb-3">
@@ -171,10 +171,10 @@ export default function SurveyDetailPage() {
                     ? 'bg-green-600'
                     : survey.status === 'PAUSED'
                     ? 'bg-yellow-600'
-                    : 'bg-neutral-400'
+                    : 'bg-neutral-400 dark:bg-neutral-500'
                 }`}
               />
-              <span className="text-sm font-medium text-neutral-700">
+              <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                 {survey.status === 'ACTIVE'
                   ? 'Active'
                   : survey.status === 'PAUSED'
@@ -183,7 +183,7 @@ export default function SurveyDetailPage() {
               </span>
             </div>
           </div>
-          <p className="text-sm text-neutral-600 max-w-2xl">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl">
             {survey.objective}
           </p>
         </div>
@@ -219,50 +219,50 @@ export default function SurveyDetailPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-neutral-600" />
+            <div className="w-10 h-10 bg-neutral-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
+              <Users className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             </div>
-            <p className="text-sm text-neutral-500">Total Engaged</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Total Engaged</p>
           </div>
-          <p className="text-3xl font-semibold text-neutral-950">
+          <p className="text-3xl font-semibold text-neutral-950 dark:text-neutral-50">
             {survey.stats.totalResponses}
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-neutral-600" />
+            <div className="w-10 h-10 bg-neutral-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             </div>
-            <p className="text-sm text-neutral-500">Completed</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Completed</p>
           </div>
-          <p className="text-3xl font-semibold text-neutral-950">
+          <p className="text-3xl font-semibold text-neutral-950 dark:text-neutral-50">
             {survey.stats.completedResponses}
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-neutral-600" />
+            <div className="w-10 h-10 bg-neutral-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             </div>
-            <p className="text-sm text-neutral-500">Active</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Active</p>
           </div>
-          <p className="text-3xl font-semibold text-neutral-950">
+          <p className="text-3xl font-semibold text-neutral-950 dark:text-neutral-50">
             {survey.stats.activeResponses}
           </p>
         </div>
 
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-neutral-600" />
+            <div className="w-10 h-10 bg-neutral-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             </div>
-            <p className="text-sm text-neutral-500">Completion Rate</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Completion Rate</p>
           </div>
-          <p className="text-3xl font-semibold text-neutral-950">
+          <p className="text-3xl font-semibold text-neutral-950 dark:text-neutral-50">
             {survey.stats.completionRate}%
           </p>
         </div>
@@ -270,16 +270,16 @@ export default function SurveyDetailPage() {
 
       {/* View Insights CTA */}
       {survey.stats.completedResponses > 0 && (
-        <div className="bg-white border border-blue-200 rounded-xl p-6 mb-8 flex items-center justify-between">
+        <div className="bg-white dark:bg-zinc-900 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-600/10 rounded-lg flex items-center justify-center">
-              <BarChart3 className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-blue-600/10 dark:bg-blue-600/20 rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-neutral-950 mb-1">
+              <h3 className="text-base font-semibold text-neutral-950 dark:text-neutral-50 mb-1">
                 {survey.stats.completedResponses} {survey.stats.completedResponses === 1 ? 'response' : 'responses'} analyzed
               </h3>
-              <p className="text-sm text-neutral-600">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
                 View insights, themes, and sentiment analysis
               </p>
             </div>
@@ -295,8 +295,8 @@ export default function SurveyDetailPage() {
       )}
 
       {/* Survey Link */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-6 mb-8">
-        <h2 className="text-lg font-semibold text-neutral-950 mb-4">
+      <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6 mb-8">
+        <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
           Survey Link
         </h2>
         <div className="flex items-center gap-3">
