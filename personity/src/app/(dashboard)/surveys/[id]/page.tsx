@@ -300,8 +300,8 @@ export default function SurveyDetailPage() {
           Survey Link
         </h2>
         <div className="flex items-center gap-3">
-          <div className="flex-1 px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg">
-            <code className="text-sm text-neutral-700">{getSurveyUrl()}</code>
+          <div className="flex-1 px-4 py-3 bg-neutral-50 dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 rounded-lg">
+            <code className="text-sm text-neutral-700 dark:text-neutral-300">{getSurveyUrl()}</code>
           </div>
           <Button
             variant="secondary"
@@ -310,8 +310,8 @@ export default function SurveyDetailPage() {
           >
             {copied ? (
               <>
-                <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
-                <span className="text-green-600">Copied!</span>
+                <CheckCircle2 className="w-4 h-4 mr-2 text-green-600 dark:text-green-500" />
+                <span className="text-green-600 dark:text-green-500">Copied!</span>
               </>
             ) : (
               <>
@@ -324,7 +324,7 @@ export default function SurveyDetailPage() {
             href={getSurveyUrl()}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-zinc-900 border border-neutral-300 dark:border-zinc-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-zinc-800 transition-colors"
           >
             <ExternalLink className="w-4 h-4 mr-2" />
             Open
@@ -334,33 +334,33 @@ export default function SurveyDetailPage() {
 
       {/* Survey Configuration */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-neutral-950 mb-4">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
             Configuration
           </h2>
           <div className="space-y-4">
             <div>
-              <p className="text-sm font-medium text-neutral-500 mb-1">Length</p>
-              <p className="text-sm text-neutral-950 capitalize">
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">Length</p>
+              <p className="text-sm text-neutral-950 dark:text-neutral-50 capitalize">
                 {survey.settings.length}
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-neutral-500 mb-1">Tone</p>
-              <p className="text-sm text-neutral-950 capitalize">
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">Tone</p>
+              <p className="text-sm text-neutral-950 dark:text-neutral-50 capitalize">
                 {survey.settings.tone}
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-neutral-500 mb-1">Stop Condition</p>
-              <p className="text-sm text-neutral-950 capitalize">
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">Stop Condition</p>
+              <p className="text-sm text-neutral-950 dark:text-neutral-50 capitalize">
                 {survey.settings.stopCondition.replace('_', ' ')}
               </p>
             </div>
             {survey.settings.maxQuestions && (
               <div>
-                <p className="text-sm font-medium text-neutral-500 mb-1">Max Questions</p>
-                <p className="text-sm text-neutral-950">
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">Max Questions</p>
+                <p className="text-sm text-neutral-950 dark:text-neutral-50">
                   {survey.settings.maxQuestions}
                 </p>
               </div>
@@ -368,15 +368,15 @@ export default function SurveyDetailPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-neutral-200 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-neutral-950 mb-4">
+        <div className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-4">
             Key Topics
           </h2>
           <div className="flex flex-wrap gap-2">
             {survey.topics.map((topic, index) => (
               <span
                 key={index}
-                className="px-3 py-1.5 bg-neutral-100 text-neutral-700 text-sm rounded-lg"
+                className="px-3 py-1.5 bg-neutral-100 dark:bg-zinc-800 text-neutral-700 dark:text-neutral-300 text-sm rounded-lg"
               >
                 {topic}
               </span>
@@ -389,14 +389,14 @@ export default function SurveyDetailPage() {
       {showDeleteConfirm && (
         <>
           <div
-            className="fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 bg-black/50 dark:bg-black/70 z-40"
             onClick={() => setShowDeleteConfirm(false)}
           />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-6 max-w-md w-full z-50">
-            <h3 className="text-lg font-semibold text-neutral-950 mb-2">
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-zinc-900 border border-transparent dark:border-zinc-800 rounded-xl p-6 max-w-md w-full z-50">
+            <h3 className="text-lg font-semibold text-neutral-950 dark:text-neutral-50 mb-2">
               Delete Survey?
             </h3>
-            <p className="text-sm text-neutral-600 mb-6">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
               This will permanently delete this survey and all associated responses. This action cannot be undone.
             </p>
             <div className="flex items-center gap-3">
