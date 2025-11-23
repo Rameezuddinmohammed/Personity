@@ -126,12 +126,12 @@ const content = [
 
 export function HowItWorksSection() {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white dark:bg-zinc-950">
       <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
-        <h2 className="text-3xl md:text-4xl font-semibold text-neutral-950 mb-4 tracking-tight">
+        <h2 className="text-3xl md:text-4xl font-semibold text-neutral-950 dark:text-neutral-50 mb-4 tracking-tight">
           From Idea to Insight
         </h2>
-        <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+        <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
           Three steps to replace weeks of manual interviews.
         </p>
       </div>
