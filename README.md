@@ -56,7 +56,7 @@ Personity stitches together 58 different technologies into one powerful platform
 - **Framework:** Next.js 16.0.3 (App Router) + TypeScript 5.x
 - **Styling:** Tailwind CSS 4 + shadcn/ui components
 - **Database:** PostgreSQL 15+ via Supabase
-- **AI:** Azure OpenAI (GPT-4o) + Google Gemini 3 Pro
+- **AI:** Azure OpenAI (GPT-4o) + Google Gemini
 - **Hosting:** Vercel (Edge Runtime)
 
 ### Key Services
@@ -81,8 +81,8 @@ Personity stitches together 58 different technologies into one powerful platform
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/personity.git
-cd personity
+git clone https://github.com/Rameezuddinmohammed/Personity.git
+cd Personity/personity
 ```
 
 ### 2. Install dependencies
@@ -91,13 +91,14 @@ npm install
 ```
 
 ### 3. Set up environment variables
-Create a `.env.local` file in the root directory:
+Create a `.env.local` file in the personity directory:
 
 ```env
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+DATABASE_URL=your_postgres_connection_string
 
 # Azure OpenAI
 AZURE_OPENAI_API_KEY=your_azure_api_key
@@ -131,16 +132,18 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
-# Database
-DATABASE_URL=your_postgres_connection_string
+# Razorpay (Phase 2 - Optional)
+# RAZORPAY_KEY_ID=your_razorpay_key_id
+# RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+# NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
 
 ### 4. Set up the database
 The database schema is managed via Supabase. Run the migration files:
 
 ```bash
-# Apply migrations via Supabase Dashboard or CLI
-# Migration files are in: DATABASE-MIGRATION-*.sql
+# Apply migrations via Supabase Dashboard or SQL Editor
+# Migration files: DATABASE-MIGRATION-*.sql
 ```
 
 ### 5. Run the development server
@@ -183,12 +186,12 @@ personity/
 
 ## 🎨 Design System
 
-Personity follows a "quiet luxury" design philosophy:
+Personity follows a "quiet luxury" design philosophy with pure monochrome aesthetics:
 
-- **Colors:** Neutral scale (N50-N950) with minimal accent colors
+- **Colors:** Neutral scale (N50-N950) with minimal semantic colors
 - **Typography:** Inter font family, 600 weight for headings
 - **Spacing:** 8px grid system
-- **Components:** Minimal shadows, 8-16px border radius
+- **Components:** Minimal shadows, 6-12px border radius
 - **Accessibility:** 4.5:1 contrast ratio, full keyboard navigation
 
 **Full design system:** [DESIGN-SYSTEM.md](./DESIGN-SYSTEM.md)
@@ -206,10 +209,11 @@ Personity was built entirely using [Kiro](https://kiro.ai), an AI-powered IDE. H
 - Zero architectural rework needed
 
 ### Steering Documents
-- **ui-design.md** - Enforced design system across all components
+- **ui-design.md** - Enforced monochrome design system across all components
 - **tech.md** - Maintained consistent tech stack decisions
 - **structure.md** - Guided project organization
 - **product.md** - Kept focus on core value proposition
+- **Behaviour.md** - Ensured code quality and security standards
 
 ### MCP Integration
 - **Supabase MCP** - Database operations without context switching
@@ -265,7 +269,7 @@ Supabase handles database hosting. No additional setup required.
 npm run lint
 
 # Type check
-npm run type-check
+npx tsc --noEmit
 
 # Build for production
 npm run build
@@ -292,6 +296,10 @@ npm run build
 - `POST /api/conversations/[token]/message` - Send message
 - `POST /api/conversations/[token]/pause` - Pause conversation
 - `POST /api/conversations/[token]/complete` - Complete conversation
+
+### Billing (Phase 2)
+- `POST /api/billing/create-order` - Create payment order
+- `POST /api/billing/verify-payment` - Verify payment
 
 **Full API documentation:** See inline JSDoc comments in route files.
 
@@ -321,31 +329,45 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-**Project Link:** [https://github.com/yourusername/personity](https://github.com/yourusername/personity)  
+**GitHub:** [https://github.com/Rameezuddinmohammed/Personity](https://github.com/Rameezuddinmohammed/Personity)  
 **Live Demo:** [https://personity.vercel.app](https://personity.vercel.app)  
-**Email:** support@personity.app
+**Email:** rameezuddinmohammed61@gmail.com
 
 ---
 
 ## 🎯 Roadmap
 
-### Phase 1 (Current - MVP)
-- ✅ Core conversation engine
+### Phase 1 (Current - MVP) ✅
+- ✅ Core conversation engine (V11.1)
 - ✅ Survey creation wizard
 - ✅ Insights dashboard
-- ✅ Export functionality
+- ✅ Export functionality (PDF/CSV)
+- ✅ Authentication (email + Google OAuth)
+- ✅ Rate limiting
+- ✅ Analytics (PostHog)
 
 ### Phase 2 (Q1 2026)
 - ⏸️ Payment integration (Razorpay)
-- ⏸️ Subscription plans
+- ⏸️ Subscription plans (Free, Starter, Pro, Business)
+- ⏸️ Usage limits enforcement
 - ⏸️ Email notifications
-- ⏸️ Team collaboration
+- ⏸️ Cost monitoring automation
 
 ### Phase 3 (Q2 2026)
+- 📋 Team collaboration
 - 📋 Survey templates
 - 📋 Advanced analytics
 - 📋 API access
 - 📋 White-label options
+
+---
+
+## 🏆 Kiroween 2025
+
+This project was built for the Kiroween hackathon, demonstrating the power of AI-assisted development with Kiro. The entire application - from architecture to implementation - was created through spec-driven development, steering documents, and MCP integration.
+
+**Category:** Frankenstein - Stitching together 58 technologies into one powerful platform  
+**Bonus:** Best Startup Project - Real business with clear monetization strategy
 
 ---
 
