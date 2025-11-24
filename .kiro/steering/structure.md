@@ -23,7 +23,7 @@ personity/
 │   │   │   ├── auth/         # Authentication endpoints
 │   │   │   ├── surveys/      # Survey CRUD
 │   │   │   ├── conversations/ # Conversation handling
-│   │   │   └── instamojo/    # Payment webhooks (⏸️ Phase 2)
+│   │   │   └── billing/      # Payment webhooks (⏸️ Phase 2)
 │   │   ├── layout.tsx        # Root layout
 │   │   └── page.tsx          # Landing page
 │   ├── components/
@@ -67,11 +67,11 @@ personity/
 - `/api/conversations/[token]/message` - Handle respondent messages
 - `/api/conversations/[token]/pause` - Pause conversation
 - `/api/conversations/[token]/complete` - Complete conversation
-- `/api/instamojo/webhook` - Payment webhook handler (⏸️ Phase 2)
+- `/api/billing/verify-payment` - Payment webhook handler (⏸️ Phase 2)
 
-### Database Models (Prisma)
-- `User` - User accounts with subscription info
-- `Survey` - Survey configurations with master prompts
+### Database Models (Supabase)
+- `users` - User accounts with subscription info
+- `surveys` - Survey configurations with master prompts
 - `ConversationSession` - Active/paused conversation sessions
 - `Conversation` - Message history and token usage
 - `ResponseAnalysis` - Per-response insights (summary, themes, sentiment, quotes)

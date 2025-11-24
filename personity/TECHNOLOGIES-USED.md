@@ -127,11 +127,10 @@ Personity is built with a modern, production-grade technology stack focused on T
    - Use case: Adaptive survey conversations
    - Cost: $2.50/1M input tokens, $10/1M output tokens
 
-2. **Google Gemini 3 Pro** - Advanced AI model
-   - Model: `gemini-3-pro-preview`
-   - Thinking level: High (deep reasoning)
+2. **Google Gemini** - Advanced AI model
+   - Model: Latest Gemini model
    - Use case: AI-powered PDF reports
-   - Cost: $2-4/1M input, $12-18/1M output
+   - Cost: Variable based on model version
 
 3. **OpenAI SDK** - AI integration library
    - Streaming responses

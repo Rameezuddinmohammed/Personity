@@ -40,9 +40,9 @@ Personity is an AI-powered conversational research platform that conducts adapti
   - **Result:** Professional, $100k-quality UI without constant design decisions
 
 - **tech.md**: Maintained consistent tech stack decisions
-  - **Impact:** Prevented scope creep (no analytics in Phase 1, Instamojo delayed to Phase 2)
+  - **Impact:** Prevented scope creep (no analytics in Phase 1, Razorpay delayed to Phase 2)
   - **Prevented:** Adding unnecessary dependencies or switching providers mid-development
-  - **Result:** Clean, focused tech stack (Next.js 14, Azure AI Foundry, Supabase, Resend)
+  - **Result:** Clean, focused tech stack (Next.js 16, Azure AI Foundry, Supabase, Resend)
 
 - **structure.md**: Guided project organization and naming conventions
   - **Impact:** Consistent file naming (kebab-case), component structure (PascalCase), and import order

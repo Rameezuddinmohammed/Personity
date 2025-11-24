@@ -2,10 +2,10 @@
 
 ## Core Technologies
 
-- **Framework**: Next.js 14 (App Router) with TypeScript 5.x
-- **Styling**: Tailwind CSS 3.x with shadcn/ui components
+- **Framework**: Next.js 16.0.3 (App Router) with TypeScript 5.x
+- **Styling**: Tailwind CSS 4.x with shadcn/ui components
 - **Database**: PostgreSQL 15+ via Supabase (with TypeScript types)
-- **AI Provider**: Azure AI Foundry (GPT-4o via Azure OpenAI SDK) + Google Gemini 3 Pro (for AI-powered PDF reports)
+- **AI Provider**: Azure AI Foundry (GPT-4o via Azure OpenAI SDK) + Google Gemini (for AI-powered PDF reports)
 - **Hosting**: Vercel (Hobby/Free tier)
 - **Node**: 20.x LTS
 
@@ -16,7 +16,7 @@
 - **Authentication**: Supabase Auth (email/password + Google OAuth)
 - **UI Components**: Radix UI primitives, lucide-react icons
 - **Email**: Resend
-- **Payments**: ⏸️ Instamojo (delayed to Phase 2)
+- **Payments**: ⏸️ Razorpay (delayed to Phase 2)
 - **Monitoring**: Sentry (error tracking - optional)
 
 ## Database Provider
@@ -57,8 +57,8 @@ Required in `.env.local`:
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` - Supabase (database + auth + storage)
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase client configuration
 - `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_DEPLOYMENT_NAME` - Azure AI Foundry (conversations)
-- `GEMINI_API_KEY` - Google Gemini 3 Pro (AI-powered PDF reports)
-- ~~`INSTAMOJO_API_KEY`, `INSTAMOJO_AUTH_TOKEN`, `INSTAMOJO_SALT`~~ - Payment provider (⏸️ Phase 2)
+- `GEMINI_API_KEY` - Google Gemini (AI-powered PDF reports)
+- ~~`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`~~ - Payment provider (⏸️ Phase 2)
 - `RESEND_API_KEY` - Email service
 - `NEXT_PUBLIC_APP_URL` - Application URL
 
