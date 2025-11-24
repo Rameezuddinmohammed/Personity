@@ -14,10 +14,11 @@ Personity embodies **quiet luxury** — sophisticated, minimal, and purposeful. 
 ## Quick Reference
 
 ### Colors
-- **Neutral Scale**: N50 (lightest) to N950 (darkest) - Use for 90% of UI
-- **Primary**: #2563EB (Blue 600) - CTAs, links, focus states only
-- **Success**: #059669 (Green 600) - Completed states
+- **Neutral Scale**: N50 (lightest) to N950 (darkest) - Use for 100% of UI
+- **Primary**: N950 (Near-black) - CTAs, text, focus states (pure monochrome)
+- **Success**: #059669 (Green 600) - Completed states only
 - **Error**: #DC2626 (Red 600) - Errors only
+- **Warning**: #F59E0B (Yellow 600) - Warnings only
 - **White**: #FFFFFF - Cards, elevated surfaces
 
 ### Typography
@@ -40,7 +41,7 @@ Personity embodies **quiet luxury** — sophisticated, minimal, and purposeful. 
 
 ### Buttons
 ```
-Primary: #2563EB background, white text, 12px 24px padding
+Primary: N950 (black) background, white text, 12px 24px padding
 Secondary: White background, N950 text, 1px N300 border
 Ghost: Transparent, N700 text, no border
 ```
@@ -50,7 +51,7 @@ Ghost: Transparent, N700 text, no border
 Background: White
 Border: 1px solid N300
 Padding: 12px 16px
-Focus: Primary border + 2px ring (Primary/20)
+Focus: N950 border + 2px ring (N950/20)
 ```
 
 ### Cards
@@ -68,8 +69,8 @@ Shadow: None (flat design)
 2. **No gradients** - Use solid colors only
 3. **No heavy shadows** - Max 2px blur
 4. **No animations over 300ms** - Keep it snappy
-5. **No pure black** - Use N950 instead
-6. **Accent colors sparingly** - 2% of interface maximum
+5. **Pure monochrome** - Only black, white, and grays (no blue/accent colors)
+6. **Semantic colors only** - Green (success), Red (error), Yellow (warning)
 7. **Always use 8px grid** - No arbitrary spacing
 8. **Focus states required** - 2px ring, 4px offset
 9. **Hover states required** - All interactive elements
