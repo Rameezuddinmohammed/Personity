@@ -217,6 +217,7 @@ export default function ConversationPage() {
 
     recognition.onstart = () => {
       setIsListening(true);
+      setError(null); // Clear any previous errors
       console.log('🎤 Voice input started');
     };
 
@@ -238,19 +239,31 @@ export default function ConversationPage() {
           alert('Microphone access denied. Please enable microphone permissions in your browser settings.');
           break;
         case 'network':
-          // Show user-friendly message for network errors
-          if (!hasReceivedResults) {
-            setError('Voice input failed to connect. Check your internet connection and try again, or type your response.');
-          }
+          // Always show error for network issues (common problem)
+          setError('Voice input requires internet connection. Please check your connection or type your response.');
+          // Auto-clear error after 5 seconds
+          setTimeout(() => setError(null), 5000);
           break;
         case 'no-speech':
-          console.log('No speech detected');
+          // User didn't say anything - show gentle feedback
+          setError('No speech detected. Please try again or type your response.');
+          setTimeout(() => setError(null), 3000);
           break;
         case 'aborted':
           // User manually stopped - no action needed
           break;
+        case 'audio-capture':
+          setError('Microphone not found. Please connect a microphone or type your response.');
+          setTimeout(() => setError(null), 5000);
+          break;
+        case 'service-not-allowed':
+          setError('Speech recognition service is blocked. Please check your browser settings.');
+          setTimeout(() => setError(null), 5000);
+          break;
         default:
           console.warn('Speech recognition error:', event.error);
+          setError('Voice input failed. Please try again or type your response.');
+          setTimeout(() => setError(null), 4000);
       }
     };
 
@@ -428,16 +441,16 @@ export default function ConversationPage() {
   }
   
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white border-b border-neutral-200">
+      <header className="sticky top-0 z-10 bg-white dark:bg-zinc-950 border-b border-neutral-200 dark:border-zinc-800">
         <div className="px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4">
-            <div className="text-sm sm:text-base font-semibold text-neutral-950">Personity</div>
-            <div className="h-4 sm:h-5 w-px bg-neutral-200" />
+            <div className="text-sm sm:text-base font-semibold text-neutral-950 dark:text-neutral-50">Personity</div>
+            <div className="h-4 sm:h-5 w-px bg-neutral-200 dark:bg-zinc-800" />
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="h-2 sm:h-2.5 w-2 sm:w-2.5 rounded-full bg-green-600" />
-              <span className="text-xs sm:text-sm text-neutral-600">Active</span>
+              <div className="h-2 sm:h-2.5 w-2 sm:w-2.5 rounded-full bg-green-600 dark:bg-green-500" />
+              <span className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">Active</span>
             </div>
           </div>
           
@@ -445,9 +458,9 @@ export default function ConversationPage() {
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-neutral-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
             >
-              <svg className="w-5 h-5 text-neutral-600" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5 text-neutral-600 dark:text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
               </svg>
             </button>
@@ -455,14 +468,14 @@ export default function ConversationPage() {
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-20" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg z-30 py-1">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-lg shadow-lg z-30 py-1">
                   <button
                     onClick={() => {
                       setShowMenu(false);
                       handlePause();
                     }}
                     disabled={isPausing}
-                    className="w-full px-4 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-2"
+                    className="w-full px-4 py-2 text-left text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                   >
                     <Pause className="w-4 h-4" />
                     Pause & Save
@@ -472,7 +485,7 @@ export default function ConversationPage() {
                       setShowMenu(false);
                       window.close();
                     }}
-                    className="w-full px-4 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-2"
+                    className="w-full px-4 py-2 text-left text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-zinc-800 flex items-center gap-2"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -491,16 +504,16 @@ export default function ConversationPage() {
         <div className="w-full max-w-[800px] flex-1 flex flex-col">
           {/* Pause Modal */}
           {pauseUrl && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4 sm:px-6">
-              <div className="bg-white rounded-[16px] p-6 sm:p-8 max-w-[480px] w-full">
-                <h2 className="text-[18px] sm:text-[20px] font-semibold text-[#0A0A0B] mb-3 sm:mb-4">
+            <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 px-4 sm:px-6">
+              <div className="bg-white dark:bg-zinc-900 rounded-[16px] p-6 sm:p-8 max-w-[480px] w-full">
+                <h2 className="text-[18px] sm:text-[20px] font-semibold text-neutral-950 dark:text-neutral-50 mb-3 sm:mb-4">
                   Conversation Paused
                 </h2>
-                <p className="text-[13px] sm:text-[14px] text-[#3F3F46] mb-4 sm:mb-6">
+                <p className="text-[13px] sm:text-[14px] text-neutral-600 dark:text-neutral-400 mb-4 sm:mb-6">
                   Save this link to resume your conversation later:
                 </p>
-                <div className="bg-[#F4F4F5] border border-[#E4E4E7] rounded-[8px] p-3 sm:p-4 mb-4 sm:mb-6">
-                  <p className="text-[12px] sm:text-[13px] text-[#0A0A0B] break-all font-mono">
+                <div className="bg-neutral-100 dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 rounded-[8px] p-3 sm:p-4 mb-4 sm:mb-6">
+                  <p className="text-[12px] sm:text-[13px] text-neutral-950 dark:text-neutral-50 break-all font-mono">
                     {pauseUrl}
                   </p>
                 </div>
@@ -509,13 +522,13 @@ export default function ConversationPage() {
                     onClick={() => {
                       navigator.clipboard.writeText(pauseUrl);
                     }}
-                    className="flex-1 bg-[#2563EB] text-white text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#1D4ED8] transition-colors duration-150"
+                    className="flex-1 bg-[#2563EB] dark:bg-[#3B82F6] text-white text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#1D4ED8] dark:hover:bg-[#2563EB] transition-colors duration-150"
                   >
                     Copy Link
                   </button>
                   <Link
                     href={`/s/${shortUrl}`}
-                    className="flex-1 bg-white border border-[#D4D4D8] text-[#0A0A0B] text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#F4F4F5] transition-colors duration-150 text-center"
+                    className="flex-1 bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 text-neutral-950 dark:text-neutral-50 text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-neutral-50 dark:hover:bg-zinc-700 transition-colors duration-150 text-center"
                   >
                     Close
                   </Link>
@@ -526,29 +539,29 @@ export default function ConversationPage() {
           
           {/* Completion Summary Modal */}
           {completionSummary && !isCompleted && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4 sm:px-6">
-              <div className="bg-white rounded-[16px] p-6 sm:p-8 max-w-[560px] w-full max-h-[90vh] overflow-y-auto">
-                <h2 className="text-[18px] sm:text-[20px] font-semibold text-[#0A0A0B] mb-3 sm:mb-4">
+            <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 px-4 sm:px-6">
+              <div className="bg-white dark:bg-zinc-900 rounded-[16px] p-6 sm:p-8 max-w-[560px] w-full max-h-[90vh] overflow-y-auto">
+                <h2 className="text-[18px] sm:text-[20px] font-semibold text-neutral-950 dark:text-neutral-50 mb-3 sm:mb-4">
                   Summary of Our Conversation
                 </h2>
-                <div className="text-[13px] sm:text-[14px] text-[#3F3F46] mb-4 sm:mb-6 whitespace-pre-wrap">
+                <div className="text-[13px] sm:text-[14px] text-neutral-600 dark:text-neutral-300 mb-4 sm:mb-6 whitespace-pre-wrap">
                   {completionSummary}
                 </div>
-                <p className="text-[12px] sm:text-[13px] text-[#71717A] mb-4 sm:mb-6">
+                <p className="text-[12px] sm:text-[13px] text-neutral-500 dark:text-neutral-400 mb-4 sm:mb-6">
                   Does this accurately capture what you shared?
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <button
                     onClick={() => handleCompleteConversation(true)}
                     disabled={isCompletingConversation}
-                    className="flex-1 bg-[#2563EB] text-white text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#1D4ED8] disabled:bg-[#D4D4D8] disabled:cursor-not-allowed transition-colors duration-150"
+                    className="flex-1 bg-[#2563EB] dark:bg-[#3B82F6] text-white text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#1D4ED8] dark:hover:bg-[#2563EB] disabled:bg-neutral-300 dark:disabled:bg-zinc-700 disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     Yes, looks good
                   </button>
                   <button
                     onClick={() => handleCompleteConversation(false)}
                     disabled={isCompletingConversation}
-                    className="flex-1 bg-white border border-[#D4D4D8] text-[#0A0A0B] text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-[#F4F4F5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+                    className="flex-1 bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 text-neutral-950 dark:text-neutral-50 text-[13px] sm:text-[14px] font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-[8px] hover:bg-neutral-50 dark:hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     Let me add more
                   </button>
@@ -568,8 +581,8 @@ export default function ConversationPage() {
                   <div
                     className={`max-w-[85%] sm:max-w-[80%] px-3 sm:px-4 py-2.5 sm:py-3 rounded-[12px] ${
                       message.role === 'user'
-                        ? 'bg-[#2563EB]/10 text-[#0A0A0B]'
-                        : 'bg-[#F4F4F5] text-[#0A0A0B]'
+                        ? 'bg-[#2563EB]/10 dark:bg-[#3B82F6]/20 text-neutral-950 dark:text-neutral-50'
+                        : 'bg-neutral-100 dark:bg-zinc-800 text-neutral-950 dark:text-neutral-50'
                     }`}
                   >
                     <p className="text-[14px] sm:text-[15px] leading-relaxed whitespace-pre-wrap">
@@ -582,11 +595,11 @@ export default function ConversationPage() {
               {/* Typing Indicator */}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-[#F4F4F5] px-4 py-3 rounded-[12px]">
+                  <div className="bg-neutral-100 dark:bg-zinc-800 px-4 py-3 rounded-[12px]">
                     <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-[#71717A] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <div className="w-2 h-2 bg-[#71717A] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <div className="w-2 h-2 bg-[#71717A] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      <div className="w-2 h-2 bg-neutral-600 dark:bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <div className="w-2 h-2 bg-neutral-600 dark:bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <div className="w-2 h-2 bg-neutral-600 dark:bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
                   </div>
                 </div>
@@ -597,7 +610,7 @@ export default function ConversationPage() {
           </div>
           
           {/* Input Area */}
-          <div className="sticky bottom-0 bg-white border-t border-neutral-200 p-3 sm:p-4">
+          <div className="sticky bottom-0 bg-white dark:bg-zinc-950 border-t border-neutral-200 dark:border-zinc-800 p-3 sm:p-4">
             {error && sessionToken && (
               <div className="mb-2 sm:mb-3 text-xs sm:text-sm text-red-600">{error}</div>
             )}
@@ -610,7 +623,7 @@ export default function ConversationPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="Type your response..."
                 disabled={isLoading}
-                className="flex-1 resize-none px-3 sm:px-4 py-2.5 sm:py-3 border border-[#D4D4D8] rounded-[8px] text-[13px] sm:text-[14px] text-[#0A0A0B] placeholder:text-[#71717A] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 disabled:bg-[#F4F4F5] disabled:cursor-not-allowed scrollbar-custom"
+                className="flex-1 resize-none px-3 sm:px-4 py-2.5 sm:py-3 border border-neutral-300 dark:border-zinc-700 rounded-[8px] text-[13px] sm:text-[14px] text-neutral-950 dark:text-neutral-50 placeholder:text-neutral-500 dark:placeholder:text-neutral-400 bg-white dark:bg-zinc-900 focus:outline-none focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#3B82F6]/20 disabled:bg-neutral-100 dark:disabled:bg-zinc-800 disabled:cursor-not-allowed scrollbar-custom"
                 rows={1}
                 style={{ maxHeight: '120px' }}
               />
@@ -621,8 +634,8 @@ export default function ConversationPage() {
                 className={`flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-[8px] transition-all duration-150 ${
                   isListening
                     ? 'bg-[#DC2626] hover:bg-[#B91C1C] text-white'
-                    : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
-                } disabled:bg-[#F4F4F5] disabled:cursor-not-allowed`}
+                    : 'bg-neutral-100 dark:bg-zinc-800 hover:bg-neutral-200 dark:hover:bg-zinc-700 text-neutral-700 dark:text-neutral-300'
+                } disabled:bg-neutral-100 dark:disabled:bg-zinc-800 disabled:cursor-not-allowed`}
                 aria-label={isListening ? 'Stop recording' : 'Start voice input'}
                 title={isListening ? 'Stop recording' : 'Record voice response'}
               >
@@ -632,7 +645,7 @@ export default function ConversationPage() {
               <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || isLoading}
-                className="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-[#2563EB] text-white rounded-[8px] hover:bg-[#1D4ED8] disabled:bg-[#D4D4D8] disabled:cursor-not-allowed transition-colors duration-150"
+                className="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-[#2563EB] dark:bg-[#3B82F6] text-white rounded-[8px] hover:bg-[#1D4ED8] dark:hover:bg-[#2563EB] disabled:bg-neutral-300 dark:disabled:bg-zinc-700 disabled:cursor-not-allowed transition-colors duration-150"
               >
                 <Send className="w-5 h-5 sm:w-5 sm:h-5" />
               </button>

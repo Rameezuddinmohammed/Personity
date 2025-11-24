@@ -110,7 +110,17 @@ export async function POST(
       timestamp: string;
     }>;
     
-    const masterPrompt = (session.Survey as any).masterPrompt;
+    // Extract survey data early for use in detectors
+    const survey = session.Survey as any;
+    const surveyTopics = (survey.topics as string[]) || [];
+    const surveySettings = survey.settings as {
+      length: 'quick' | 'standard' | 'deep';
+      tone: 'professional' | 'friendly' | 'casual';
+      stopCondition: 'questions' | 'topics_covered';
+      maxQuestions?: number;
+    };
+    
+    const masterPrompt = survey.masterPrompt;
     
     // Check for spam and abuse patterns
     const spamCheck = await checkForSpam(ipAddress, exchanges, message);
@@ -131,6 +141,166 @@ export async function POST(
         },
         { status: 403 }
       );
+    }
+    
+    // Check for crisis indicators first (highest priority)
+    const { detectCrisisIndicators } = await import('@/lib/ai/sensitive-content-detector');
+    const crisisCheck = detectCrisisIndicators(message);
+    
+    if (crisisCheck.isCrisis) {
+      // End conversation immediately with crisis resources
+      await supabase
+        .from('ConversationSession')
+        .update({
+          status: 'COMPLETED',
+          completedAt: new Date().toISOString(),
+        })
+        .eq('id', session.id);
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          aiResponse: crisisCheck.message,
+          shouldEnd: true,
+          reason: 'crisis_detected',
+          isCrisis: true,
+        },
+      });
+    }
+    
+    // Check for sensitive content
+    const { detectSensitiveContent } = await import('@/lib/ai/sensitive-content-detector');
+    const sensitiveCheck = detectSensitiveContent(message, survey.objective);
+    
+    if (sensitiveCheck.isSensitive) {
+      // Acknowledge gently and redirect
+      const updatedExchanges = [
+        ...exchanges,
+        {
+          role: 'user',
+          content: message,
+          timestamp: new Date().toISOString(),
+        },
+        {
+          role: 'assistant',
+          content: sensitiveCheck.gentleResponse!,
+          timestamp: new Date().toISOString(),
+        },
+      ];
+      
+      await supabase
+        .from('Conversation')
+        .update({
+          exchanges: updatedExchanges,
+        })
+        .eq('id', conversation.id);
+      
+      await supabase
+        .from('ConversationSession')
+        .update({
+          lastMessageAt: new Date().toISOString(),
+        })
+        .eq('id', session.id);
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          aiResponse: sensitiveCheck.gentleResponse,
+          progress: 0,
+          shouldEnd: false,
+          isSensitive: true,
+        },
+      });
+    }
+    
+    // Check for off-topic responses
+    const { isOffTopic, isAskingAIQuestion, generateAIQuestionResponse } = await import('@/lib/ai/topic-detector');
+    const lastAIMessage = exchanges.filter(ex => ex.role === 'assistant').pop()?.content;
+    
+    // Check if user is asking AI a question
+    if (isAskingAIQuestion(message)) {
+      const redirectResponse = generateAIQuestionResponse(lastAIMessage);
+      
+      const updatedExchanges = [
+        ...exchanges,
+        {
+          role: 'user',
+          content: message,
+          timestamp: new Date().toISOString(),
+        },
+        {
+          role: 'assistant',
+          content: redirectResponse,
+          timestamp: new Date().toISOString(),
+        },
+      ];
+      
+      await supabase
+        .from('Conversation')
+        .update({
+          exchanges: updatedExchanges,
+        })
+        .eq('id', conversation.id);
+      
+      await supabase
+        .from('ConversationSession')
+        .update({
+          lastMessageAt: new Date().toISOString(),
+        })
+        .eq('id', session.id);
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          aiResponse: redirectResponse,
+          progress: 0,
+          shouldEnd: false,
+          isRedirect: true,
+        },
+      });
+    }
+    
+    // Check if response is off-topic
+    const topicCheck = isOffTopic(message, survey.objective, surveyTopics, lastAIMessage);
+    
+    if (topicCheck.isOffTopic) {
+      const updatedExchanges = [
+        ...exchanges,
+        {
+          role: 'user',
+          content: message,
+          timestamp: new Date().toISOString(),
+        },
+        {
+          role: 'assistant',
+          content: topicCheck.redirectMessage!,
+          timestamp: new Date().toISOString(),
+        },
+      ];
+      
+      await supabase
+        .from('Conversation')
+        .update({
+          exchanges: updatedExchanges,
+        })
+        .eq('id', conversation.id);
+      
+      await supabase
+        .from('ConversationSession')
+        .update({
+          lastMessageAt: new Date().toISOString(),
+        })
+        .eq('id', session.id);
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          aiResponse: topicCheck.redirectMessage,
+          progress: 0,
+          shouldEnd: false,
+          isOffTopic: true,
+        },
+      });
     }
     
     // Check response quality (user input)
@@ -237,18 +407,25 @@ export async function POST(
       });
     }
     
-    // Extract conversation state for dynamic prompt
-    const survey = session.Survey as any;
-    const surveyTopics = (survey.topics as string[]) || [];
-    const surveySettings = survey.settings as {
-      length: 'quick' | 'standard' | 'deep';
-      tone: 'professional' | 'friendly' | 'casual';
-      stopCondition: 'questions' | 'topics_covered';
-      maxQuestions?: number;
+    // Build conversation state from exchanges (survey variables already declared above)
+    const conversationState = extractConversationState(exchanges, surveyTopics);
+    
+    // CRITICAL: Inject ending phase from currentState if it exists
+    // This ensures the AI knows which step of the ending protocol it's on
+    const currentState = session.currentState as {
+      exchangeCount: number;
+      topicsCovered: string[];
+      lowQualityCount?: number;
+      hasReEngaged?: boolean;
+      isFlagged?: boolean;
+      endingPhase?: 'none' | 'reflection_asked' | 'summary_shown' | 'confirmed';
+      persona?: any;
     };
     
-    // Build conversation state from exchanges
-    const conversationState = extractConversationState(exchanges, surveyTopics);
+    if (currentState?.endingPhase) {
+      conversationState.endingPhase = currentState.endingPhase;
+      console.log('[Ending Phase] Loaded from currentState:', currentState.endingPhase);
+    }
     
     // Suggest intelligent follow-up based on user response
     const currentTopic = conversationState.coveredTopics[conversationState.coveredTopics.length - 1];
@@ -310,51 +487,17 @@ export async function POST(
       },
     ];
     
-    // Check for contradictions in user responses
+    // DISABLED: Contradiction detection has too many false positives
+    // TODO: Improve algorithm before re-enabling
+    // The current implementation compares unrelated statements and confuses users
+    /*
     const userResponses = exchanges.filter(ex => ex.role === 'user').map(ex => ex.content);
     const contradiction = detectContradiction(message, userResponses);
     
-    // If contradiction detected, ask clarifying question instead of continuing
     if (shouldAskClarification(contradiction, message)) {
-      // Return clarifying question immediately
-      const clarifyingExchange = [
-        ...exchanges,
-        {
-          role: 'user',
-          content: message,
-          timestamp: new Date().toISOString(),
-        },
-        {
-          role: 'assistant',
-          content: contradiction.clarifyingQuestion,
-          timestamp: new Date().toISOString(),
-        },
-      ];
-      
-      await supabase
-        .from('Conversation')
-        .update({
-          exchanges: clarifyingExchange,
-        })
-        .eq('id', conversation.id);
-      
-      await supabase
-        .from('ConversationSession')
-        .update({
-          lastMessageAt: new Date().toISOString(),
-        })
-        .eq('id', session.id);
-      
-      return NextResponse.json({
-        success: true,
-        data: {
-          aiResponse: contradiction.clarifyingQuestion,
-          progress: 0, // Don't update progress for clarification
-          shouldEnd: false,
-          isClarification: true,
-        },
-      });
+      // ... clarification logic ...
     }
+    */
     
     // Generate AI response with structured output
     const { generateStructuredConversationResponse } = await import('@/lib/ai/structured-response');
@@ -486,13 +629,7 @@ Generate an improved response that addresses these issues. Remember:
       .eq('id', conversation.id);
     
     // Update session state with enhanced tracking
-    const currentState = session.currentState as {
-      exchangeCount: number;
-      topicsCovered: string[];
-      lowQualityCount?: number;
-      hasReEngaged?: boolean;
-      isFlagged?: boolean;
-    };
+    // Note: currentState already declared earlier, reuse it
     
     // Extract updated conversation state after this exchange
     const updatedConversationState = extractConversationState(updatedExchanges, surveyTopics);
@@ -502,7 +639,7 @@ Generate an improved response that addresses these issues. Remember:
       Object.assign(updatedConversationState.persona, structuredResponse.persona);
     }
     
-    // Build enhanced state for storage
+    // Build enhanced state for storage (ending phase will be set later)
     const updatedState = {
       exchangeCount: currentState.exchangeCount + 1,
       topicsCovered: updatedConversationState.coveredTopics,
@@ -511,15 +648,8 @@ Generate an improved response that addresses these issues. Remember:
       isFlagged: updatedConversationState.isFlagged || currentState.isFlagged || false,
       persona: updatedConversationState.persona,
       keyInsights: updatedConversationState.keyInsights,
+      endingPhase: 'none' as 'none' | 'reflection_asked' | 'summary_shown' | 'confirmed', // Will be updated below
     };
-    
-    await supabase
-      .from('ConversationSession')
-      .update({
-        currentState: updatedState,
-        lastMessageAt: new Date().toISOString(),
-      })
-      .eq('id', session.id);
     
     // Track API usage
     await supabase.from('ApiUsage').insert({
@@ -547,32 +677,144 @@ Generate an improved response that addresses these issues. Remember:
     }
     
     // Track ending phase for 3-step protocol
-    const currentEndingPhase = (updatedState as any).endingPhase || 'none';
+    const currentEndingPhase = currentState?.endingPhase || 'none';
     let newEndingPhase = currentEndingPhase;
     
-    // Detect if AI asked reflection question
-    const askedReflection = structuredResponse.message.toLowerCase().includes('anything important i didn\'t ask') ||
-                           structuredResponse.message.toLowerCase().includes('anything i missed') ||
-                           structuredResponse.message.toLowerCase().includes('anything else i should');
+    // Detect if AI asked reflection question (STEP 1) - More flexible patterns
+    const messageLower = structuredResponse.message.toLowerCase();
+    const askedReflection = 
+      (messageLower.includes('anything') && messageLower.includes('didn\'t ask')) ||
+      (messageLower.includes('anything') && messageLower.includes('should have')) ||
+      (messageLower.includes('anything') && messageLower.includes('should know')) ||
+      (messageLower.includes('anything') && messageLower.includes('missed')) ||
+      (messageLower.includes('is there') && messageLower.includes('didn\'t ask'));
     
-    // Detect if AI showed summary
-    const showedSummary = structuredResponse.message.includes('•') || 
-                         structuredResponse.message.toLowerCase().includes('let me make sure') ||
-                         structuredResponse.message.toLowerCase().includes('did i capture');
+    // Detect if AI showed summary (STEP 2) - More flexible patterns
+    const hasBullets = structuredResponse.message.includes('•') || 
+                      structuredResponse.message.includes('-') || 
+                      structuredResponse.message.includes('1.') ||
+                      structuredResponse.message.includes('2.');
     
+    const hasSummaryLanguage = 
+      messageLower.includes('let me make sure') ||
+      messageLower.includes('did i capture') ||
+      messageLower.includes('here\'s what') ||
+      messageLower.includes('to sum up') ||
+      messageLower.includes('summary') ||
+      messageLower.includes('here\'s what i heard') ||
+      (messageLower.includes('you') && (messageLower.includes('mentioned') || messageLower.includes('said')));
+    
+    const showedSummary = hasBullets && hasSummaryLanguage;
+    
+    // Update ending phase based on AI response
     if (askedReflection && currentEndingPhase === 'none') {
       newEndingPhase = 'reflection_asked';
       console.log('[Ending Phase] STEP 1: Reflection question asked');
     } else if (showedSummary && currentEndingPhase === 'reflection_asked') {
       newEndingPhase = 'summary_shown';
       console.log('[Ending Phase] STEP 2: Summary shown');
-    } else if (structuredResponse.shouldEnd && currentEndingPhase === 'summary_shown') {
+    } else if (structuredResponse.shouldEnd && structuredResponse.reason === 'completed' && currentEndingPhase === 'summary_shown') {
       newEndingPhase = 'confirmed';
       console.log('[Ending Phase] STEP 3: User confirmed, ending conversation');
     }
     
-    // Update ending phase in state
-    (updatedState as any).endingPhase = newEndingPhase;
+    // CRITICAL: Save ending phase to state so it persists across turns
+    updatedState.endingPhase = newEndingPhase;
+    
+    // Update the session state immediately so next turn has access to it
+    await supabase
+      .from('ConversationSession')
+      .update({
+        currentState: updatedState,
+        lastMessageAt: new Date().toISOString(),
+      })
+      .eq('id', session.id);
+    
+    // VALIDATION: Check if AI response matches expected step
+    let validationError = null;
+    
+    // CRITICAL FIX: If AI skipped Step 2, force regeneration with explicit summary
+    if (currentEndingPhase === 'reflection_asked' && !showedSummary) {
+      validationError = 'AI should have shown summary at Step 2 but did not';
+      console.error('[Ending Phase Validation]', validationError);
+      console.log('[Ending Phase] Forcing summary generation...');
+      
+      // Build key insights from conversation state
+      const insights = updatedConversationState.keyInsights.length > 0 
+        ? updatedConversationState.keyInsights 
+        : ['User shared their perspective on the topic'];
+      
+      // Force regenerate with explicit summary instruction
+      const forcedSummaryMessages: AIMessage[] = [
+        ...messages,
+        {
+          role: 'system',
+          content: `CRITICAL ERROR CORRECTION: You must show a summary now (Step 2 of 3).
+
+The user just responded to your reflection question. You CANNOT skip to "Thanks!" yet.
+
+REQUIRED FORMAT (copy this structure):
+"Let me make sure I got this right:
+
+${insights.map((insight, i) => `• ${insight.substring(0, 100)}`).join('\n')}
+
+Did I capture that accurately?"
+
+Return ONLY this JSON:
+{"message": "[summary above with bullets]", "shouldEnd": false}
+
+DO NOT:
+- Say "Thanks!" (that's Step 3)
+- Set shouldEnd to true
+- Skip the bullet points`,
+        },
+      ];
+      
+      try {
+        const forcedResponse = await generateStructuredConversationResponse(
+          forcedSummaryMessages,
+          { temperature: 0.5, maxTokens: 400 }
+        );
+        
+        // Use forced response instead
+        structuredResponse.message = forcedResponse.message;
+        structuredResponse.shouldEnd = false;
+        newEndingPhase = 'summary_shown';
+        updatedState.endingPhase = 'summary_shown';
+        
+        console.log('[Ending Phase] Successfully generated forced summary');
+      } catch (error) {
+        console.error('[Ending Phase] Failed to generate forced summary:', error);
+        // Fallback: manually construct summary
+        structuredResponse.message = `Let me make sure I got this right:\n\n${insights.map(i => `• ${i}`).join('\n')}\n\nDid I capture that accurately?`;
+        structuredResponse.shouldEnd = false;
+        newEndingPhase = 'summary_shown';
+        updatedState.endingPhase = 'summary_shown';
+      }
+    }
+    
+    if (currentEndingPhase === 'reflection_asked' && structuredResponse.shouldEnd) {
+      validationError = 'AI tried to end at Step 2 (should be false)';
+      console.error('[Ending Phase Validation]', validationError);
+      // Force shouldEnd to false
+      structuredResponse.shouldEnd = false;
+    }
+    
+    if (currentEndingPhase === 'summary_shown' && !structuredResponse.shouldEnd) {
+      validationError = 'AI should have ended at Step 3 but did not';
+      console.error('[Ending Phase Validation]', validationError);
+      // Force ending if user confirmed
+      if (message.toLowerCase().includes('yes') || message.toLowerCase().includes('correct') || 
+          message.toLowerCase().includes('right') || message.toLowerCase().includes('accurate')) {
+        console.log('[Ending Phase] User confirmed summary, forcing end');
+        structuredResponse.shouldEnd = true;
+        structuredResponse.reason = 'completed';
+        structuredResponse.summary = structuredResponse.message;
+        structuredResponse.persona = updatedConversationState.persona;
+        newEndingPhase = 'confirmed';
+        updatedState.endingPhase = 'confirmed';
+      }
+    }
     
     // Determine if conversation should end
     // Use the AI's explicit signal from structured response

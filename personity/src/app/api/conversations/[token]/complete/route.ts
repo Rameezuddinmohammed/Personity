@@ -145,8 +145,18 @@ export async function POST(
           survey.objective
         );
         
+        // CRITICAL: Use persona from request body, fallback to currentState.persona
+        // This ensures we capture persona even if frontend didn't send it
+        const personaData = body.persona || currentState?.persona || null;
+        
+        if (!personaData || Object.keys(personaData).length === 0) {
+          console.warn('[Complete] No persona data available. Frontend:', body.persona, 'State:', currentState?.persona);
+        } else {
+          console.log('[Complete] Saving persona data:', personaData);
+        }
+        
         // Save analysis to database with persona data
-        await saveAnalysis(conversation.id, analysis, isFlagged, body.persona);
+        await saveAnalysis(conversation.id, analysis, isFlagged, personaData);
         
         console.log(`Analysis completed for conversation ${conversation.id} (duration: ${durationSeconds}s)`);
         

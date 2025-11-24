@@ -236,16 +236,23 @@ HOW TO END THE CONVERSATION (3-STEP PROTOCOL)
 ═══════════════════════════════════════════════════════════════════
 
 End when:
-1. All topics covered AND you have sufficient depth (L2+ on all topics)
+1. You've reached the MINIMUM target question count (see CONVERSATION STATE above)
+   AND all topics are covered with sufficient depth (L2+ on all topics)
 2. User gives 2+ low-quality responses in a row
 3. User is clearly not qualified
-4. You've reached the target question count
+
+⚠️ DO NOT END EARLY:
+- If you haven't reached the minimum target question count, KEEP ASKING
+- Even if topics are covered, continue exploring for deeper insights
+- The target question count is your PRIMARY guide for when to end
 
 CRITICAL: You MUST follow this 3-step ending protocol. DO NOT skip steps.
+⚠️ ONLY set shouldEnd: true in STEP 3. Steps 1 and 2 MUST have shouldEnd: false.
 
 STEP 1 - REFLECTION QUESTION (When ready to end):
 Ask: "Is there anything important I didn't ask about—but should have?"
 Return: {"message": "Is there anything important I didn't ask about—but should have?", "shouldEnd": false}
+⚠️ shouldEnd MUST be false here!
 
 This often reveals the BEST insights. Wait for their response.
 
@@ -257,18 +264,27 @@ ${modeConfig.summaryFormat}
 Did I capture that accurately?"
 
 Return: {"message": "[summary with bullets]", "shouldEnd": false}
+⚠️ shouldEnd MUST be false here too!
 
 Wait for their confirmation/correction.
 
 STEP 3 - FINAL GOODBYE (After they confirm):
 Thank them and end:
 {"message": "Perfect! Thanks for your time and insights.", "shouldEnd": true, "reason": "completed", "summary": "[comprehensive summary of all key insights]", "persona": {"painLevel": "...", "experience": "...", "sentiment": "...", "readiness": "...", "clarity": "..."}}
+✅ NOW you can set shouldEnd: true!
 
 The summary field must include:
 - All major pain points mentioned
 - Key workflows/processes described
 - Feature requests or desired solutions
 - Important quotes (2-3 most impactful)
+
+The persona field MUST include all 5 attributes based on what you learned:
+- painLevel: low/medium/high (how much this problem affects them)
+- experience: novice/intermediate/expert (their familiarity with the topic)
+- sentiment: positive/neutral/negative (their overall attitude)
+- readiness: cold/warm/hot (how ready they are to act/decide)
+- clarity: low/medium/high (how articulate and clear they are)
 
 STEP 4 - STOP. Do not respond to "you're welcome", "thanks", or "bye".
 
@@ -573,11 +589,21 @@ export function generateDynamicPrompt(
     return `${depthLabel} - ${topic}`;
   }).join('\n');
 
+  // Calculate target question range
+  const targetRange = {
+    quick: { min: 5, max: 7 },
+    standard: { min: 8, max: 12 },
+    deep: { min: 13, max: 20 },
+  }[settings.length];
+
   // Build conversation state summary
   const stateSummary = `
 ═══════════════════════════════════════════════════════════════════
 CONVERSATION STATE (Exchange ${state.exchangeCount})
 ═══════════════════════════════════════════════════════════════════
+
+TARGET: ${targetQuestions} questions (currently at ${state.exchangeCount})
+${state.exchangeCount < targetRange.min ? `⚠️ KEEP GOING - Need at least ${targetRange.min - state.exchangeCount} more questions` : state.exchangeCount >= targetRange.max ? '✓ Target reached - Can start ending protocol' : '✓ In target range - Continue or start ending when topics covered'}
 
 TOPIC DEPTH TRACKING:
 ${topicDepthSummary}
@@ -603,6 +629,62 @@ ENDING PHASE: ${getEndingPhaseStatus(state)}
 
 NEXT FOCUS: ${getNextFocus(state, topics)}
 `;
+
+  // Build explicit step instruction based on ending phase
+  const endingPhaseInstruction = state.endingPhase === 'reflection_asked' ? `
+═══════════════════════════════════════════════════════════════════
+⚠️ CRITICAL: YOU ARE IN STEP 2 OF ENDING PROTOCOL ⚠️
+═══════════════════════════════════════════════════════════════════
+
+The user just responded to your reflection question.
+
+YOU MUST NOW:
+1. Summarize what you learned in bullet points (3-5 bullets)
+2. Ask "Did I capture that accurately?"
+3. Set shouldEnd: false (NOT true!)
+
+REQUIRED FORMAT:
+{
+  "message": "Let me make sure I got this right:\\n\\n• [insight 1]\\n• [insight 2]\\n• [insight 3]\\n\\nDid I capture that accurately?",
+  "shouldEnd": false
+}
+
+DO NOT:
+- Say "Thanks!" or end the conversation
+- Skip the summary
+- Set shouldEnd: true
+
+YOU ARE IN STEP 2. STEP 3 COMES AFTER THEY CONFIRM.
+` : state.endingPhase === 'summary_shown' ? `
+═══════════════════════════════════════════════════════════════════
+⚠️ CRITICAL: YOU ARE IN STEP 3 OF ENDING PROTOCOL ⚠️
+═══════════════════════════════════════════════════════════════════
+
+The user just confirmed your summary.
+
+YOU MUST NOW:
+1. Thank them briefly
+2. Set shouldEnd: true
+3. Include comprehensive summary in "summary" field
+4. Include ALL 5 persona attributes
+
+REQUIRED FORMAT:
+{
+  "message": "Perfect! Thanks for your time and insights.",
+  "shouldEnd": true,
+  "reason": "completed",
+  "summary": "[Comprehensive summary of all key insights with bullets]",
+  "persona": {
+    "painLevel": "low|medium|high",
+    "experience": "novice|intermediate|expert",
+    "sentiment": "positive|neutral|negative",
+    "readiness": "cold|warm|hot",
+    "clarity": "low|medium|high"
+  }
+}
+
+NOW you can end the conversation. This is STEP 3.
+` : '';
 
   // Build memory reference instruction
   const memoryInstruction = state.exchangeCount > 1 ? `
@@ -830,6 +912,76 @@ export function extractConversationState(
   // Limit insights to last 3
   state.keyInsights = state.keyInsights.slice(-3);
 
+  // INCREMENTAL PERSONA DETECTION
+  // Analyze user responses to build persona profile throughout conversation
+  const allUserText = userExchanges.map(ex => ex.content.toLowerCase()).join(' ');
+  
+  // Detect pain level based on language intensity
+  const highPainIndicators = ['frustrated', 'terrible', 'hate', 'awful', 'nightmare', 'impossible', 'waste', 'losing', 'costing'];
+  const mediumPainIndicators = ['annoying', 'difficult', 'problem', 'issue', 'struggle', 'challenge', 'takes too long'];
+  const lowPainIndicators = ['minor', 'small', 'occasionally', 'not a big deal', 'manageable'];
+  
+  if (highPainIndicators.some(word => allUserText.includes(word))) {
+    state.persona.painLevel = 'high';
+  } else if (mediumPainIndicators.some(word => allUserText.includes(word))) {
+    state.persona.painLevel = 'medium';
+  } else if (lowPainIndicators.some(word => allUserText.includes(word))) {
+    state.persona.painLevel = 'low';
+  }
+  
+  // Detect experience level based on technical language and detail
+  const expertIndicators = ['architecture', 'implementation', 'optimize', 'integrate', 'configure', 'deploy'];
+  const noviceIndicators = ['new to', 'just started', 'learning', 'not sure how', 'don\'t know much'];
+  
+  const avgResponseLength = userExchanges.reduce((sum, ex) => sum + ex.content.length, 0) / userExchanges.length;
+  
+  if (expertIndicators.some(word => allUserText.includes(word)) || avgResponseLength > 100) {
+    state.persona.experience = 'expert';
+  } else if (noviceIndicators.some(word => allUserText.includes(word))) {
+    state.persona.experience = 'novice';
+  } else {
+    state.persona.experience = 'intermediate';
+  }
+  
+  // Detect sentiment based on positive/negative language
+  const positiveIndicators = ['love', 'great', 'excellent', 'happy', 'satisfied', 'works well', 'helpful'];
+  const negativeIndicators = ['hate', 'terrible', 'frustrated', 'disappointed', 'doesn\'t work', 'broken'];
+  
+  const positiveCount = positiveIndicators.filter(word => allUserText.includes(word)).length;
+  const negativeCount = negativeIndicators.filter(word => allUserText.includes(word)).length;
+  
+  if (positiveCount > negativeCount) {
+    state.persona.sentiment = 'positive';
+  } else if (negativeCount > positiveCount) {
+    state.persona.sentiment = 'negative';
+  } else {
+    state.persona.sentiment = 'neutral';
+  }
+  
+  // Detect readiness based on action-oriented language
+  const hotIndicators = ['ready to', 'need to', 'looking for', 'want to buy', 'asap', 'urgently'];
+  const warmIndicators = ['considering', 'evaluating', 'thinking about', 'might', 'probably'];
+  const coldIndicators = ['just exploring', 'curious', 'maybe later', 'not sure yet'];
+  
+  if (hotIndicators.some(word => allUserText.includes(word))) {
+    state.persona.readiness = 'hot';
+  } else if (warmIndicators.some(word => allUserText.includes(word))) {
+    state.persona.readiness = 'warm';
+  } else if (coldIndicators.some(word => allUserText.includes(word))) {
+    state.persona.readiness = 'cold';
+  }
+  
+  // Detect clarity based on response coherence and length
+  const avgWords = userExchanges.reduce((sum, ex) => sum + ex.content.split(/\s+/).length, 0) / userExchanges.length;
+  
+  if (avgWords > 20 && avgResponseLength > 80) {
+    state.persona.clarity = 'high';
+  } else if (avgWords > 10 && avgResponseLength > 40) {
+    state.persona.clarity = 'medium';
+  } else {
+    state.persona.clarity = 'low';
+  }
+
   // Check for low quality (very short responses, profanity, nonsense)
   const recentResponses = userExchanges.slice(-2);
   const lowQualityCount = recentResponses.filter(ex => {
@@ -847,6 +999,11 @@ export function extractConversationState(
   }).length;
   
   state.isFlagged = lowQualityCount >= 2;
+
+  // DON'T detect ending phase here - it should come from currentState
+  // The detection in message/route.ts is authoritative
+  // This function should not overwrite the saved state
+  state.endingPhase = 'none'; // Default, will be overwritten by currentState.endingPhase
 
   return state;
 }
@@ -907,6 +1064,12 @@ function getNextFocus(state: ConversationState, topics: string[]): string {
     return `Start exploring "${notStarted[0]}" (L1 - Awareness)`;
   }
 
+  // All topics covered - but check if we should continue for more depth
+  // Don't end too early - explore topics further even if all are at L2+
+  if (state.exchangeCount < 6) {
+    return 'Continue exploring - Ask follow-up questions to deepen understanding';
+  }
+
   // All topics covered - ready to start ending
-  return 'All topics at L3 - Start ending protocol (STEP 1: Ask reflection question)';
+  return 'All topics covered with sufficient depth - Start ending protocol (STEP 1: Ask reflection question)';
 }

@@ -38,11 +38,15 @@ export async function generateStructuredConversationResponse(
 ): Promise<StructuredConversationResponse> {
   // Add JSON instruction to the last user message
   const lastMessage = messages[messages.length - 1];
+  
+  // Check if this is the opening message (master prompt already has instructions)
+  const isOpening = lastMessage.content === '[START_CONVERSATION]';
+  
   const enhancedMessages = [
     ...messages.slice(0, -1),
     {
       ...lastMessage,
-      content: `${lastMessage.content}
+      content: isOpening ? lastMessage.content : `${lastMessage.content}
 
 CRITICAL JSON REQUIREMENTS:
 1. ALWAYS return valid JSON
