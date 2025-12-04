@@ -50,24 +50,18 @@ export function ObjectiveStep() {
           setHasAnalyzed(true);
           lastAnalyzedObjective.current = objective;
           
-          // Auto-generate title using AI if title is empty
+          // Auto-generate a simple title from objective (no AI call)
           if (!title.trim()) {
-            try {
-              const titleResponse = await fetch('/api/surveys/generate-title', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ objective }),
-              });
-              
-              const titleData = await titleResponse.json();
-              if (titleData.success && titleData.title) {
-                setTitle(titleData.title);
-              }
-            } catch (error) {
-              console.error('Failed to generate title:', error);
-              // Fallback: use first 60 chars of objective
-              setTitle(objective.substring(0, 60));
-            }
+            // Create a simple title from the objective
+            const simpleTitle = objective
+              .replace(/^(I want to |I'd like to |I need to |We want to |We need to )/i, '')
+              .replace(/^(understand |learn |know |find out |discover |explore )/i, '')
+              .split(/[.!?]/)[0] // Take first sentence
+              .trim();
+            
+            // Capitalize first letter and limit length
+            const formattedTitle = simpleTitle.charAt(0).toUpperCase() + simpleTitle.slice(1);
+            setTitle(formattedTitle.length > 60 ? formattedTitle.substring(0, 57) + '...' : formattedTitle);
           }
         }
       } catch (error) {
