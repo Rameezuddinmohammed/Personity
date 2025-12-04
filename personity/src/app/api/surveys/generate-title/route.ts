@@ -58,10 +58,16 @@ Title: Customer Support Experience Survey`,
       success: true,
       title,
     });
-  } catch (error) {
-    console.error('Generate title error:', error);
+  } catch (error: any) {
+    console.error('Generate title error:', {
+      message: error?.message,
+      code: error?.code,
+      status: error?.status,
+      cause: error?.cause,
+      stack: error?.stack,
+    });
     return NextResponse.json(
-      { success: false, error: 'Failed to generate title' },
+      { success: false, error: error?.message || 'Failed to generate title' },
       { status: 500 }
     );
   }

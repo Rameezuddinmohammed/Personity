@@ -27,7 +27,10 @@ export interface AIResponse {
 
 /**
  * Generate AI response using Azure OpenAI o4-mini
- * Note: o4-mini is a reasoning model that doesn't support temperature parameter
+ * Note: o4-mini is a reasoning model that:
+ * - Doesn't support temperature parameter
+ * - Doesn't support system messages (must use developer role or merge into user message)
+ * - Uses max_completion_tokens instead of max_tokens
  */
 export async function generateAIResponse(
   messages: AIMessage[],
@@ -37,10 +40,19 @@ export async function generateAIResponse(
   } = {}
 ): Promise<AIResponse> {
   try {
-    // o4-mini reasoning model doesn't support temperature - use max_completion_tokens instead of max_tokens
+    // o4-mini reasoning model: convert system messages to developer role
+    // and use max_completion_tokens instead of max_tokens
+    const convertedMessages = messages.map((msg) => {
+      if (msg.role === 'system') {
+        // o-series models use 'developer' role instead of 'system'
+        return { role: 'developer' as const, content: msg.content };
+      }
+      return msg;
+    });
+
     const response = await client.chat.completions.create({
       model: deploymentName,
-      messages,
+      messages: convertedMessages as any,
       max_completion_tokens: options.maxTokens ?? 200,
     });
 
