@@ -50,11 +50,17 @@ export async function generateAIResponse(
       return msg;
     });
 
+    console.log('[Azure OpenAI] Calling model:', deploymentName);
+    console.log('[Azure OpenAI] Message count:', convertedMessages.length);
+    console.log('[Azure OpenAI] First message role:', convertedMessages[0]?.role);
+
     const response = await client.chat.completions.create({
       model: deploymentName,
       messages: convertedMessages as any,
       max_completion_tokens: options.maxTokens ?? 200,
     });
+
+    console.log('[Azure OpenAI] Response received, content length:', response.choices[0]?.message?.content?.length);
 
     return {
       content: response.choices[0].message.content || '',
@@ -64,6 +70,14 @@ export async function generateAIResponse(
       },
     };
   } catch (error: any) {
+    console.error('[Azure OpenAI] Full error:', JSON.stringify({
+      message: error?.message,
+      code: error?.code,
+      status: error?.status,
+      type: error?.type,
+      error: error?.error,
+    }, null, 2));
+    
     logAI.error('Azure OpenAI API error', error, {
       code: error?.code,
       status: error?.status,
@@ -74,7 +88,7 @@ export async function generateAIResponse(
       throw new Error('CONTENT_FILTERED');
     }
     
-    throw new Error('Failed to generate AI response');
+    throw new Error(`Failed to generate AI response: ${error?.message || 'Unknown error'}`);
   }
 }
 

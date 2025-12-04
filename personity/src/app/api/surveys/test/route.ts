@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to generate response',
+        error: error instanceof Error ? error.message : 'Failed to generate response',
       },
       { status: 500 }
     );
