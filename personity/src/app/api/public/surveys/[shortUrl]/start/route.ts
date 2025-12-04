@@ -137,7 +137,8 @@ export async function POST(
     // Estimate token usage (since structured response doesn't return usage)
     const estimatedInputTokens = Math.ceil(survey.masterPrompt.length / 4);
     const estimatedOutputTokens = Math.ceil(structuredResponse.message.length / 4);
-    const cost = (estimatedInputTokens * 0.0000025) + (estimatedOutputTokens * 0.00001);
+    // o4-mini pricing: $1.10/1M input, $4.40/1M output
+    const cost = (estimatedInputTokens * 0.0000011) + (estimatedOutputTokens * 0.0000044);
     
     // Handle two-message opening
     const exchanges = [];
@@ -163,7 +164,7 @@ export async function POST(
     await supabase.from('ApiUsage').insert({
       context: `session:${session.id}`,
       provider: 'azure',
-      model: 'gpt-4o',
+      model: 'o4-mini',
       tokensInput: estimatedInputTokens,
       tokensOutput: estimatedOutputTokens,
       cost,

@@ -7,6 +7,9 @@
 
 import { generateAIResponse, AIMessage } from './azure-openai';
 import { createClient } from '@/lib/supabase/server';
+import { AI_CONFIG, QUALITY_THRESHOLDS } from '@/lib/constants';
+import { logAnalysis } from '@/lib/logger';
+import type { PersonaInsights } from '@/types/conversation';
 
 export interface ResponseAnalysisResult {
   summary: string;
@@ -96,8 +99,8 @@ Respond with ONLY the JSON object, no additional text.`;
     ];
     
     const response = await generateAIResponse(messages, {
-      temperature: 0.5,
-      maxTokens: 800,
+      temperature: AI_CONFIG.ANALYSIS_TEMPERATURE + 0.2, // Slightly higher for analysis variety
+      maxTokens: AI_CONFIG.MAX_TOKENS_ANALYSIS,
     });
     
     // Parse JSON response
@@ -128,7 +131,7 @@ Respond with ONLY the JSON object, no additional text.`;
         : 5,
     };
   } catch (error) {
-    console.error('Error analyzing conversation:', error);
+    logAnalysis.error('Failed to analyze conversation', error, { conversationId });
     
     // Return fallback analysis
     return {
@@ -161,6 +164,12 @@ export async function saveAnalysis(
   const supabase = await createClient();
   
   try {
+    // Build insert data - personaInsights stored in topQuotes metadata if provided
+    // Note: personaInsights column may not exist in all deployments
+    const topQuotesWithPersona = personaInsights 
+      ? [...analysis.topQuotes, { quote: '', context: '', _personaInsights: personaInsights }]
+      : analysis.topQuotes;
+    
     const { data, error } = await supabase
       .from('ResponseAnalysis')
       .insert({
@@ -168,24 +177,24 @@ export async function saveAnalysis(
         summary: analysis.summary,
         keyThemes: analysis.keyThemes,
         sentiment: analysis.sentiment,
-        topQuotes: analysis.topQuotes,
+        topQuotes: topQuotesWithPersona,
         painPoints: analysis.painPoints,
         opportunities: analysis.opportunities,
         qualityScore: analysis.qualityScore,
         isFlagged,
-        personaInsights: personaInsights || null,
       })
       .select('id')
       .single();
     
     if (error) {
-      console.error('Error saving analysis:', error);
+      logAnalysis.error('Failed to save analysis to database', error, { conversationId });
       return null;
     }
     
+    logAnalysis.info('Analysis saved', { conversationId, analysisId: data.id });
     return data.id;
   } catch (error) {
-    console.error('Error saving analysis:', error);
+    logAnalysis.error('Failed to save analysis', error, { conversationId });
     return null;
   }
 }
@@ -206,7 +215,7 @@ export async function getAnalysis(conversationId: string) {
     .maybeSingle();
   
   if (error) {
-    console.error('Error fetching analysis:', error);
+    logAnalysis.error('Failed to fetch analysis', error, { conversationId });
     return null;
   }
   
@@ -230,7 +239,7 @@ export async function getAnalysesForSurvey(surveyId: string) {
     .eq('status', 'COMPLETED');
   
   if (sessionsError || !sessions) {
-    console.error('Error fetching sessions:', sessionsError);
+    logAnalysis.error('Failed to fetch sessions for survey', sessionsError, { surveyId });
     return [];
   }
   
@@ -247,7 +256,7 @@ export async function getAnalysesForSurvey(surveyId: string) {
     .in('sessionId', sessionIds);
   
   if (conversationsError || !conversations) {
-    console.error('Error fetching conversations:', conversationsError);
+    logAnalysis.error('Failed to fetch conversations', conversationsError, { surveyId });
     return [];
   }
   
@@ -258,19 +267,21 @@ export async function getAnalysesForSurvey(surveyId: string) {
   }
   
   // Get analyses for these conversations
-  // ONLY include quality responses (score >= 6 and not flagged)
+  // ONLY include quality responses (score >= threshold and not flagged)
+  const minQualityScore = QUALITY_THRESHOLDS.MIN_QUALITY_SCORE - 1; // Allow slightly lower for aggregate
   const { data: analyses, error: analysesError } = await supabase
     .from('ResponseAnalysis')
     .select('*')
     .in('conversationId', conversationIds)
-    .gte('qualityScore', 6)
+    .gte('qualityScore', minQualityScore)
     .eq('isFlagged', false)
     .order('createdAt', { ascending: false });
   
   if (analysesError) {
-    console.error('Error fetching analyses:', analysesError);
+    logAnalysis.error('Failed to fetch analyses', analysesError, { surveyId });
     return [];
   }
   
+  logAnalysis.debug('Fetched analyses for survey', { surveyId, count: analyses?.length || 0 });
   return analyses || [];
 }

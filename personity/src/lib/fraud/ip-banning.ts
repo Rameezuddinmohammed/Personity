@@ -6,6 +6,8 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
+import { FRAUD_THRESHOLDS } from '@/lib/constants';
+import { logFraud } from '@/lib/logger';
 
 export interface BanResult {
   success: boolean;
@@ -99,7 +101,7 @@ export async function banIP(
     };
   }
   
-  console.log(`IP ${ipAddress} banned: ${reason}${durationDays ? ` (${durationDays} days)` : ' (permanent)'}`);
+  logFraud.info('IP banned', { ipAddress, reason, durationDays });
   
   return {
     success: true,
@@ -129,7 +131,7 @@ export async function unbanIP(ipAddress: string): Promise<BanResult> {
     };
   }
   
-  console.log(`IP ${ipAddress} unbanned`);
+  logFraud.info('IP unbanned', { ipAddress });
   
   return {
     success: true,
@@ -194,12 +196,12 @@ export async function autoBanIfNeeded(ipAddress: string): Promise<BanResult | nu
     return state?.isFlagged === true || state?.lowQualityCount >= 3;
   }).length;
   
-  // Ban if 10+ low-quality sessions in 24 hours
-  if (flaggedCount >= 10) {
+  // Ban if flagged sessions exceed threshold
+  if (flaggedCount >= FRAUD_THRESHOLDS.FLAGGED_SESSION_BAN_THRESHOLD) {
     return await banIP(
       ipAddress,
       `Automatic ban: ${flaggedCount} low-quality sessions in 24 hours`,
-      7 // 7-day ban
+      FRAUD_THRESHOLDS.DEFAULT_BAN_DURATION_DAYS
     );
   }
   
@@ -229,7 +231,7 @@ export async function cleanupExpiredBans(): Promise<number> {
   
   const count = data?.length || 0;
   if (count > 0) {
-    console.log(`Cleaned up ${count} expired IP bans`);
+    logFraud.info('Cleaned up expired IP bans', { count });
   }
   
   return count;

@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import { AI_CONFIG } from '@/lib/constants';
+import { logAI } from '@/lib/logger';
 
 // Initialize Azure OpenAI client using OpenAI SDK with Azure configuration
 const client = new OpenAI({
@@ -24,7 +26,7 @@ export interface AIResponse {
 }
 
 /**
- * Generate AI response using Azure OpenAI GPT-4o
+ * Generate AI response using Azure OpenAI o4-mini
  */
 export async function generateAIResponse(
   messages: AIMessage[],
@@ -49,7 +51,10 @@ export async function generateAIResponse(
       },
     };
   } catch (error: any) {
-    console.error('Azure OpenAI API error:', error);
+    logAI.error('Azure OpenAI API error', error, {
+      code: error?.code,
+      status: error?.status,
+    });
     
     // Handle content filter errors
     if (error?.code === 'content_filter' || error?.status === 400) {
@@ -93,14 +98,14 @@ Does this objective need additional context? Respond with only YES or NO.`,
 
   try {
     const response = await generateAIResponse(messages, {
-      temperature: 0.3,
+      temperature: AI_CONFIG.ANALYSIS_TEMPERATURE,
       maxTokens: 10,
     });
 
     const answer = response.content.trim().toUpperCase();
     return answer === 'YES';
   } catch (error) {
-    console.error('Error detecting context need:', error);
+    logAI.error('Error detecting context need', error);
     // Default to not requiring context if AI fails
     return false;
   }
@@ -108,15 +113,15 @@ Does this objective need additional context? Respond with only YES or NO.`,
 
 /**
  * Calculate cost based on token usage
- * GPT-4o pricing: $2.50/1M input tokens, $10.00/1M output tokens
+ * o4-mini pricing: $1.10/1M input tokens, $4.40/1M output tokens
  */
 export function calculateCost(usage: {
   inputTokens: number;
   outputTokens: number;
 }): number {
   const COST_PER_1M_TOKENS = {
-    input: 2.5,
-    output: 10.0,
+    input: 1.1,
+    output: 4.4,
   };
 
   return (

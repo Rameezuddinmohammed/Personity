@@ -139,8 +139,13 @@ export function detectCrisisIndicators(userMessage: string): {
       isCrisis: true,
       message: `I'm concerned about what you've shared. If you're in crisis, please reach out to a crisis helpline:
 
-• National Suicide Prevention Lifeline: 988 (US)
-• Crisis Text Line: Text HOME to 741741
+International Resources:
+• United States: 988 (Suicide & Crisis Lifeline) or text HOME to 741741
+• United Kingdom: 116 123 (Samaritans)
+• India: 9152987821 (iCall)
+• Australia: 13 11 14 (Lifeline)
+• Canada: 1-833-456-4566 (Crisis Services Canada)
+• International: https://findahelpline.com
 
 This research conversation isn't equipped to provide the support you need. Please take care of yourself.`,
     };

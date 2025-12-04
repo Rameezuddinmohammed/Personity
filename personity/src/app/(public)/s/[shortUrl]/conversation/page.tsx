@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Send, Pause, Mic } from 'lucide-react';
+import { ConversationErrorBoundary } from '@/components/ui/error-boundary';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -11,7 +12,7 @@ interface Message {
   timestamp: string;
 }
 
-export default function ConversationPage() {
+function ConversationContent() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -655,5 +656,14 @@ export default function ConversationPage() {
         
       </main>
     </div>
+  );
+}
+
+// Export with error boundary wrapper
+export default function ConversationPage() {
+  return (
+    <ConversationErrorBoundary>
+      <ConversationContent />
+    </ConversationErrorBoundary>
   );
 }

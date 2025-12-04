@@ -11,6 +11,9 @@ import { validateResponseQuality } from '@/lib/ai/response-quality-validator';
 import { detectContradiction, shouldAskClarification } from '@/lib/ai/contradiction-detector';
 import { compressConversationHistory, needsCompression } from '@/lib/ai/conversation-compression';
 import { suggestFollowUp, generateFollowUpInstruction } from '@/lib/ai/follow-up-logic';
+import { logConversation } from '@/lib/logger';
+import { QUALITY_THRESHOLDS } from '@/lib/constants';
+import type { SessionState } from '@/types/conversation';
 import { z } from 'zod';
 
 interface RouteContext {
@@ -424,7 +427,7 @@ export async function POST(
     
     if (currentState?.endingPhase) {
       conversationState.endingPhase = currentState.endingPhase;
-      console.log('[Ending Phase] Loaded from currentState:', currentState.endingPhase);
+      logConversation.debug('Ending phase loaded from state', { phase: currentState.endingPhase });
     }
     
     // Suggest intelligent follow-up based on user response
@@ -436,7 +439,7 @@ export async function POST(
       previousFollowUps: 0, // TODO: Track this in state
     });
     
-    console.log('[Follow-Up]', followUpSuggestion.reason, '- Priority:', followUpSuggestion.priority);
+    logConversation.debug('Follow-up suggestion', { reason: followUpSuggestion.reason, priority: followUpSuggestion.priority });
     
     // Parse survey config for dynamic prompt
     const surveyConfig = {
@@ -461,14 +464,14 @@ export async function POST(
     let compressionSummary = null;
     
     if (needsCompression(exchanges)) {
-      console.log('[Compression] Compressing conversation history...');
+      logConversation.debug('Compressing conversation history');
       const { compressedExchanges, summary } = await compressConversationHistory(
         exchanges,
         surveyTopics
       );
       processedExchanges = compressedExchanges;
       compressionSummary = summary;
-      console.log('[Compression] Compressed from', exchanges.length, 'to', compressedExchanges.length, 'exchanges');
+      logConversation.debug('Compression complete', { from: exchanges.length, to: compressedExchanges.length });
     }
     
     // Build messages with DYNAMIC system prompt (regenerated each turn)
@@ -520,15 +523,15 @@ export async function POST(
     );
     
     // Log quality score for monitoring
-    console.log(`[AI Quality Check] Score: ${aiQualityCheck.score}/10`, {
+    logConversation.debug('AI quality check', {
+      score: aiQualityCheck.score,
       passed: aiQualityCheck.passed,
       issues: aiQualityCheck.issues,
-      suggestions: aiQualityCheck.suggestions,
     });
     
-    // Auto-regenerate if quality is too low (score < 7) - ONE retry only
-    if (!aiQualityCheck.passed && aiQualityCheck.score < 7) {
-      console.log('[AI Quality] Low score detected, regenerating response...');
+    // Auto-regenerate if quality is too low - ONE retry only
+    if (!aiQualityCheck.passed && aiQualityCheck.score < QUALITY_THRESHOLDS.MIN_QUALITY_SCORE) {
+      logConversation.debug('Low quality score, regenerating', { score: aiQualityCheck.score });
       
       // Add quality feedback to the prompt
       const regenerationMessages: AIMessage[] = [
@@ -569,7 +572,7 @@ Generate an improved response that addresses these issues. Remember:
         surveyConfig.mode || 'EXPLORATORY_GENERAL'
       );
       
-      console.log(`[AI Quality] Regenerated score: ${regeneratedQualityCheck.score}/10`);
+      logConversation.debug('Regenerated quality score', { score: regeneratedQualityCheck.score });
       
       // Use regenerated response if it's better
       if (regeneratedQualityCheck.score > aiQualityCheck.score) {
@@ -579,9 +582,9 @@ Generate an improved response that addresses these issues. Remember:
         structuredResponse.summary = regeneratedResponse.summary;
         structuredResponse.persona = regeneratedResponse.persona;
         aiQualityCheck = regeneratedQualityCheck;
-        console.log('[AI Quality] Using regenerated response (improved)');
+        logConversation.debug('Using regenerated response (improved)');
       } else {
-        console.log('[AI Quality] Keeping original response (regeneration did not improve)');
+        logConversation.debug('Keeping original response (regeneration did not improve)');
       }
     }
     
@@ -589,7 +592,8 @@ Generate an improved response that addresses these issues. Remember:
     // This is a limitation - we'll estimate based on message length
     const estimatedInputTokens = messages.reduce((sum, m) => sum + Math.ceil(m.content.length / 4), 0);
     const estimatedOutputTokens = Math.ceil(structuredResponse.message.length / 4);
-    const cost = (estimatedInputTokens * 0.0000025) + (estimatedOutputTokens * 0.00001);
+    // o4-mini pricing: $1.10/1M input, $4.40/1M output
+    const cost = (estimatedInputTokens * 0.0000011) + (estimatedOutputTokens * 0.0000044);
     
     // Update conversation with new exchanges
     const updatedExchanges = [
@@ -655,7 +659,7 @@ Generate an improved response that addresses these issues. Remember:
     await supabase.from('ApiUsage').insert({
       context: `session:${session.id}`,
       provider: 'azure',
-      model: 'gpt-4o',
+      model: 'o4-mini',
       tokensInput: estimatedInputTokens,
       tokensOutput: estimatedOutputTokens,
       cost,
@@ -709,13 +713,13 @@ Generate an improved response that addresses these issues. Remember:
     // Update ending phase based on AI response
     if (askedReflection && currentEndingPhase === 'none') {
       newEndingPhase = 'reflection_asked';
-      console.log('[Ending Phase] STEP 1: Reflection question asked');
+      logConversation.debug('Ending phase: STEP 1 - Reflection question asked');
     } else if (showedSummary && currentEndingPhase === 'reflection_asked') {
       newEndingPhase = 'summary_shown';
-      console.log('[Ending Phase] STEP 2: Summary shown');
+      logConversation.debug('Ending phase: STEP 2 - Summary shown');
     } else if (structuredResponse.shouldEnd && structuredResponse.reason === 'completed' && currentEndingPhase === 'summary_shown') {
       newEndingPhase = 'confirmed';
-      console.log('[Ending Phase] STEP 3: User confirmed, ending conversation');
+      logConversation.debug('Ending phase: STEP 3 - User confirmed, ending conversation');
     }
     
     // CRITICAL: Save ending phase to state so it persists across turns
@@ -736,8 +740,8 @@ Generate an improved response that addresses these issues. Remember:
     // CRITICAL FIX: If AI skipped Step 2, force regeneration with explicit summary
     if (currentEndingPhase === 'reflection_asked' && !showedSummary) {
       validationError = 'AI should have shown summary at Step 2 but did not';
-      console.error('[Ending Phase Validation]', validationError);
-      console.log('[Ending Phase] Forcing summary generation...');
+      logConversation.warn('Ending phase validation failed', { error: validationError });
+      logConversation.debug('Forcing summary generation');
       
       // Build key insights from conversation state
       const insights = updatedConversationState.keyInsights.length > 0 
@@ -782,9 +786,9 @@ DO NOT:
         newEndingPhase = 'summary_shown';
         updatedState.endingPhase = 'summary_shown';
         
-        console.log('[Ending Phase] Successfully generated forced summary');
+        logConversation.debug('Successfully generated forced summary');
       } catch (error) {
-        console.error('[Ending Phase] Failed to generate forced summary:', error);
+        logConversation.error('Failed to generate forced summary', error);
         // Fallback: manually construct summary
         structuredResponse.message = `Let me make sure I got this right:\n\n${insights.map(i => `• ${i}`).join('\n')}\n\nDid I capture that accurately?`;
         structuredResponse.shouldEnd = false;
@@ -795,18 +799,18 @@ DO NOT:
     
     if (currentEndingPhase === 'reflection_asked' && structuredResponse.shouldEnd) {
       validationError = 'AI tried to end at Step 2 (should be false)';
-      console.error('[Ending Phase Validation]', validationError);
+      logConversation.warn('Ending phase validation failed', { error: validationError });
       // Force shouldEnd to false
       structuredResponse.shouldEnd = false;
     }
     
     if (currentEndingPhase === 'summary_shown' && !structuredResponse.shouldEnd) {
       validationError = 'AI should have ended at Step 3 but did not';
-      console.error('[Ending Phase Validation]', validationError);
+      logConversation.warn('Ending phase validation failed', { error: validationError });
       // Force ending if user confirmed
       if (message.toLowerCase().includes('yes') || message.toLowerCase().includes('correct') || 
           message.toLowerCase().includes('right') || message.toLowerCase().includes('accurate')) {
-        console.log('[Ending Phase] User confirmed summary, forcing end');
+        logConversation.debug('User confirmed summary, forcing end');
         structuredResponse.shouldEnd = true;
         structuredResponse.reason = 'completed';
         structuredResponse.summary = structuredResponse.message;
@@ -824,7 +828,7 @@ DO NOT:
     // Only allow ending if proper protocol followed (unless disqualified/max questions)
     if (shouldEnd && structuredResponse.reason === 'completed') {
       if (newEndingPhase !== 'confirmed' && newEndingPhase !== 'summary_shown') {
-        console.warn('[Ending Phase] AI tried to end without following 3-step protocol. Preventing end.');
+        logConversation.warn('AI tried to end without following 3-step protocol, preventing end');
         shouldEnd = false;
         summary = '';
       }
@@ -860,7 +864,7 @@ DO NOT:
       },
     });
   } catch (error: any) {
-    console.error('Message handling error:', error);
+    logConversation.error('Message handling error', error);
     
     // Handle content filter errors
     if (error?.message === 'CONTENT_FILTERED') {

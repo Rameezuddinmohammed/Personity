@@ -5,14 +5,11 @@
  */
 
 import { generateAIResponse, AIMessage } from './azure-openai';
+import { logAI } from '@/lib/logger';
+import type { PersonaInsights } from '@/types/conversation';
 
-export interface PersonaInsights {
-  painLevel?: 'low' | 'medium' | 'high';
-  experience?: 'novice' | 'intermediate' | 'expert';
-  sentiment?: 'positive' | 'neutral' | 'negative';
-  readiness?: 'cold' | 'warm' | 'hot';
-  clarity?: 'low' | 'medium' | 'high';
-}
+// Re-export for backward compatibility
+export type { PersonaInsights };
 
 export interface StructuredConversationResponse {
   message: string;
@@ -108,12 +105,20 @@ RETURN ONLY THE JSON OBJECT. NO OTHER TEXT.`,
       persona: parsed.persona,
     };
   } catch (error) {
-    console.error('Error parsing structured response:', error);
+    logAI.error('Error parsing structured response', error);
     // Fallback: return raw response, don't end
-    const response = await generateAIResponse(messages, options);
-    return {
-      message: response.content,
-      shouldEnd: false,
-    };
+    try {
+      const response = await generateAIResponse(messages, options);
+      return {
+        message: response.content,
+        shouldEnd: false,
+      };
+    } catch (fallbackError) {
+      logAI.error('Fallback response also failed', fallbackError);
+      return {
+        message: 'I apologize, but I encountered an issue. Could you please repeat that?',
+        shouldEnd: false,
+      };
+    }
   }
 }

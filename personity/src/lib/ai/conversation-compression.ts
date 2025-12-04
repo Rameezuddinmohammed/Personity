@@ -2,10 +2,12 @@
  * Conversation Compression
  * 
  * Compresses long conversation histories to prevent prompt truncation
- * Triggered after 10+ exchanges to keep context manageable
+ * Triggered after threshold exchanges to keep context manageable
  */
 
 import { generateAIResponse, AIMessage } from './azure-openai';
+import { CONVERSATION_THRESHOLDS, AI_CONFIG } from '@/lib/constants';
+import { logAI } from '@/lib/logger';
 
 export interface CompressionResult {
   summary: string;
@@ -30,14 +32,14 @@ export async function compressConversationHistory(
   compressedExchanges: Array<{ role: string; content: string; timestamp: string }>;
   summary: CompressionResult;
 }> {
-  // Keep last 3 exchanges (6 messages) - most recent context
-  const recentExchanges = exchanges.slice(-6).map(ex => ({
+  // Keep recent exchanges - most recent context
+  const recentExchanges = exchanges.slice(-CONVERSATION_THRESHOLDS.COMPRESSION_KEEP_RECENT).map(ex => ({
     ...ex,
     timestamp: ex.timestamp || new Date().toISOString(),
   }));
   
   // Compress earlier exchanges
-  const earlierExchanges = exchanges.slice(0, -6);
+  const earlierExchanges = exchanges.slice(0, -CONVERSATION_THRESHOLDS.COMPRESSION_KEEP_RECENT);
   
   if (earlierExchanges.length === 0) {
     // Nothing to compress
@@ -93,7 +95,7 @@ Return ONLY valid JSON:
         },
       ],
       {
-        temperature: 0.3, // Low temperature for consistent extraction
+        temperature: AI_CONFIG.ANALYSIS_TEMPERATURE,
         maxTokens: 500,
       }
     );
@@ -151,6 +153,6 @@ ${Object.entries(summary.personaSnapshot).map(([key, val]) => `- ${key}: ${val}`
  * Check if conversation needs compression
  */
 export function needsCompression(exchanges: Array<{ role: string; content: string }>): boolean {
-  // Compress after 10+ exchanges (20+ messages)
-  return exchanges.length > 20;
+  // Compress after threshold messages
+  return exchanges.length > CONVERSATION_THRESHOLDS.COMPRESSION_THRESHOLD;
 }

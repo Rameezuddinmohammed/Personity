@@ -9,9 +9,11 @@
  * - Stays brief (1-2 sentences)
  */
 
+import { QUALITY_THRESHOLDS } from '@/lib/constants';
+
 export interface QualityScore {
   score: number; // 1-10
-  passed: boolean; // true if score >= 7
+  passed: boolean; // true if score >= MIN_QUALITY_SCORE
   issues: string[];
   suggestions: string[];
 }
@@ -135,7 +137,7 @@ export function validateResponseQuality(
 
   return {
     score,
-    passed: score >= 7,
+    passed: score >= QUALITY_THRESHOLDS.MIN_QUALITY_SCORE,
     issues,
     suggestions,
   };

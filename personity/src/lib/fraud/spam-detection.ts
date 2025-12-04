@@ -6,6 +6,8 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
+import { FRAUD_THRESHOLDS } from '@/lib/constants';
+import { logFraud } from '@/lib/logger';
 
 export interface SpamCheckResult {
   isSpam: boolean;
@@ -18,7 +20,7 @@ export interface SpamCheckResult {
  * 
  * @param exchanges - Conversation history
  * @param newMessage - New user message
- * @returns True if message is identical to 3+ previous messages
+ * @returns True if message is identical to threshold+ previous messages
  */
 export function detectIdenticalResponses(
   exchanges: Array<{ role: string; content: string }>,
@@ -33,8 +35,8 @@ export function detectIdenticalResponses(
   // Count how many times this exact message appears
   const identicalCount = userMessages.filter(msg => msg === normalizedNew).length;
   
-  // Flag if this would be the 3rd+ identical response
-  return identicalCount >= 2;
+  // Flag if this would exceed the identical response limit
+  return identicalCount >= FRAUD_THRESHOLDS.IDENTICAL_RESPONSE_LIMIT;
 }
 
 /**
@@ -78,8 +80,8 @@ export function calculateAverageExchangeTime(
  * @returns True if suspiciously fast
  */
 export function isSuspiciousSpeed(averageExchangeTime: number): boolean {
-  // Flag if average response time is under 5 seconds
-  return averageExchangeTime > 0 && averageExchangeTime < 5;
+  // Flag if average response time is under threshold
+  return averageExchangeTime > 0 && averageExchangeTime < FRAUD_THRESHOLDS.MIN_AVG_RESPONSE_TIME_SECONDS;
 }
 
 /**
@@ -186,21 +188,23 @@ export async function checkForSpam(
   
   // Check IP session count
   const sessionCount = await getIPSessionCount(ipAddress);
-  if (sessionCount > 20) {
+  if (sessionCount > FRAUD_THRESHOLDS.IP_SESSION_LIMIT_24H) {
+    logFraud.warn('IP session limit exceeded', { ipAddress, sessionCount });
     return {
       isSpam: true,
       reason: `Too many sessions from IP (${sessionCount} in 24h)`,
-      shouldBan: true, // This is more serious
+      shouldBan: true,
     };
   }
   
   // Check low-quality session count
   const lowQualityCount = await getLowQualitySessionCount(ipAddress);
-  if (lowQualityCount >= 10) {
+  if (lowQualityCount >= FRAUD_THRESHOLDS.FLAGGED_SESSION_BAN_THRESHOLD) {
+    logFraud.warn('Low quality session limit exceeded', { ipAddress, lowQualityCount });
     return {
       isSpam: true,
       reason: `Too many low-quality sessions (${lowQualityCount} in 24h)`,
-      shouldBan: true, // Ban after 10+ low-quality sessions
+      shouldBan: true,
     };
   }
   

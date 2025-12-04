@@ -5,6 +5,8 @@
  */
 
 import { generateAIResponse, AIMessage } from './azure-openai';
+import { AI_CONFIG } from '@/lib/constants';
+import { logAI } from '@/lib/logger';
 
 export type SurveyMode = 'PRODUCT_DISCOVERY' | 'FEEDBACK_SATISFACTION' | 'EXPLORATORY_GENERAL';
 
@@ -59,7 +61,7 @@ Phrase them as questions TO the creator (e.g., "What specific features are you c
     ];
 
     const response = await generateAIResponse(messages, {
-      temperature: 0.3,
+      temperature: AI_CONFIG.ANALYSIS_TEMPERATURE,
       maxTokens: 300,
     });
 
@@ -86,7 +88,7 @@ Phrase them as questions TO the creator (e.g., "What specific features are you c
         : [],
     };
   } catch (error) {
-    console.error('Error detecting survey mode:', error);
+    logAI.error('Error detecting survey mode', error, { objective: objective.substring(0, 100) });
     
     // Fallback to simple keyword matching
     const objectiveLower = objective.toLowerCase();

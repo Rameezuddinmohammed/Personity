@@ -4,6 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 import { createSurveySchema } from '@/lib/validations/survey';
 import { generateMasterPrompt } from '@/lib/ai/master-prompt';
 import { generateShortUrl } from '@/lib/utils/short-url';
+import { logger } from '@/lib/logger';
 import { z } from 'zod';
 
 export async function POST(request: NextRequest) {
@@ -81,12 +82,14 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError || !data) {
-      console.error('Error creating survey:', insertError);
+      logger.error('Failed to insert survey', insertError);
       return NextResponse.json(
         { success: false, error: 'Failed to create survey' },
         { status: 500 }
       );
     }
+    
+    logger.info('Survey created', { surveyId: data.id, userId: user.id });
 
     return NextResponse.json({
       success: true,
@@ -100,7 +103,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error('Validation error:', error.issues);
+      logger.warn('Survey validation error', { issues: error.issues });
       return NextResponse.json(
         {
           success: false,
@@ -111,7 +114,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error('Error creating survey:', error);
+    logger.error('Error creating survey', error);
     return NextResponse.json(
       {
         success: false,
@@ -122,6 +125,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/**
+ * @deprecated Use /api/surveys/list instead for detailed stats
+ * This endpoint is kept for backward compatibility
+ */
 export async function GET() {
   try {
     // Verify authentication
@@ -145,7 +152,7 @@ export async function GET() {
       .order('createdAt', { ascending: false });
 
     if (fetchError) {
-      console.error('Error fetching surveys:', fetchError);
+      logger.error('Error fetching surveys', fetchError);
       return NextResponse.json(
         { success: false, error: 'Failed to fetch surveys' },
         { status: 500 }

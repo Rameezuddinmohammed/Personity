@@ -1,4 +1,7 @@
-interface SurveyConfig {
+import { TOPIC_DEPTH, KEY_INSIGHTS_CONFIG, CONVERSATION_THRESHOLDS } from '@/lib/constants';
+import type { SurveyConfig, ConversationState as ConversationStateType, PersonaInsights } from '@/types/conversation';
+
+interface SurveyConfigInternal {
   objective: string;
   context?: {
     productDescription?: string;
@@ -15,6 +18,9 @@ interface SurveyConfig {
   };
   mode?: 'PRODUCT_DISCOVERY' | 'FEEDBACK_SATISFACTION' | 'EXPLORATORY_GENERAL';
 }
+
+// Re-export for backward compatibility
+export type { SurveyConfig };
 
 /**
  * Conversation State - tracks progress and context across turns
@@ -866,14 +872,14 @@ export function extractConversationState(
       // L1 (Awareness): 1 question
       // L2 (Experience): 2-3 questions
       // L3 (Impact): 4+ questions
-      let depth = 1;
-      if (topicQuestionCount >= 4) depth = 3;
-      else if (topicQuestionCount >= 2) depth = 2;
+      let depth: number = TOPIC_DEPTH.AWARENESS;
+      if (topicQuestionCount >= 4) depth = TOPIC_DEPTH.IMPACT;
+      else if (topicQuestionCount >= 2) depth = TOPIC_DEPTH.EXPERIENCE;
       
       state.topicDepth[topic] = depth;
       
-      // Only mark as "covered" if reached L2 or higher
-      if (depth >= 2) {
+      // Only mark as "covered" if reached minimum depth
+      if (depth >= TOPIC_DEPTH.MIN_COVERED_DEPTH) {
         state.coveredTopics.push(topic);
       }
     }
@@ -886,11 +892,12 @@ export function extractConversationState(
     /alien|pluto|teleport|magic|wizard/i, // Nonsensical content
   ];
   
-  // Extract key insights (quotes from user responses > 50 chars)
+  // Extract key insights (quotes from user responses within length bounds)
   // Filter out low-quality responses
   userExchanges.forEach(ex => {
-    // Check length requirements
-    if (ex.content.length < 50 || ex.content.length > 200) {
+    // Check length requirements using constants
+    if (ex.content.length < KEY_INSIGHTS_CONFIG.MIN_LENGTH || 
+        ex.content.length > KEY_INSIGHTS_CONFIG.MAX_LENGTH) {
       return;
     }
     
@@ -902,15 +909,15 @@ export function extractConversationState(
     
     // Check for very short words (likely low quality)
     const words = ex.content.split(/\s+/);
-    if (words.length < 8) {
+    if (words.length < KEY_INSIGHTS_CONFIG.MIN_WORDS) {
       return;
     }
     
     state.keyInsights.push(ex.content);
   });
 
-  // Limit insights to last 3
-  state.keyInsights = state.keyInsights.slice(-3);
+  // Limit insights to configured maximum
+  state.keyInsights = state.keyInsights.slice(-KEY_INSIGHTS_CONFIG.MAX_INSIGHTS);
 
   // INCREMENTAL PERSONA DETECTION
   // Analyze user responses to build persona profile throughout conversation

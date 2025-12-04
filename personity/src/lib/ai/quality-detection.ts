@@ -6,6 +6,8 @@
  */
 
 import { generateAIResponse, AIMessage } from './azure-openai';
+import { QUALITY_THRESHOLDS } from '@/lib/constants';
+import { logAI } from '@/lib/logger';
 
 export interface QualityCheckResult {
   isLowQuality: boolean;
@@ -60,7 +62,7 @@ export async function checkResponseQuality(
   }
   
   // For slightly longer responses, use AI to assess quality
-  if (wordCount <= 5) {
+  if (wordCount <= QUALITY_THRESHOLDS.SHORT_RESPONSE_WORD_COUNT) {
     try {
       const messages: AIMessage[] = [
         {
@@ -172,7 +174,6 @@ Generate a re-engagement message to encourage them to share more details.`,
 /**
  * Track low-quality responses for a session
  * 
- * @param sessionId - The conversation session ID
  * @param currentState - Current session state
  * @returns Updated state with quality tracking
  */
@@ -193,8 +194,12 @@ export function trackLowQualityResponse(
   const lowQualityCount = (currentState.lowQualityCount || 0) + 1;
   const hasReEngaged = currentState.hasReEngaged || false;
   
-  // Flag session after 3 low-quality responses
-  const shouldFlag = lowQualityCount >= 3;
+  // Flag session after threshold low-quality responses
+  const shouldFlag = lowQualityCount >= QUALITY_THRESHOLDS.LOW_QUALITY_COUNT_LIMIT;
+  
+  if (shouldFlag) {
+    logAI.warn('Session flagged for low quality', { lowQualityCount });
+  }
   
   return {
     exchangeCount: currentState.exchangeCount,

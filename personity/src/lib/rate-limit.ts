@@ -1,5 +1,6 @@
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { RATE_LIMITS } from '@/lib/constants';
 
 // Create Redis client using Upstash KV
 const redis = new Redis({
@@ -10,21 +11,21 @@ const redis = new Redis({
 // Rate limiters for different endpoints
 export const conversationRateLimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 requests per minute per IP
+  limiter: Ratelimit.slidingWindow(RATE_LIMITS.CONVERSATION_PER_MINUTE, '1 m'),
   analytics: true,
   prefix: 'ratelimit:conversation',
 });
 
 export const authRateLimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, '15 m'), // 5 requests per 15 minutes per IP
+  limiter: Ratelimit.slidingWindow(RATE_LIMITS.AUTH_PER_15_MINUTES, '15 m'),
   analytics: true,
   prefix: 'ratelimit:auth',
 });
 
 export const surveyCreationRateLimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(10, '1 h'), // 10 surveys per hour per user
+  limiter: Ratelimit.slidingWindow(RATE_LIMITS.SURVEY_PER_HOUR, '1 h'),
   analytics: true,
   prefix: 'ratelimit:survey',
 });
