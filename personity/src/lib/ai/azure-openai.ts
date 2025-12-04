@@ -27,6 +27,7 @@ export interface AIResponse {
 
 /**
  * Generate AI response using Azure OpenAI o4-mini
+ * Note: o4-mini is a reasoning model that doesn't support temperature parameter
  */
 export async function generateAIResponse(
   messages: AIMessage[],
@@ -36,11 +37,11 @@ export async function generateAIResponse(
   } = {}
 ): Promise<AIResponse> {
   try {
+    // o4-mini reasoning model doesn't support temperature - use max_completion_tokens instead of max_tokens
     const response = await client.chat.completions.create({
       model: deploymentName,
       messages,
-      temperature: options.temperature ?? 0.7,
-      max_tokens: options.maxTokens ?? 200,
+      max_completion_tokens: options.maxTokens ?? 200,
     });
 
     return {
