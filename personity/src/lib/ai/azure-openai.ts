@@ -50,37 +50,29 @@ export async function generateAIResponse(
       return msg;
     });
 
-    console.log('[Azure OpenAI] Calling model:', deploymentName);
-    console.log('[Azure OpenAI] Message count:', convertedMessages.length);
-    console.log('[Azure OpenAI] First message role:', convertedMessages[0]?.role);
-
+    // o4-mini uses tokens for reasoning before generating content
+    // Need much higher limit: reasoning_tokens + output_tokens
+    // Minimum 1000 for simple responses, 2000+ for complex ones
     const response = await client.chat.completions.create({
       model: deploymentName,
       messages: convertedMessages as any,
-      max_completion_tokens: options.maxTokens ?? 200,
+      max_completion_tokens: Math.max(options.maxTokens ?? 200, 1) * 10, // 10x multiplier for reasoning overhead
     });
 
-    console.log('[Azure OpenAI] Response received, content length:', response.choices[0]?.message?.content?.length);
+    const messageContent = response.choices[0]?.message?.content || '';
 
     return {
-      content: response.choices[0].message.content || '',
+      content: messageContent,
       usage: {
         inputTokens: response.usage?.prompt_tokens ?? 0,
         outputTokens: response.usage?.completion_tokens ?? 0,
       },
     };
   } catch (error: any) {
-    console.error('[Azure OpenAI] Full error:', JSON.stringify({
-      message: error?.message,
-      code: error?.code,
-      status: error?.status,
-      type: error?.type,
-      error: error?.error,
-    }, null, 2));
-    
     logAI.error('Azure OpenAI API error', error, {
       code: error?.code,
       status: error?.status,
+      message: error?.message,
     });
     
     // Handle content filter errors
