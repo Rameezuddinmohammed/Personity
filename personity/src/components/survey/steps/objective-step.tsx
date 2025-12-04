@@ -52,15 +52,20 @@ export function ObjectiveStep() {
           
           // Auto-generate a simple title from objective (no AI call)
           if (!title.trim()) {
-            // Create a simple title from the objective
-            const simpleTitle = objective
-              .replace(/^(I want to |I'd like to |I need to |We want to |We need to )/i, '')
-              .replace(/^(understand |learn |know |find out |discover |explore )/i, '')
-              .split(/[.!?]/)[0] // Take first sentence
+            // Extract key topic and create a survey-style title
+            let topic = objective
+              .replace(/^(I want to |I'd like to |I need to |We want to |We need to |I'm trying to )/i, '')
+              .replace(/^(understand |learn |know |find out |discover |explore |research |investigate )/i, '')
+              .replace(/^(why |how |what |when |where |who |whether )/i, '')
+              .split(/[.!?]/)[0]
               .trim();
             
-            // Capitalize first letter and limit length
-            const formattedTitle = simpleTitle.charAt(0).toUpperCase() + simpleTitle.slice(1);
+            // Extract the main noun phrase (first ~5 words)
+            const words = topic.split(/\s+/).slice(0, 6);
+            topic = words.join(' ');
+            
+            // Create a proper survey title
+            const formattedTitle = topic.charAt(0).toUpperCase() + topic.slice(1) + ' Survey';
             setTitle(formattedTitle.length > 60 ? formattedTitle.substring(0, 57) + '...' : formattedTitle);
           }
         }
